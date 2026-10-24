@@ -2141,9 +2141,13 @@ let stage13PhotoRenderRevision=0;
 let stage13PhotoStaleEventCount=0;
 let stage13PhotoEventHandlingCount=0;
 let stage13ActiveViewerImage=null;
+let stage13PhotoInitStatus='starting';
+let stage13PhotoInitError='';
+let stage13PhotoLastTabClick='尚未點擊';
 function stage13PhotoAssetUrl(source){const fileName=String(source||'').replace(/\\/g,'/').split('/').filter(Boolean).pop();if(!fileName)return '';const page=new URL(document.baseURI),segments=page.pathname.split('/').filter(Boolean),isGitHubPages=page.hostname.endsWith('.github.io'),projectPath=isGitHubPages&&segments.length?`/${encodeURIComponent(segments[0])}/assets/`:'/assets/',base=isGitHubPages?new URL(projectPath,page.origin):new URL('assets/',page);return new URL(encodeURIComponent(fileName),base).href}
 function stage13PhotoDebugUpdate(){
   if(!stage13PhotoDebugEnabled)return;
+  try{
   const id=stage13PhotoViewerId||stage13PhotoDebugSelectedId||stage13PhotoDebugLastId;
   const photo=STAGE13_PHOTOS.find(item=>item.id===id),viewer=$('#photos-viewer'),photosApp=$('#app-gallery');
   const appActive=!!photosApp?.classList.contains('active');
@@ -2179,19 +2183,23 @@ function stage13PhotoDebugUpdate(){
     `事件處理次數：${stage13PhotoEventHandlingCount}；過期事件忽略次數：${stage13PhotoStaleEventCount}`,
     `照片 App 畫面顯示：${appActive?'是':'否'}`,
     `目前畫面 ID：${currentScreen||'—'}`,
+    `照片 App 初始化：${stage13PhotoInitStatus}`,
+    `最近分頁點擊：${stage13PhotoLastTabClick}`,
+    `初始化／執行錯誤：${stage13PhotoInitError||'無'}`,
     `圖庫 render 次數：${stage13PhotoRenderRevision}`,
     `照片檢視器顯示：${viewerOpen?'是':'否'}`,
     `照片檢視器 hidden：${viewer?String(viewer.hidden):'—'}`,
     `照片檢視器 aria-hidden：${viewer?.getAttribute('aria-hidden')||'—'}`,
-    `事件時間：${event.at||'—'}`
+    `最近圖片事件時間：${viewerEvent.at||thumbEvent.at||albumEvent.at||'—'}`
   ];
   const textarea=$('#photos-debug-text');if(textarea)textarea.value=line.join('\n');
   const pageState=$('#photos-debug-page-state');if(pageState)pageState.textContent=viewerOpen?'單張檢視':'圖庫';
+  }catch(error){stage13PhotoInitError=error?.stack||String(error);const textarea=$('#photos-debug-text');if(textarea)textarea.value=`照片診斷更新錯誤\n${stage13PhotoInitError}`}
 }
 function stage13PhotoDebugRecord(image,result,surface=image?.dataset.photoSurface||'viewer'){if(!stage13PhotoDebugEnabled||!image)return;const id=image.dataset.photoId||stage13PhotoViewerId||stage13PhotoDebugSelectedId;if(!id)return;const key=`${id}|${surface}`;stage13PhotoDebugLastId=id;stage13PhotoDebugCounts[key]??={};stage13PhotoDebugCounts[key][result]=(stage13PhotoDebugCounts[key][result]||0)+1;if(result==='load'||result==='error')stage13PhotoEventHandlingCount++;stage13PhotoDebugEvents[key]={result,surface,src:image.src||'',currentSrc:image.currentSrc||'',dimensions:`${image.naturalWidth} × ${image.naturalHeight}`,complete:image.complete,at:new Date().toISOString()};stage13PhotoDebugUpdate()}
 function stage13PhotoDebugSelect(id){if(!stage13PhotoDebugEnabled)return;stage13PhotoDebugSelectedId=id;stage13PhotoDebugLastId=id;stage13PhotoDebugUpdate()}
 function stage13PhotoDebugCopy(){const textarea=$('#photos-debug-text'),state=$('#photos-debug-copy-state');if(!textarea)return;textarea.focus();textarea.select();const fallback=()=>{let ok=false;try{ok=document.execCommand('copy')}catch{}if(state)state.textContent=ok?'已複製診斷資訊。若未複製，可長按文字全選複製。':'請長按文字全選並複製。'};if(navigator.clipboard?.writeText)navigator.clipboard.writeText(textarea.value).then(()=>{if(state)state.textContent='已複製診斷資訊。'},fallback).catch(fallback);else fallback()}
-if(stage13PhotoDebugEnabled){$('#photos-debug-toggle').hidden=false;$('#photos-debug-toggle').addEventListener('click',()=>{$('#photos-debug-panel').hidden=false;stage13PhotoDebugUpdate()});$('#photos-debug-close').addEventListener('click',()=>{$('#photos-debug-panel').hidden=true});$('#photos-debug-copy').addEventListener('click',stage13PhotoDebugCopy);stage13PhotoDebugUpdate()}
+if(stage13PhotoDebugEnabled){window.addEventListener('error',event=>{stage13PhotoInitError=event.error?.stack||event.message||'未知 JavaScript 錯誤';try{stage13PhotoDebugUpdate()}catch{}});window.addEventListener('unhandledrejection',event=>{stage13PhotoInitError=event.reason?.stack||String(event.reason||'未處理 Promise 錯誤');try{stage13PhotoDebugUpdate()}catch{}});$('#photos-debug-toggle').hidden=false;$('#photos-debug-toggle').addEventListener('click',()=>{$('#photos-debug-panel').hidden=false;stage13PhotoDebugUpdate()});$('#photos-debug-close').addEventListener('click',()=>{$('#photos-debug-panel').hidden=true});$('#photos-debug-copy').addEventListener('click',stage13PhotoDebugCopy);stage13PhotoDebugUpdate()}
 function stage13LoadPhotoFavorites(){try{const stored=JSON.parse(localStorage.getItem(STAGE13_FAVORITES_KEY)||'[]');stage13PhotoFavorites=new Set(Array.isArray(stored)?stored.filter(id=>STAGE13_PHOTOS.some(photo=>photo.id===id)):[])}catch{stage13PhotoFavorites=new Set()}}
 function stage13SavePhotoFavorites(){try{localStorage.setItem(STAGE13_FAVORITES_KEY,JSON.stringify([...stage13PhotoFavorites]));return true}catch{return false}}
 function stage13StoryDateLabel(iso){const d=new Date(`${iso}T12:00:00Z`),weekdays=['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];return `${d.getUTCFullYear()}년 ${d.getUTCMonth()+1}월 ${d.getUTCDate()}일 ${weekdays[d.getUTCDay()]}`}
@@ -2211,7 +2219,7 @@ stage13LoadPhotoFavorites();
 $('#photos-content').addEventListener('click',event=>{const tile=event.target.closest('[data-photo-open]');if(tile){stage13PhotoDebugSelect(tile.dataset.photoOpen);stage13OpenPhoto(tile.dataset.photoOpen);return}const album=event.target.closest('[data-photo-album]');if(album){stage13PhotoPage='albums';stage13PhotoAlbum=album.dataset.photoAlbum;renderPhotos();return}if(event.target.closest('#photos-album-back')){stage13PhotoAlbum=null;renderPhotos()}});
 $('#photos-content').addEventListener('error',event=>{if(event.target.matches('img')){const fallback=event.target.parentElement?.querySelector('.photo-tile-fallback');if(fallback)fallback.hidden=false;event.target.hidden=true;stage13PhotoDebugRecord(event.target,'error')}},true);
 $('#photos-content').addEventListener('load',event=>{if(event.target.matches('img')){const fallback=event.target.parentElement?.querySelector('.photo-tile-fallback');if(fallback)fallback.hidden=true;event.target.hidden=false;stage13PhotoDebugRecord(event.target,'load')}},true);
-$$('[data-photo-tab]').forEach(button=>button.addEventListener('click',()=>stage13SelectTab(button.dataset.photoTab)));
+$$('[data-photo-tab]').forEach(button=>button.addEventListener('click',()=>{stage13PhotoLastTabClick=button.dataset.photoTab;stage13SelectTab(button.dataset.photoTab);stage13PhotoDebugUpdate()}));
 $('#photos-header-action').addEventListener('click',()=>stage13SelectTab('albums'));
 $('#photos-viewer-back').addEventListener('click',stage13ClosePhoto);
 $('#photos-favorite-toggle').addEventListener('click',()=>{if(!stage13PhotoViewerId)return;const current=stage13PhotoViewerId;if(stage13PhotoFavorites.has(current))stage13PhotoFavorites.delete(current);else stage13PhotoFavorites.add(current);stage13SavePhotoFavorites();stage13RenderViewer();if(stage13PhotoPage==='favorites'||stage13PhotoAlbum==='favorites'){renderPhotos();if(stage13PhotoFavorites.has(current))stage13OpenPhoto(current)}});
@@ -2225,6 +2233,8 @@ stage13PhotosStage.addEventListener('touchend',event=>{if(stage13PinchStart&&eve
 window.addEventListener('keydown',event=>{if(currentScreen!=='app-gallery'||$('#photos-viewer').hidden)return;if(event.key==='Escape'){stage13ClosePhoto();event.preventDefault()}else if(event.key==='ArrowLeft')stage13MovePhoto(-1);else if(event.key==='ArrowRight')stage13MovePhoto(1)});
 const stage13ShowScreenBeforePhotos=showScreen;
 showScreen=function(id){const result=stage13ShowScreenBeforePhotos(id);if(id==='app-gallery')renderPhotos();return result};
+stage13PhotoInitStatus='ready';
+stage13PhotoDebugUpdate();
 </script>
 </body>
 </html>
