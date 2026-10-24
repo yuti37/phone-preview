@@ -2131,8 +2131,7 @@ let stage13Zoom=1;
 let stage13TouchStart=null;
 let stage13PinchStart=null;
 let stage13PanPoint=null;
-const STAGE13_PHOTO_DEBUG_BUILD='photo-debug-r1-2026-10-25';
-const STAGE13_PHOTO_LAST_DEPLOYED_COMMIT='455fcfe0e205560949f19281b40c65425e082f91';
+const STAGE13_PHOTO_DEBUG_BUILD='photo-viewer-fix-r2-2026-10-25';
 const stage13PhotoDebugEnabled=new URLSearchParams(location.search).get('photo-debug')==='1';
 let stage13PhotoDebugSelectedId=null;
 let stage13PhotoDebugLastId=null;
@@ -2160,8 +2159,7 @@ function stage13PhotoDebugUpdate(){
   const line=[
     `頁面網址：${location.href}`,
     `診斷版本：${STAGE13_PHOTO_DEBUG_BUILD}`,
-    `目前已知 Pages 部署 commit：${STAGE13_PHOTO_LAST_DEPLOYED_COMMIT}`,
-    `部署狀態：此版本為本機診斷修改，尚未部署`,
+    `頁面來源：${location.hostname==='yuti37.github.io'?'GitHub Pages':'本機或其他主機'}`,
     `目前選取照片 ID：${id||'尚未選取'}`,
     `原始素材路徑：${photo?.src||'—'}`,
     `最終 img.src：${image?.src||viewerEvent.src||thumbEvent.src||albumEvent.src||'—'}`,
