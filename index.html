@@ -2121,6 +2121,63 @@ const STAGE13_ALBUMS = [
   {id:'food',title:'食物',sub:'음식'},
   {id:'work',title:'工作',sub:'무대와 작업'}
 ];
+// Stage 14: a small, idempotent addition to the shared October 21 dinner
+// history. This is supplemental fiction; it does not alter player state.
+const STAGE14_MEAL_EVENT_ID='restaurant-evening-20261021';
+const STAGE14_MEAL_MESSAGES=[
+  {id:'phone-sim-stage14:meal-20261021:1',day:'10월 21일 수요일',time:'19:46',from:'민혁',text:'오늘 저녁 먹을 사람? 연습 끝나고 간단히 먹자',translation:'今晚有人要一起吃飯嗎？練習結束後簡單吃點吧。',storyTimestamp:Date.parse('2026-10-21T19:46:00+09:00')},
+  {id:'phone-sim-stage14:meal-20261021:2',day:'10월 21일 수요일',time:'19:48',from:'기현',text:'간단히가 제일 어려운 말인데 ㅋㅋ',translation:'「簡單吃點」最難拿捏了ㅋㅋ',storyTimestamp:Date.parse('2026-10-21T19:48:00+09:00')},
+  {id:'phone-sim-stage14:meal-20261021:3',day:'10월 21일 수요일',time:'19:50',from:'주헌',text:'난 따뜻한 거면 다 좋아!',translation:'我只要是熱的都可以！',storyTimestamp:Date.parse('2026-10-21T19:50:00+09:00')},
+  {id:'phone-sim-stage14:meal-20261021:4',day:'10월 21일 수요일',time:'19:52',from:'형원',text:'국물 있는 것도 괜찮겠다 ㅋㅋ',translation:'有湯的也不錯ㅋㅋ',storyTimestamp:Date.parse('2026-10-21T19:52:00+09:00')},
+  {id:'phone-sim-stage14:meal-20261021:5',day:'10월 21일 수요일',time:'19:54',from:'민혁',text:'그럼 전에 얘기한 곳으로 갈까?',translation:'那去之前提過的那家如何？',storyTimestamp:Date.parse('2026-10-21T19:54:00+09:00')},
+  {id:'phone-sim-stage14:meal-20261021:6',day:'10월 21일 수요일',time:'19:56',from:'창균이',text:'거기면 이동하기도 괜찮겠다. 나도 갈게',translation:'那裡交通也方便，我也去。',storyTimestamp:Date.parse('2026-10-21T19:56:00+09:00')},
+  {id:'phone-sim-stage14:meal-20261021:7',day:'10월 21일 수요일',time:'20:01',from:'셔누',text:'먼저 도착한 사람 있으면 자리 봐줘',translation:'如果有人先到，幫忙看一下位子。',storyTimestamp:Date.parse('2026-10-21T20:01:00+09:00')},
+  {id:'phone-sim-stage14:meal-20261021:8',day:'10월 21일 수요일',time:'21:08',from:'기현',text:'다들 잘 먹었네. 사진은 나중에 보내줘 ㅋㅋ',translation:'大家吃得不錯嘛，照片晚點傳我ㅋㅋ',storyTimestamp:Date.parse('2026-10-21T21:08:00+09:00')}
+].map(message=>({...message,sourceEventId:STAGE14_MEAL_EVENT_ID,provenance:'stage14-supplemental'}));
+function ensureStage14MealHistory(){
+  const chat=(CONFIG.chats||[]).find(item=>item.id==='group');
+  if(!chat)return false;
+  chat.messages=Array.isArray(chat.messages)?chat.messages:[];
+  const ids=new Set(chat.messages.map(message=>String(message?.id||'')));
+  for(const message of STAGE14_MEAL_MESSAGES)if(!ids.has(message.id)){chat.messages.push({...message});ids.add(message.id)}
+  chat.messages=chat.messages.map((message,index)=>({message,index,at:kakaoMessageTimestamp(message)}))
+    .sort((a,b)=>(a.at??Infinity)-(b.at??Infinity)||a.index-b.index)
+    .map(item=>item.message);
+  return true;
+}
+// Read-only cross-app references. These entries never drive events, navigation,
+// choices, or character knowledge; source apps remain the canonical records.
+const CROSS_APP_EVENTS_V1=Object.freeze([
+  Object.freeze({eventId:'cross-app-meal-20261021',date:'2026-10-21',type:'shared-meal',people:Object.freeze(['hyungwon','shownu','minhyuk','kihyun','jooheon','changkyun']),description:'A casual meal after the day’s work, reflected in group chat and the existing restaurant and food photos.',provenance:'mixed-existing-and-supplemental',references:Object.freeze([
+    ...STAGE14_MEAL_MESSAGES.map(message=>Object.freeze({app:'kakao',kind:'message',chatId:'group',id:message.id})),
+    Object.freeze({app:'photos',kind:'photo',id:'photo-9376'}),Object.freeze({app:'photos',kind:'photo',id:'photo-9333'}),Object.freeze({app:'photos',kind:'photo',id:'photo-9334'})
+  ])}),
+  Object.freeze({eventId:'cross-app-work-20261018-23',dateRange:Object.freeze(['2026-10-18','2026-10-23']),type:'work-and-travel-routine',people:Object.freeze(['hyungwon','shownu','minhyuk','kihyun','jooheon','changkyun','manager']),description:'Work preparation, transfers, backstage moments, and ordinary rest across several days; no city or specific performance is inferred.',provenance:'existing',references:Object.freeze([
+    ...['photo-9320','photo-9322','photo-9323','photo-9369','photo-9370','photo-9371'].map(id=>Object.freeze({app:'photos',kind:'photo',id})),
+    ...[['shownu','phone-sim-stage10-history:shownu:22-a'],['group','phone-sim-stage10-history:group:22-a'],['group','phone-sim-stage10-history:group:22-b'],['group','phone-sim-stage10-history:group:22-c'],['manager','phone-sim-stage10-history:manager:23-a']].map(([chatId,id])=>Object.freeze({app:'kakao',kind:'message',chatId,id})),
+    Object.freeze({app:'x',kind:'post',id:'x-history-20261022-02'})
+  ])}),
+  Object.freeze({eventId:'cross-app-private-moment-20261021',date:'2026-10-21',type:'private-reflection',people:Object.freeze(['hyungwon','shownu']),description:'A few quiet daily details and a private thought; the undated note remains undated and the materials do not declare a relationship.',provenance:'existing',references:Object.freeze([
+    Object.freeze({app:'photos',kind:'photo',id:'photo-9332'}),Object.freeze({app:'x',kind:'post',id:'x-legacy-20261021'}),
+    ...[1,2,3].map(number=>Object.freeze({app:'kakao',kind:'message',chatId:'shownu',id:`phone-sim-stage11-clue:shownu:remember-song:${number}`})),
+    Object.freeze({app:'notes',kind:'note',id:'phone-sim-stage11-private-note',date:null})
+  ])})
+]);
+function resolveCrossAppReference(reference){
+  try{
+    if(reference?.app==='photos')return STAGE13_PHOTOS.find(item=>item.id===reference.id)||null;
+    if(reference?.app==='x')return (CONFIG.tweets||[]).find(item=>item.id===reference.id)||null;
+    if(reference?.app==='notes')return (CONFIG.notes||[]).find(item=>item.id===reference.id)||null;
+    if(reference?.app==='kakao')return (CONFIG.chats||[]).find(chat=>chat.id===reference.chatId)?.messages?.find(message=>message.id===reference.id)||null;
+  }catch{}
+  return null;
+}
+function validateCrossAppEventsV1(){
+  const results=[];
+  for(const event of CROSS_APP_EVENTS_V1){let found=0,missing=[];for(const reference of event.references||[]){try{if(resolveCrossAppReference(reference))found++;else missing.push(`${reference.app}:${reference.id}`)}catch{missing.push(`${reference.app}:${reference.id}`)}}results.push({eventId:event.eventId,found,missing})}
+  return results;
+}
+ensureStage14MealHistory();
 const STAGE13_FAVORITES_KEY='phone-sim.photos-favorites.v1';
 let stage13PhotoFavorites=new Set();
 let stage13PhotoPage='library';
