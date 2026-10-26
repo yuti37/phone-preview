@@ -534,3 +534,153 @@ test('new topics stay isolated by recipient and topic; an active turn in one roo
   assert.ok(h.sandbox.__optionTest.STAGE_TWELVE_FLOWS.kihyun.work);
   assert.ok(h.sandbox.__optionTest.STAGE_TWELVE_FLOWS.minhyuk.daily);
 });
+
+const secondBatchScenarios = [
+  { chat: 'jooheon', topic: 'music-process', start: 'music-process-record', response: 'capture-method', next: 'capture-phone', replyKorean: '응, 허밍이라도 남겨 둬. 나중엔 기억이 안 나더라. 형은 보통 어떻게 해?' },
+  { chat: 'changkyun', topic: 'listening-habit', start: 'listening-order', response: 'album-order-answer', next: 'album-order-yes', replyKorean: '응. 순서대로 들으면 만든 사람이 잡아 둔 흐름이 느껴져. 형은?' },
+  { chat: 'manager', topic: 'schedule-handoff', start: 'handoff-channel', response: 'handoff-follow', next: 'handoff-ack', replyKorean: '네. 변경되는 내용이 있으면 단체방에도 공유하겠습니다.' },
+  { chat: 'group', topic: 'break-chat', start: 'break-chat-music', response: 'break-music-follow', next: 'break-music-ask-changkyun', replyKorean: '난 쉴 때는 작업할 때 듣던 거랑 다른 분위기를 찾게 돼 ㅋㅋ' }
+];
+
+for (const scenario of secondBatchScenarios) {
+  test(`${scenario.chat}/${scenario.topic}: initial choices are stable, translated, and separate from other topics`, () => {
+    const h = createHarness();
+    h.sandbox.activeChat.id = scenario.chat;
+    const items = h.sandbox.__optionTest.stageTwelveConversationOptions(scenario.chat)
+      .filter(item => item.topicId === scenario.topic && item.topicStage === 'start');
+    assert.ok(items.length >= 1);
+    assert.ok(items.some(item => item.id.endsWith(`:${scenario.start}`)));
+    assert.ok(items.every(item => item.id.startsWith(`conversation:${scenario.chat}:${scenario.topic}:start:`) && item.text && item.translation && item.reply && item.replyTranslation));
+    assert.equal(new Set(items.map(item => item.id)).size, items.length);
+    if (scenario.chat === 'group') {
+      assert.ok(items.every(item => !item.mealChoiceId));
+      assert.ok(items.some(item => item.topicId === 'break-chat'));
+    }
+  });
+
+  test(`${scenario.chat}/${scenario.topic}: production reply is delivered and the next round matches the topic`, () => {
+    const h = createHarness();
+    const first = beginProductionTurn(h, scenario.chat, scenario.topic, scenario.start);
+    assert.equal(first.conversation.pendingReply, null);
+    assert.equal(first.conversation.stage, scenario.response);
+    assert.ok(first.message.text.includes(scenario.replyKorean));
+    assert.ok(first.message.translation);
+    assert.ok(first.used.replyDelivered);
+    const next = h.sandbox.__optionTest.stageTwelveConversationOptions(scenario.chat)
+      .filter(item => item.topicId === scenario.topic && item.topicStage === scenario.response);
+    assert.ok(next.some(item => item.id.endsWith(`:${scenario.next}`)));
+    assert.ok(next.every(item => item.text && item.translation && item.reply && item.replyTranslation));
+    if (scenario.chat === 'group') {
+      const turns = h.chats.find(chat => chat.id === 'group').messages.filter(message => String(message.id).startsWith(`${first.used.eventId}:reply:message`));
+      assert.deepEqual(turns.map(message => message.from), ['창균', '주헌']);
+      assert.ok(turns[0].delay <= turns[1].delay);
+    }
+  });
+
+  test(`${scenario.chat}/${scenario.topic}: used option, pending gate, and restored progress are preserved`, () => {
+    const h = createHarness();
+    h.sandbox.activeChat.id = scenario.chat;
+    const option = h.sandbox.__optionTest.stageTwelveConversationOptions(scenario.chat)
+      .find(item => item.topicId === scenario.topic && item.id.endsWith(`:${scenario.start}`));
+    assert.ok(option);
+    assert.equal(h.sandbox.stageElevenCommitActiveMessage(option), true);
+    assert.equal(h.sandbox.__optionTest.stageTwelveConversationOptions(scenario.chat).length, 0);
+    const event = h.events.get(h.sandbox.ensureStageTwelveState().conversations[scenario.chat].pendingReply);
+    assert.ok(event);
+    h.sandbox.stageElevenActiveWorldEvent(event);
+    const restored = createHarness({ stageEleven: structuredClone(h.story.stageEleven), selectedBranch: h.story.selectedBranch });
+    restored.sandbox.activeChat.id = scenario.chat;
+    const conversation = restored.sandbox.ensureStageTwelveState().conversations[scenario.chat];
+    assert.equal(conversation.pendingReply, h.sandbox.ensureStageTwelveState().conversations[scenario.chat].pendingReply);
+    assert.equal(restored.sandbox.__optionTest.stageTwelveConversationOptions(scenario.chat).length, 0);
+    const sent = h.chats.find(chat => chat.id === scenario.chat).messages.filter(message => message.from === '형원').length;
+    assert.equal(h.sandbox.stageElevenCommitActiveMessage(option), false);
+    assert.equal(h.chats.find(chat => chat.id === scenario.chat).messages.filter(message => message.from === '형원').length, sent);
+  });
+}
+
+test('group break conversation does not change the event-scoped dinner decision', () => {
+  const h = createHarness();
+  h.sandbox.activeChat.id = 'group';
+  const context = h.sandbox.stageFourteenGroupMealContext();
+  assert.ok(context);
+  const decision = h.sandbox.ensureStageFourteenGroupMealDecision(context.eventId);
+  assert.equal(decision.status, 'undecided');
+  beginProductionTurn(h, 'group', 'break-chat', 'break-chat-music');
+  assert.equal(h.sandbox.ensureStageFourteenGroupMealDecision(context.eventId).status, 'undecided');
+  assert.equal(h.sandbox.ensureStageFourteenGroupMealDecision(context.eventId).menuAsked, undefined);
+  assert.equal(h.story.stageSeven.groupMealDecisions[context.eventId].status, 'undecided');
+});
+
+test('Jooheon music-process alternate branch responds to the player and closes without replay', () => {
+  const h = createHarness();
+  const first = beginProductionTurn(h, 'jooheon', 'music-process', 'music-process-break');
+  assert.equal(first.conversation.stage, 'work-rhythm');
+  assert.match(first.message.text, /잠깐 다른 거 하다가 다시 들어/);
+  const follow = beginProductionTurn(h, 'jooheon', 'music-process', 'work-rhythm-joke');
+  assert.match(follow.message.text, /알람 맞춰 둬/);
+  assert.equal(follow.conversation.status, 'completed');
+  assert.equal(h.sandbox.__optionTest.stageTwelveConversationOptions('jooheon').some(item => item.id.includes('music-process')), false);
+});
+
+test('Changkyun night-music branch offers contextual alternatives and remembers completion', () => {
+  const h = createHarness();
+  const first = beginProductionTurn(h, 'changkyun', 'listening-habit', 'listening-night');
+  assert.equal(first.conversation.stage, 'night-listening-answer');
+  assert.match(first.message.text, /소리가 편안한 걸/);
+  const follow = beginProductionTurn(h, 'changkyun', 'listening-habit', 'night-listening-ask');
+  assert.match(follow.message.text, /제목 적어 둘게/);
+  assert.equal(follow.conversation.status, 'completed');
+  assert.equal(h.sandbox.__optionTest.stageTwelveConversationOptions('changkyun').some(item => item.id.includes('listening-habit')), false);
+});
+
+test('manager work-handoff alternate response stays professional and finishes the topic', () => {
+  const h = createHarness();
+  beginProductionTurn(h, 'manager', 'schedule-handoff', 'handoff-channel');
+  const follow = beginProductionTurn(h, 'manager', 'schedule-handoff', 'handoff-prepare');
+  assert.match(follow.message.text, /변동 사항이 생기면 다시 안내드리겠습니다/);
+  assert.equal(follow.conversation.status, 'completed');
+  assert.ok(follow.message.translation);
+});
+
+test('group rest branch has staggered member replies and leaves dinner undecided', () => {
+  const h = createHarness();
+  const context = h.sandbox.stageFourteenGroupMealContext();
+  const first = beginProductionTurn(h, 'group', 'break-chat', 'break-chat-rest');
+  assert.equal(first.conversation.stage, 'break-rest-follow');
+  const firstReplies = h.chats.find(chat => chat.id === 'group').messages
+    .filter(message => String(message.id).startsWith(`${first.used.eventId}:reply:message`));
+  assert.deepEqual(firstReplies.map(message => message.from), ['민혁', '셔누']);
+  assert.ok(firstReplies[0].delay < firstReplies[1].delay);
+  const follow = beginProductionTurn(h, 'group', 'break-chat', 'break-rest-joke');
+  assert.match(follow.message.text, /의자가 나를 따라와야지/);
+  assert.equal(follow.conversation.status, 'completed');
+  assert.equal(h.sandbox.ensureStageFourteenGroupMealDecision(context.eventId).status, 'undecided');
+});
+
+test('every second-batch option and queued group reply has a unique ID and Traditional Chinese translation', () => {
+  const h = createHarness();
+  const flows = h.sandbox.__optionTest.STAGE_TWELVE_FLOWS;
+  const targets = [
+    ['jooheon', 'music-process'],
+    ['changkyun', 'listening-habit'],
+    ['manager', 'schedule-handoff'],
+    ['group', 'break-chat']
+  ];
+  for (const [chatId, topicId] of targets) {
+    const flow = flows[chatId]?.[topicId];
+    assert.ok(flow, `${chatId}/${topicId} should exist`);
+    const ids = [];
+    for (const [stage, choices] of Object.entries(flow.stages)) {
+      for (const choice of choices) {
+        ids.push(choice.id);
+        assert.ok(choice.text && choice.translation, `${chatId}/${topicId}/${stage}/${choice.id} needs message translation`);
+        assert.ok(choice.reply && choice.replyTranslation, `${chatId}/${topicId}/${stage}/${choice.id} needs reply translation`);
+        for (const message of choice.replyMessages || []) {
+          assert.ok(message.from && message.text && message.translation, `${chatId}/${topicId}/${choice.id} has an incomplete group reply`);
+        }
+      }
+    }
+    assert.equal(new Set(ids).size, ids.length, `${chatId}/${topicId} option IDs must be unique`);
+  }
+});
