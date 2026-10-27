@@ -7,7 +7,12 @@ const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8');
 
 test('Instagram profile uses aligned stats/name layout and stable selected-tab underline', () => {
   assert.match(html, /\.instagram-app \.ig-profile-top\{display:grid;grid-template-columns:clamp\(/);
-  assert.match(html, /\.instagram-app \.ig-profile-main\{display:contents\}/);
+  assert.match(html, /\.instagram-app \.ig-profile-main\{min-width:0;grid-column:2;grid-row:1\}/);
+  assert.match(html, /<div class="ig-profile-top">\$\{igAvatar\(account\)\}<div class="ig-profile-main"><div class="ig-profile-stats">[\s\S]*?<\/div><\/div><\/div><div class="ig-profile-display">\$\{escapeHtml\(title\)\}<\/div>/);
+  assert.match(html, /account\.note\?`<div class="ig-profile-bio">/);
+  assert.match(html, /account\.bioLink\?`<button class="ig-profile-link"/);
+  assert.match(html, /\.instagram-app \.ig-profile-display\{display:block;max-width:100%;margin:12px 0 0;[^}]*overflow-wrap:anywhere/);
+  assert.match(html, /\.instagram-app \.ig-profile-link\{display:flex;max-width:100%;[^}]*overflow-wrap:anywhere/);
   assert.match(html, /\.instagram-app \.ig-profile-tabs button\.selected:after\{content:""/);
   assert.match(html, /const scrollTop=\$\('#ig-app-content'\)\.scrollTop;igProfileTab=profileTab\.dataset\.igProfileTab;renderInstagram\(\);\$\('#ig-app-content'\)\.scrollTop=scrollTop/);
 });
