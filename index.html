@@ -717,12 +717,11 @@
 /* External game launch menu; deliberately separate from the simulated phone. */
 #game-launch-menu{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:calc(24px + env(safe-area-inset-top)) 22px calc(24px + env(safe-area-inset-bottom));background:radial-gradient(ellipse at 50% 18%,#41475c 0,#20212d 47%,#111218 100%);color:#f7f7fb;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
 #game-launch-menu[hidden],#launch-confirm[hidden]{display:none}
-.launch-card{width:min(100%,360px);padding:34px 24px 25px;border:1px solid #ffffff22;border-radius:28px;background:linear-gradient(155deg,#ffffff13,#ffffff08);box-shadow:0 24px 70px #0005;backdrop-filter:blur(24px);text-align:center}
-.launch-mark{width:56px;height:56px;margin:0 auto 20px;border:1px solid #ffffff33;border-radius:19px;display:grid;place-items:center;background:#ffffff12;font-size:25px}
-.launch-title{margin:0;font-size:22px;letter-spacing:-.5px;font-weight:700}.launch-caption{margin:10px 0 26px;color:#c2c4cf;font-size:12px;line-height:1.65}
-.launch-actions{display:grid;gap:10px}.launch-action{min-height:54px;border-radius:16px;padding:12px 16px;font-size:15px;font-weight:700;touch-action:manipulation;background:#f7f7fa;color:#20212a}.launch-action.primary{background:#fee500;color:#27251d}.launch-action:disabled{opacity:.42;cursor:not-allowed}.launch-status{min-height:18px;margin:14px 2px 0;color:#f2c7bf;font-size:11px;line-height:1.5}
 #launch-confirm{position:fixed;inset:0;z-index:10001;display:grid;place-items:center;padding:24px;background:#090a10b8;backdrop-filter:blur(8px);color:#20212a}
-.launch-dialog{width:min(100%,340px);padding:22px 20px 14px;border-radius:22px;background:#f8f8fb;box-shadow:0 18px 60px #0007;text-align:center}.launch-dialog h2{margin:0 0 10px;font-size:17px}.launch-dialog p{margin:0 0 20px;color:#636571;font-size:13px;line-height:1.65}.launch-dialog-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.launch-dialog-actions button{min-height:46px;padding:9px;border-radius:13px;background:#e9e9ee;color:#292a32;font-size:13px;font-weight:650;touch-action:manipulation}.launch-dialog-actions .destructive{background:#ff453a;color:white}
+.launch-card{width:min(100%,360px);padding:27px 24px 21px;border:1px solid #ffffff22;border-radius:28px;background:linear-gradient(155deg,#ffffff13,#ffffff08);box-shadow:0 24px 70px #0005;backdrop-filter:blur(24px);text-align:center}
+.launch-mark{width:56px;height:56px;margin:0 auto 24px;border:1px solid #ffffff33;border-radius:19px;display:grid;place-items:center;background:#ffffff12;font-size:25px}
+.launch-actions{display:grid;gap:11px}.launch-action{width:100%;min-height:62px;border:0;border-radius:16px;padding:10px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;touch-action:manipulation;background:#f7f7fa;color:#20212a}.launch-action .launch-ko{font-size:16px;line-height:1.3;font-weight:750}.launch-action .launch-zh{font-size:11px;line-height:1.35;font-weight:500;color:#666873}.launch-action.primary{background:#fee500;color:#27251d}.launch-action.primary .launch-zh{color:#625d32}.launch-action:disabled{background:#777985;color:#e2e2e7;opacity:1;cursor:not-allowed}.launch-action:disabled .launch-zh{color:#c2c3ca}.launch-status{display:grid;gap:2px;margin:13px 2px 0;color:#ffd5ce;font-size:11px;line-height:1.45}.launch-status:empty{display:none}.launch-status .launch-zh{color:#d0c0bd;font-size:10px}.launch-status .launch-detail{max-width:100%;overflow-wrap:anywhere;color:#e0c8c4;font-size:9px}
+.launch-dialog{width:min(100%,340px);padding:22px 20px 14px;border-radius:22px;background:#f8f8fb;box-shadow:0 18px 60px #0007;text-align:center}.launch-dialog h2{margin:0 0 12px;font-size:16px;line-height:1.35}.launch-dialog h2 span,.launch-dialog p span{display:block}.launch-dialog h2 .launch-zh{margin-top:2px;color:#72737c;font-size:12px;font-weight:550}.launch-dialog p{margin:0 0 20px;color:#3e3f48;font-size:13px;line-height:1.5}.launch-dialog p .launch-zh{margin-top:3px;color:#72737c;font-size:11px}.launch-dialog-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.launch-dialog-actions button{min-width:0;min-height:52px;padding:7px 5px;border:0;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:#e9e9ee;color:#292a32;font-size:13px;font-weight:650;line-height:1.25;touch-action:manipulation}.launch-dialog-actions button span:last-child{color:#666873;font-size:10px;font-weight:500}.launch-dialog-actions .destructive{background:#ff453a;color:white}.launch-dialog-actions .destructive span:last-child{color:#ffe2e0}
 </style>
 </head>
 <body>
@@ -1133,22 +1132,20 @@ const CONFIG = {
 <section id="game-launch-menu" aria-label="게임 시작 메뉴" aria-modal="true" role="dialog">
   <div class="launch-card">
     <div class="launch-mark" aria-hidden="true">⌕</div>
-    <h1 class="launch-title">주운 휴대폰</h1>
-    <p class="launch-caption">휴대폰 안에 남겨진 일상을 천천히 살펴보세요.</p>
     <div class="launch-actions">
-      <button class="launch-action primary" id="launch-continue" type="button">이어하기</button>
-      <button class="launch-action" id="launch-new" type="button">처음부터</button>
+      <button class="launch-action primary" id="launch-continue" type="button"><span class="launch-ko">이어하기</span><span class="launch-zh">繼續遊戲</span></button>
+      <button class="launch-action" id="launch-new" type="button"><span class="launch-ko">처음부터</span><span class="launch-zh">從頭開始</span></button>
     </div>
-    <p class="launch-status" id="launch-status" aria-live="polite"></p>
+    <div class="launch-status" id="launch-status" aria-live="polite"></div>
   </div>
 </section>
 <section id="launch-confirm" aria-label="새 게임 확인" aria-modal="true" role="dialog" hidden>
   <div class="launch-dialog">
-    <h2>처음부터 시작할까요?</h2>
-    <p id="launch-confirm-copy">기존 진행 상황이 삭제되고 처음부터 시작됩니다. 계속할까요?</p>
+    <h2><span>기존 진행 상황이 삭제되고 처음부터 시작됩니다.</span><span class="launch-zh">目前的遊戲進度將被刪除，並從頭開始。</span></h2>
+    <p id="launch-confirm-copy"><span>정말 처음부터 시작할까요?</span><span class="launch-zh">確定要重新開始嗎？</span></p>
     <div class="launch-dialog-actions">
-      <button id="launch-cancel" type="button">취소</button>
-      <button class="destructive" id="launch-confirm-new" type="button">처음부터 시작</button>
+      <button id="launch-cancel" type="button"><span>취소</span><span>取消</span></button>
+      <button class="destructive" id="launch-confirm-new" type="button"><span>처음부터 시작</span><span>確認重新開始</span></button>
     </div>
   </div>
 </section>
@@ -1157,6 +1154,13 @@ const groupChatConfig = CONFIG.chats.find(c=>c.id==='group');
 if (groupChatConfig && CONFIG.groupMessages) groupChatConfig.messages = CONFIG.groupMessages;
 const $ = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
+function setLaunchBilingualText(target,korean,chinese,detail=''){
+  if(!target)return;
+  target.replaceChildren();
+  if(korean){const primary=document.createElement('span');primary.className='launch-ko';primary.textContent=korean;target.appendChild(primary)}
+  if(chinese){const secondary=document.createElement('span');secondary.className='launch-zh';secondary.textContent=chinese;target.appendChild(secondary)}
+  if(detail){const extra=document.createElement('small');extra.className='launch-detail';extra.textContent=detail;target.appendChild(extra)}
+}
 const X_HISTORY_ADDITIONS=[
  {id:'x-history-20261023-01',date:'10월 23일',time:'16:36',text:'오늘 하루 길었다. 씻고 나면 아무것도 안 해야지.',translation:'今天一整天好長。洗完澡之後就什麼也不做。',replies:'1',reposts:'2',likes:'18',views:'—'},
  {id:'x-history-20261022-01',date:'10월 22일',time:'21:16',text:'늦게 먹는 밥은 맛있는데 먹고 나면 바로 졸려.',translation:'晚吃的飯很好吃，但吃完馬上就想睡。',replies:'2',reposts:'1',likes:'21',views:'—',quote:{name:'필름 기록',handle:'@stillframe_note',date:'10월 16일',text:'빛이 좋은 날은 평범한 골목도 오래 보게 된다.',translation:'光線好的日子，連普通巷子都會讓人多看一會兒。'}},
@@ -2551,7 +2555,7 @@ function initializeGameOnce(){
     return true;
   }catch(error){
     gameInitializationStatus='failed';
-    const status=$('#launch-status');if(status)status.textContent=`게임 데이터를 불러오지 못했습니다. 저장 데이터는 자동으로 삭제하지 않았습니다. (${String(error?.message||error)})`;
+    setLaunchBilingualText($('#launch-status'),'게임 데이터를 불러오지 못했습니다.','無法載入遊戲資料。儲存資料不會自動刪除。',String(error?.message||error));
     return false;
   }
 }
@@ -2564,10 +2568,10 @@ function refreshLaunchMenu(){
   const save=inspectLaunchSave(),continueButton=$('#launch-continue'),newButton=$('#launch-new'),status=$('#launch-status');
   continueButton.disabled=!save.canContinue;
   newButton.disabled=!!save.storageError;
-  if(save.storageError)status.textContent='저장 공간에 접근할 수 없습니다. 브라우저 설정을 확인해 주세요.';
-  else if(save.corruptKeys.length)status.textContent='저장 데이터를 읽을 수 없습니다. 이어하기는 잠겨 있으며, 새 게임은 확인 후 진행됩니다.';
-  else if(!save.canContinue)status.textContent='이어갈 저장 데이터가 없습니다.';
-  else status.textContent='';
+  if(save.storageError)setLaunchBilingualText(status,'저장 공간에 접근할 수 없습니다. 브라우저 설정을 확인해 주세요.','儲存空間目前無法使用，請檢查瀏覽器設定。');
+  else if(save.corruptKeys.length)setLaunchBilingualText(status,'저장 데이터를 읽을 수 없습니다. 이어하기는 잠겨 있으며, 새 게임은 확인 후 진행됩니다.','無法讀取儲存資料。「繼續遊戲」已停用；確認後仍可開始新遊戲。');
+  else if(!save.canContinue)setLaunchBilingualText(status,'이어갈 저장 데이터가 없습니다.','目前沒有可以繼續的存檔。');
+  else setLaunchBilingualText(status,'','');
   return save;
 }
 phone.inert=true;
@@ -2577,13 +2581,14 @@ $('#launch-new').addEventListener('click',()=>{
   const save=refreshLaunchMenu();
   if(save.storageError)return;
   if(!save.hasGameData){resetGameRuntimeForFreshStart();initializeGameOnce();return}
-  $('#launch-confirm-copy').textContent=save.corruptKeys.length?'기존 저장 데이터를 삭제하고 새 게임을 시작합니다. 손상된 데이터도 삭제됩니다. 계속할까요?':'기존 진행 상황이 삭제되고 처음부터 시작됩니다. 계속할까요?';
+  if(save.corruptKeys.length)setLaunchBilingualText($('#launch-confirm-copy'),'기존 저장 데이터를 삭제하고 새 게임을 시작합니다. 손상된 데이터도 삭제됩니다. 계속할까요?','既有儲存資料將被刪除並開始新遊戲，損壞的資料也會一併刪除。要繼續嗎？');
+  else setLaunchBilingualText($('#launch-confirm-copy'),'정말 처음부터 시작할까요?','確定要重新開始嗎？');
   launchConfirm.hidden=false;$('#launch-cancel').focus();
 });
 $('#launch-cancel').addEventListener('click',()=>{launchConfirm.hidden=true;$('#launch-new').focus()});
 $('#launch-confirm-new').addEventListener('click',()=>{
   const reset=resetLaunchSave();
-  if(!reset.ok){launchConfirm.hidden=true;refreshLaunchMenu();const status=$('#launch-status');if(status)status.textContent=`저장 데이터를 안전하게 초기화하지 못했습니다. 게임은 시작하지 않았습니다.${reset.rollbackError?' 복구도 완료되지 않았습니다.':''}`;return}
+  if(!reset.ok){launchConfirm.hidden=true;refreshLaunchMenu();setLaunchBilingualText($('#launch-status'),`저장 데이터를 안전하게 초기화하지 못했습니다. 게임은 시작하지 않았습니다.${reset.rollbackError?' 복구도 완료되지 않았습니다.':''}`,`無法安全重設儲存資料，遊戲尚未開始。${reset.rollbackError?'復原也未能完成。':''}`);return}
   launchConfirm.hidden=true;resetGameRuntimeForFreshStart();gameInitializationStatus='idle';refreshLaunchMenu();initializeGameOnce();
 });
 launchConfirm.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();$('#launch-cancel').click()}});

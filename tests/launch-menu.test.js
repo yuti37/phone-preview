@@ -90,11 +90,11 @@ test('partial app-only data opens restart confirmation without mutating storage'
   const confirm = { hidden: true }, copy = { textContent: '' }, cancel = { focus() {} }, button = { disabled: false, addEventListener(_type, handler) { this.handler = handler; } };
   const launch = helpers(local, session);
   const startHandler = html.slice(html.indexOf("$('#launch-new').addEventListener('click',()=>{"), html.indexOf("$('#launch-cancel').addEventListener", html.indexOf("$('#launch-new').addEventListener('click',()=>{")));
-  const context = { refreshLaunchMenu: () => launch.inspectLaunchSave(), resetGameRuntimeForFreshStart(){ throw new Error('must not start before confirmation'); }, initializeGameOnce(){ throw new Error('must not initialize before confirmation'); }, launchConfirm: confirm, $: selector => selector === '#launch-new' ? button : selector === '#launch-confirm-copy' ? copy : selector === '#launch-cancel' ? cancel : confirm };
+  const context = { refreshLaunchMenu: () => launch.inspectLaunchSave(), setLaunchBilingualText(target, ko, zh){target.textContent=`${ko}\n${zh}`}, resetGameRuntimeForFreshStart(){ throw new Error('must not start before confirmation'); }, initializeGameOnce(){ throw new Error('must not initialize before confirmation'); }, launchConfirm: confirm, $: selector => selector === '#launch-new' ? button : selector === '#launch-confirm-copy' ? copy : selector === '#launch-cancel' ? cancel : confirm };
   vm.runInNewContext(startHandler, context);
   button.handler();
   assert.equal(confirm.hidden, false);
-  assert.match(copy.textContent, /기존 진행 상황이 삭제/);
+  assert.match(copy.textContent, /정말 처음부터 시작할까요\?/);
   assert.deepEqual(local.snapshot(), beforeLocal);
   assert.deepEqual(session.snapshot(), beforeSession);
 });
@@ -187,9 +187,59 @@ test('storage access failure prevents continuing or starting from an assumed emp
 test('launch menu is outside the phone and is shown by default on every page load', () => {
   assert.match(html, /<div class="phone" id="phone">[\s\S]*?<\/div>\s*<section id="game-launch-menu"/);
   assert.match(html, /id="game-launch-menu" aria-label="게임 시작 메뉴" aria-modal="true" role="dialog">/);
-  assert.match(html, /id="launch-continue"[^>]*>이어하기<\/button>/);
-  assert.match(html, /id="launch-new"[^>]*>처음부터<\/button>/);
+  assert.match(html, /id="launch-continue"[^>]*>[\s\S]*?이어하기[\s\S]*?繼續遊戲[\s\S]*?<\/button>/);
+  assert.match(html, /id="launch-new"[^>]*>[\s\S]*?처음부터[\s\S]*?從頭開始[\s\S]*?<\/button>/);
   assert.match(html, /padding:calc\(24px \+ env\(safe-area-inset-top\)\) 22px calc\(24px \+ env\(safe-area-inset-bottom\)\)/);
+});
+
+test('launch menu uses a title-free bilingual minimal layout with a visible no-save state', () => {
+  const menu = html.slice(html.indexOf('<section id="game-launch-menu"'), html.indexOf('</section>', html.indexOf('<section id="game-launch-menu"')) + 10);
+  assert.doesNotMatch(menu, /주운 휴대폰|휴대폰 안에 남겨진 일상을 천천히 살펴보세요/);
+  assert.match(menu, /class="launch-mark"/);
+  assert.match(html, /이어갈 저장 데이터가 없습니다\./);
+  assert.match(html, /目前沒有可以繼續的存檔。/);
+  assert.match(html, /\.launch-action:disabled\{background:#777985;color:#e2e2e7;opacity:1/);
+  assert.match(html, /\.launch-action \.launch-ko\{font-size:16px;[^}]*font-weight:750/);
+  assert.match(html, /\.launch-action \.launch-zh\{font-size:11px/);
+});
+
+test('refreshLaunchMenu toggles continue and bilingual no-save status from recoverability', () => {
+  const helperStart = html.indexOf('function setLaunchBilingualText(');
+  const helperEnd = html.indexOf('const X_HISTORY_ADDITIONS=', helperStart);
+  const refreshStart = html.indexOf('function refreshLaunchMenu(){');
+  const refreshEnd = html.indexOf('phone.inert=true;', refreshStart);
+  const nodes = {
+    '#launch-continue': { disabled: false }, '#launch-new': { disabled: false }, '#launch-status': {
+      children: [], replaceChildren(){ this.children=[]; }, appendChild(node){ this.children.push(node); }
+    }
+  };
+  let fixtureSave = { canContinue:false, hasGameData:false, corruptKeys:[], storageError:null };
+  const context = {
+    document: { createElement(){ return { className:'', textContent:'' }; } },
+    $: selector => nodes[selector],
+    inspectLaunchSave(){ return fixtureSave; }
+  };
+  vm.runInNewContext(`${html.slice(helperStart, helperEnd)}\n${html.slice(refreshStart, refreshEnd)}\nthis.refresh=refreshLaunchMenu;`, context);
+  context.refresh();
+  assert.equal(nodes['#launch-continue'].disabled, true);
+  assert.equal(nodes['#launch-new'].disabled, false);
+  assert.deepEqual(nodes['#launch-status'].children.map(node=>node.textContent), ['이어갈 저장 데이터가 없습니다.','目前沒有可以繼續的存檔。']);
+  fixtureSave = { canContinue:true, hasGameData:true, corruptKeys:[], storageError:null };
+  context.refresh();
+  assert.equal(nodes['#launch-continue'].disabled, false);
+  assert.deepEqual(nodes['#launch-status'].children, []);
+});
+
+test('launch error and save-status messages have paired Korean and Traditional Chinese copy', () => {
+  for (const phrase of [
+    '저장 공간에 접근할 수 없습니다.', '儲存空間目前無法使用',
+    '저장 데이터를 읽을 수 없습니다.', '無法讀取儲存資料',
+    '게임 데이터를 불러오지 못했습니다.', '無法載入遊戲資料',
+    '저장 데이터를 안전하게 초기화하지 못했습니다.', '無法安全重設儲存資料'
+  ]) assert.ok(html.includes(phrase), `missing launch copy: ${phrase}`);
+  assert.match(html, /정말 처음부터 시작할까요\?[\s\S]*確定要重新開始嗎？/);
+  assert.match(html, /기존 진행 상황이 삭제되고 처음부터 시작됩니다\.[\s\S]*目前的遊戲進度將被刪除，並從頭開始。/);
+  assert.match(html, /취소[\s\S]*取消[\s\S]*처음부터 시작[\s\S]*確認重新開始/);
 });
 
 test('game restoration and legacy migration have no eager top-level invocation', () => {
