@@ -173,15 +173,15 @@ test('Special focus blocks stale normal sends only for Shownu; switching apps ca
  h.c.activeChat={id:'kihyun'};assert.equal(h.c.stageElevenActiveOptions('kihyun')[0].id,'normal');assert.equal(h.c.stageElevenCommitActiveMessage({id:'normal'}),true);
 });
 
-test('Old saves preserve every existing message and completed invitation without replay',()=>{
+test('A saved phone outcome alone never completes the unrelated drinking invitation',()=>{
  const h=harness();const snapshot=h.snapshot();const old=JSON.parse(snapshot.storage.find(([key])=>key==='phone-sim-lost-phone-story-v1')[1]);
  delete old.stageSeven.drinkingNight;old.truthToldAt=123;old.call={status:'completed',eventId:'original-phone'};
  snapshot.storage=snapshot.storage.map(([key,value])=>[key,key==='phone-sim-lost-phone-story-v1'?JSON.stringify(old):value]);
  snapshot.events={version:2,events:[],notifications:[]};
- const legacy=harness(snapshot);assert.equal(legacy.state().legacyCompleted,true);assert.equal(legacy.state().stage,'complete');
- assert.ok(legacy.config.chats.find(c=>c.id==='shownu').messages.some(m=>m.time==='18:14'&&m.text==='좋아. 어디서 볼까?'));
+ const legacy=harness(snapshot);assert.equal(legacy.state().legacyCompleted,false);assert.equal(legacy.state().stage,'invite');
+ assert.ok(!legacy.config.chats.find(c=>c.id==='shownu').messages.some(m=>m.templateRole==='preset-outcome'));
  assert.equal(legacy.c.lostPhoneStory.call.eventId,'original-phone');assert.equal(legacy.c.lostPhoneStory.truthToldAt,123);
- assert.equal(legacy.c.stageElevenActiveOptions('shownu')[0].id,'normal');
+ assert.equal(legacy.c.stageElevenActiveOptions('shownu').length,0);
 });
 
 test('Only the conflicting old check-in is suppressed; unrelated world events still run',()=>{
