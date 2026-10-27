@@ -21,7 +21,10 @@ const openingRouteFn = between('function lockOpeningRoute(app){', 'function reco
 const lostCallChoiceFn = between('function lostCallChoices(call){', 'function showLostPhoneCall(){');
 const applyLostCallChoiceFn = between('function applyLostCallChoice(id){', 'function registerLostPhoneCallHandlers(){');
 const igChoicesDeclaration = between('const igCallChoiceData={', 'function renderIgCallChoices(){');
+const igCallKnowledgeFn = between('function igCallShownuKnowsFinder(){', 'const igCallChoiceData=');
+const renderIgChoicesFn = between('function renderIgCallChoices(){', 'function addIgStoryLine(');
 const applyIgChoiceFn = between('function applyInstagramStoryChoice(id){', 'function acceptCall(){');
+const reconcileInstagramCallFn = between('function reconcileInstagramOpeningCall(){', '\nregisterAfterWorkHandlers();');
 
 function makeRouteHarness(route = null) {
   const story = { openingRouteVersion: 1, openingRoute: route, phase: 'awaiting-reply', openingCall: null, call: { status: 'idle', records: [] } };
@@ -130,7 +133,7 @@ test('IG why-stage option responds to the concern instead of asking why again', 
 
   const story = { stage: 'why', choiceIds: [], choiceBusy: false };
   const opening = { status: 'connected', transcript: [] };
-  const lostPhoneStory = { openingCall: opening, igCall: story, characterKnowledge: { shownu: {} } };
+  const lostPhoneStory = { openingRoute: 'instagram_first', openingCall: opening, igCall: story, characterKnowledge: { shownu: {} } };
   const context = {
     lostPhoneStory,
     callActive: true,
@@ -145,7 +148,7 @@ test('IG why-stage option responds to the concern instead of asking why again', 
     setTimeout() { return 1; },
     endCall() {}
   };
-  vm.runInNewContext(`${applyIgChoiceFn}\nthis.apply=applyInstagramStoryChoice;`, context);
+  vm.runInNewContext(`${igCallKnowledgeFn}\n${applyIgChoiceFn}\nthis.apply=applyInstagramStoryChoice;`, context);
   context.apply('why-answer');
   assert.equal(story.stage, 'closed');
   assert.equal(story.choiceIds[0], 'why-answer');
@@ -168,8 +171,149 @@ test('IG why-stage reply naturally closes without altering call trigger conditio
   const whyContext = {};
   vm.runInNewContext(`${igChoicesDeclaration}\nthis.data=igCallChoiceData;`, whyContext);
   assert.ok(whyContext.data.why.some(item => item.id === 'truth'));
-  assert.match(applyIgChoiceFn, /story\.stage='closed';reply='그래\. 괜찮으면 됐어\. 늦었으니까 얼른 쉬어\.'/);
+  assert.match(applyIgChoiceFn, /id==='why-answer'\)\{story\.stage='closed';reply=knownStranger\?/);
+  assert.match(applyIgChoiceFn, /translation=knownStranger\?'這樣啊。您沒事就好。時間很晚了，請好好休息。':'好，沒事就好。很晚了，快休息吧。'/);
   assert.match(html, /scheduleInstagramOpeningCall\(\)[\s\S]*?scheduledAt:opening\.scheduledAt/);
+});
+
+function makeIgCallHarness({ stage = 'opening', choiceIds = [], known = false } = {}) {
+  const opening = { status: 'connected', eventId: 'ig-opening-fixture', transcript: [], choiceIds: [] };
+  const story = { stage, choiceIds: [...choiceIds], choiceBusy: false, toldTruth: known };
+  const lostPhoneStory = { openingRoute: 'instagram_first', truthToldAt: known ? 1 : null, openingCall: opening, igCall: story, characterKnowledge: { shownu: {} } };
+  const root = { innerHTML: '', hidden: true };
+  const context = {
+    lostPhoneStory, callActive: true, instagramState: { callStatus: 'in-call' }, igLastMessageAt: 0, igNaturalEndTimer: null,
+    igCallChoiceData: null, Date,
+    $: selector => selector === '#ig-call-reply-options' ? root : null,
+    escapeHtml: value => String(value),
+    addIgStoryLine(from, text, translation, branchId) { opening.transcript.push({ from, text, translation, branchId }); },
+    recordLostPhoneTruthFromText(text) { lostPhoneStory.truthToldAt = Date.now(); opening.truthTold = true; return true; },
+    recordCharacterPhoneKnowledge(id, facts) { Object.assign(lostPhoneStory.characterKnowledge[id], facts, { knowsPhoneLost: true, knowsPossibleStranger: true, knowsPlayerIsFinder: true }); },
+    saveLostPhoneStory() {}, renderIgCallChoices: null,
+    clearTimeout() {}, setTimeout() { return 1; }, endCall() {}
+  };
+  vm.runInNewContext(`${igCallKnowledgeFn}\n${igChoicesDeclaration}\n${renderIgChoicesFn}\n${applyIgChoiceFn}\nthis.data=igCallChoiceData;this.render=renderIgCallChoices;this.apply=applyInstagramStoryChoice;this.knows=igCallShownuKnowsFinder;`, context);
+  return { ...context, context, opening, story, lostPhoneStory, root };
+}
+function renderedIgChoiceIds(root) { return [...root.innerHTML.matchAll(/data-ig-story-choice="([^"]+)"/g)].map(match => match[1]); }
+
+test('IG unclear answer advances coherently and the selected option disappears from the next round', () => {
+  const h = makeIgCallHarness();
+  h.render();
+  assert.deepEqual(renderedIgChoiceIds(h.root), ['as-hyung', 'tell-found', 'hello']);
+  h.apply('hello');
+  assert.equal(h.story.stage, 'heard');
+  assert.match(h.opening.transcript.at(-1).text, /내 목소리 들려/);
+  h.apply('unclear');
+  assert.equal(h.story.stage, 'heard');
+  assert.match(h.opening.transcript.at(-1).text, /어디가 안 들려/);
+  assert.deepEqual(renderedIgChoiceIds(h.root), ['heard', 'tell-found']);
+  assert.equal(h.story.choiceIds.filter(id => id === 'unclear').length, 1);
+});
+
+test('IG nearby answer closes the location check naturally while Shownu still believes it is Hyungwon', () => {
+  const h = makeIgCallHarness({ stage: 'outside' });
+  h.apply('nearby');
+  assert.equal(h.story.stage, 'closed');
+  assert.equal(h.lostPhoneStory.characterKnowledge.shownu.knowsPhoneLost, undefined);
+  assert.equal(h.opening.transcript.at(-1).text, '그래. 늦었으니까 조심해서 들어가.');
+  assert.equal(h.opening.transcript.at(-1).translation, '好。很晚了，回去路上小心。');
+});
+
+test('IG truth disclosure updates only Shownu knowledge and all remaining call turns address a stranger', () => {
+  const h = makeIgCallHarness({ stage: 'outside' });
+  h.apply('truth');
+  assert.equal(h.story.stage, 'found');
+  assert.equal(h.opening.truthTold, true);
+  assert.equal(h.lostPhoneStory.characterKnowledge.shownu.knowsPhoneLost, true);
+  assert.equal(h.lostPhoneStory.characterKnowledge.shownu.knowsPossibleStranger, true);
+  assert.match(h.opening.transcript.at(-1).text, /아… 형원이가 아니시군요/);
+  assert.equal(h.opening.transcript.at(-1).translation, '啊……原來您不是亨源。您撿到這支手機嗎？現在還在您那裡嗎？');
+  assert.deepEqual(renderedIgChoiceIds(h.root), ['have-phone', 'check-place']);
+  h.apply('have-phone');
+  assert.equal(h.story.stage, 'place');
+  assert.match(h.opening.transcript.at(-1).text, /여쭤봐도 될까요/);
+  h.apply('later-place');
+  assert.equal(h.story.stage, 'closed');
+  assert.match(h.opening.transcript.at(-1).text, /감사합니다/);
+  assert.match(h.opening.transcript.at(-1).text, /연락 기다리고 있겠습니다/);
+});
+
+test('truth told to another character does not make Shownu recognize the finder on the IG call', () => {
+  const h = makeIgCallHarness({ stage: 'home', known: false });
+  h.lostPhoneStory.truthToldAt = 1234;
+  assert.equal(h.context.knows(), false);
+  h.apply('outside');
+  assert.match(h.opening.transcript.at(-1).text, /혼자야\?/);
+  assert.match(h.opening.transcript.at(-1).text, /어디쯤인데/);
+  assert.match(html, /addIgStoryLine\('셔누',igCallShownuKnowsFinder\(\)\?/);
+});
+
+test('IG undisclosed nearby branch keeps familiar speech and does not claim the finder disclosed identity', () => {
+  const h = makeIgCallHarness({ stage: 'home', known: false });
+  h.apply('outside');
+  assert.equal(h.story.stage, 'outside');
+  assert.match(h.opening.transcript.at(-1).text, /혼자야\?/);
+  assert.match(h.opening.transcript.at(-1).text, /어디쯤인데/);
+  h.apply('nearby');
+  assert.equal(h.opening.transcript.at(-1).text, '그래. 늦었으니까 조심해서 들어가.');
+  assert.equal(h.lostPhoneStory.truthToldAt, null);
+});
+
+test('IG call choice stage and one-time selections survive restore; a completed call renders no stale options', () => {
+  const saved = { stage: 'heard', choiceIds: ['hello', 'unclear'], choiceBusy: false };
+  const restored = makeIgCallHarness({ ...saved });
+  restored.render();
+  assert.deepEqual(renderedIgChoiceIds(restored.root), ['heard', 'tell-found']);
+  assert.equal(restored.story.stage, 'heard');
+  restored.apply('unclear');
+  assert.equal(restored.story.choiceIds.filter(id => id === 'unclear').length, 1);
+  restored.opening.status = 'completed';
+  restored.context.callActive = false;
+  restored.render();
+  assert.equal(restored.root.hidden, true);
+  assert.deepEqual(renderedIgChoiceIds(restored.root), []);
+});
+
+test('legacy IG saves with used choices only on openingCall still suppress and reject resends', () => {
+  const legacy = makeIgCallHarness({ stage: 'heard' });
+  legacy.story.choiceIds = undefined;
+  legacy.opening.choiceIds = ['hello', 'unclear'];
+  legacy.render();
+  assert.deepEqual(renderedIgChoiceIds(legacy.root), ['heard', 'tell-found']);
+  const transcriptLength = legacy.opening.transcript.length;
+  legacy.apply('unclear');
+  assert.equal(legacy.opening.transcript.length, transcriptLength);
+  assert.deepEqual(Array.from(legacy.story.choiceIds), ['hello', 'unclear']);
+});
+
+test('refresh reconciliation preserves the IG call branch and consumed choices without reopening it', () => {
+  const h = makeIgCallHarness({ stage: 'heard', choiceIds: ['hello', 'unclear'] });
+  h.opening.status = 'connected';
+  let scheduled = 0;
+  const context = {
+    lostPhoneStory: h.lostPhoneStory,
+    instagramState: { callStatus: 'in-call', unlocked: false },
+    saveInstagramState() {}, saveLostPhoneStory() {}, ensureInstagramOpeningCallLog() {},
+    scheduleInstagramOpeningCall() { scheduled++; }
+  };
+  vm.runInNewContext(`${reconcileInstagramCallFn}\nthis.reconcile=reconcileInstagramOpeningCall;`, context);
+  context.reconcile();
+  assert.equal(h.opening.status, 'interrupted');
+  assert.equal(h.lostPhoneStory.openingRoute, 'instagram_first');
+  assert.equal(h.story.stage, 'heard');
+  assert.deepEqual(Array.from(h.story.choiceIds), ['hello', 'unclear']);
+  assert.equal(context.instagramState.callStatus, 'hung-up');
+  assert.equal(scheduled, 0);
+});
+
+test('IG first-call truth option uses natural spacing and translation without changing KKT-first copy', () => {
+  const context = {};
+  vm.runInNewContext(`${igChoicesDeclaration}\nthis.data=igCallChoiceData;`, context);
+  const truth = context.data.outside.find(option => option.id === 'truth');
+  assert.equal(truth.text, '미안, 난 형원이가 아니야. 휴대폰을 주웠어.');
+  assert.equal(truth.translation, '抱歉，我不是亨源。我撿到了這支手機。');
+  assert.match(lostCallChoiceFn, /미안, 사실 내가 형원이는 아니야\. 핸드폰을 주웠어\./);
 });
 
 test('telephone line Korean and Traditional Chinese revisions remain paired', () => {
