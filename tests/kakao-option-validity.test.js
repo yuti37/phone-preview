@@ -46,6 +46,14 @@ const stageSevenVisibleGroups = between(
   'function stageSevenGroupForChat(',
   'function stageSevenDisplayName('
 );
+const stageSevenOrdinaryReplies = between(
+  'function stageSevenOrdinaryReply(chatId,optionId){',
+  'function stageSevenObserveKakaoEvent('
+);
+const stageSevenScheduledPrompts = between(
+  'function stageSevenRefreshPendingPrompt(',
+  'function restoreStageSevenOptionGroups()'
+);
 const stageTwelveFlowData = between(
   'const STAGE_TWELVE_FLOWS={',
   'function ensureStageTwelveState()'
@@ -97,6 +105,7 @@ function createHarness(save = {}) {
     chats.find(chat => chat.id === chatId).messages.push({ id: sourceEventId, storyTimestamp: 1792800000000 });
   }
   const events = new Map();
+  const scheduledMessages = [];
   const state = {
     conversations: {}, usedByChat: {}, sentIds: [], memories: {},
     romance: { lastResponseKind: null, confessionStatus: 'idle', invitationStatus: 'idle', interactionIds: [], replyEventIds: {} }
@@ -150,6 +159,7 @@ function createHarness(save = {}) {
     getGameEvent(id) { return events.get(id); },
     stageSevenQueueMessage() { return { id: 'test-event' }; },
     ensurePersistentTopicState() { return topics; },
+    saveGameEventStore() { save.eventStoreSaves = (save.eventStoreSaves || 0) + 1; return true; },
     topicStateIsFinal(topic) { return ['completed', 'phone-disclosed'].includes(topic?.status); },
     hasValidInitialCheckinReply() { return !!story.selectedBranch && ['reply-home', 'reply-outside', 'reply-why'].includes(story.selectedBranch); },
     kakaoDialogueStyleFor() { return {}; },
@@ -158,7 +168,8 @@ function createHarness(save = {}) {
     recordLostPhoneTruthFromText() {},
     renderAfterWorkPanel() {}, renderChatMessages() {}, renderKakaoChats() {},
     phoneUnlocked: true,
-    stageElevenComposerBusy: false
+    stageElevenComposerBusy: false,
+    stageFiveChatMessageEvent(...args) { scheduledMessages.push(args); return { id: args[0] }; }
   };
   sandbox.STAGE_ELEVEN_ID = 'stage-eleven-test';
   sandbox.gameEventHandlers = new Map([['kkt-message', () => null]]);
@@ -204,15 +215,15 @@ function createHarness(save = {}) {
     const lostPhoneStory = globalThis.lostPhoneStory;
     const LOST_PHONE_STORY_ID = globalThis.LOST_PHONE_STORY_ID;
   `, sandbox);
-  const source = [stageSevenData, stageSevenOptionGroup, stageSevenVisibleGroups, stageElevenCatalog, stageElevenFilters, stageTwelveFlowData, stageTwelveStateAndBasePredicates, stageTwelveBuilder, stageTwelveOptionWrapper, stageFifteenFilter, stageTwelveQueueWrapper,
+  const source = [stageSevenData, stageSevenOptionGroup, stageSevenVisibleGroups, stageSevenOrdinaryReplies, stageSevenScheduledPrompts, stageElevenCatalog, stageElevenFilters, stageTwelveFlowData, stageTwelveStateAndBasePredicates, stageTwelveBuilder, stageTwelveOptionWrapper, stageFifteenFilter, stageTwelveQueueWrapper,
     `const stageElevenCommitBeforeTwelve=stageElevenCommitActiveMessage;`,
     productionCommitLine,
     `const stageElevenActiveWorldBeforeTwelve=stageElevenActiveWorldEvent;`, productionActiveWorldLine,
     `const stageElevenKakaoHandlerBeforeTwelve=gameEventHandlers.get('kkt-message');`, productionKakaoHandlerLine,
     `ensureStageTwelveState();`
   ].join('\n');
-  vm.runInContext(`${source}\nglobalThis.__optionTest = { STAGE_SEVEN_COPY, stageElevenActiveCatalog, STAGE_TWELVE_FLOWS, stageTwelveConversationOptions, stageTwelveChoiceIsValid, stageFifteenConfessionIsUnlocked };`, sandbox, { filename: 'index.html:KakaoTalk-option-validity' });
-  return { sandbox, story, state: story.stageEleven, chats, events, sourceIds, topics };
+  vm.runInContext(`${source}\nglobalThis.__optionTest = { STAGE_SEVEN_COPY, stageElevenActiveCatalog, STAGE_TWELVE_FLOWS, stageTwelveConversationOptions, stageTwelveChoiceIsValid, stageFifteenConfessionIsUnlocked, stageSevenOrdinaryReply, stageSevenRefreshPendingPrompt, scheduleStageSevenEvents };`, sandbox, { filename: 'index.html:KakaoTalk-option-validity' });
+  return { sandbox, story, state: story.stageEleven, chats, events, sourceIds, topics, scheduledMessages, save };
 }
 
 function optionIds(harness, chatId) {
@@ -537,7 +548,7 @@ test('new topics stay isolated by recipient and topic; an active turn in one roo
 
 const secondBatchScenarios = [
   { chat: 'jooheon', topic: 'music-process', start: 'music-process-record', response: 'capture-method', next: 'capture-phone', replyKorean: '응, 허밍이라도 남겨 둬. 나중엔 기억이 안 나더라. 형은 보통 어떻게 해?' },
-  { chat: 'changkyun', topic: 'listening-habit', start: 'listening-order', response: 'album-order-answer', next: 'album-order-yes', replyKorean: '응. 순서대로 들으면 만든 사람이 잡아 둔 흐름이 느껴져. 형은?' },
+  { chat: 'changkyun', topic: 'listening-habit', start: 'listening-order', response: 'album-order-answer', next: 'album-order-yes', replyKorean: '응. 순서대로 들으면 앨범 흐름이 잘 느껴져. 형은?' },
   { chat: 'manager', topic: 'schedule-handoff', start: 'handoff-channel', response: 'handoff-follow', next: 'handoff-ack', replyKorean: '네. 변경되는 내용이 있으면 단체방에도 공유하겠습니다.' },
   { chat: 'group', topic: 'break-chat', start: 'break-chat-music', response: 'break-music-follow', next: 'break-music-ask-changkyun', replyKorean: '난 쉴 때는 작업할 때 듣던 거랑 다른 분위기를 찾게 돼 ㅋㅋ' }
 ];
@@ -616,7 +627,7 @@ test('Jooheon music-process alternate branch responds to the player and closes w
   const h = createHarness();
   const first = beginProductionTurn(h, 'jooheon', 'music-process', 'music-process-break');
   assert.equal(first.conversation.stage, 'work-rhythm');
-  assert.match(first.message.text, /잠깐 다른 거 하다가 다시 들어/);
+  assert.equal(first.message.text, '응, 잠깐 딴 거 하다가 다시 해. 계속 붙잡고 있으면 더 막히더라.');
   const follow = beginProductionTurn(h, 'jooheon', 'music-process', 'work-rhythm-joke');
   assert.match(follow.message.text, /알람 맞춰 둬/);
   assert.equal(follow.conversation.status, 'completed');
@@ -627,7 +638,7 @@ test('Changkyun night-music branch offers contextual alternatives and remembers 
   const h = createHarness();
   const first = beginProductionTurn(h, 'changkyun', 'listening-habit', 'listening-night');
   assert.equal(first.conversation.stage, 'night-listening-answer');
-  assert.match(first.message.text, /소리가 편안한 걸/);
+  assert.equal(first.message.text, '요즘은 편하게 들을 수 있는 걸 찾게 돼. 가사보다 분위기가 먼저 느껴지는 곡들.');
   const follow = beginProductionTurn(h, 'changkyun', 'listening-habit', 'night-listening-ask');
   assert.match(follow.message.text, /제목 적어 둘게/);
   assert.equal(follow.conversation.status, 'completed');
@@ -682,5 +693,107 @@ test('every second-batch option and queued group reply has a unique ID and Tradi
       }
     }
     assert.equal(new Set(ids).size, ids.length, `${chatId}/${topicId} option IDs must be unique`);
+  }
+});
+
+function privateHistory(chatId) {
+  const marker = `{ id: "${chatId}", title:`;
+  const start = html.indexOf(marker);
+  assert.notEqual(start, -1, `missing production chat data: ${chatId}`);
+  const next = html.indexOf('\n    { id:', start + marker.length);
+  const section = html.slice(start, next < 0 ? html.length : next);
+  const row = /\{ day: "([^"]+)", from: "([^"]+)", time: "([^"]+)", text: "([^"]+)", translation: "([^"]+)" \}/g;
+  return Array.from(section.matchAll(row), match => ({ day: match[1], from: match[2], time: match[3], text: match[4], translation: match[5] }));
+}
+
+test('Jooheon and Changkyun private history preserves familiar banmal and matching translations', () => {
+  const jooheon = privateHistory('jooheon');
+  const changkyun = privateHistory('changkyun');
+  assert.deepEqual(jooheon.map(({ from, text, translation }) => [from, text, translation]), [
+    ['주헌', '형, 저번에 추천해 준 노래 들어봤어!!', '哥，我聽了你之前推薦的歌！！'],
+    ['형원', '어때 괜찮지 ㅋㅋ', '怎麼樣，不錯吧ㅋㅋ'],
+    ['주헌', '완전 좋아. 플레이리스트에 넣었어 ㅠㅠ', '超喜歡，我加進播放清單了ㅠㅠ'],
+    ['형원', 'ㅋㅋㅋ 그렇게까지 좋아?', 'ㅋㅋㅋ有那麼喜歡喔？'],
+    ['주헌', '응, 진짜 좋은데!! 다음엔 다른 곡도 추천해 줘', '真的很好聽！！下次也推薦別首給我吧。']
+  ]);
+  assert.deepEqual(changkyun.map(({ from, text, translation }) => [from, text, translation]), [
+    ['창균이', '형 지금 뭐 해?', '哥，現在在做什麼？'],
+    ['형원', '그냥 쉬고 있어 왜', '在休息啊，怎麼了？'],
+    ['창균이', '아, 별건 아니고 노래 하나 물어보려고 ㅋㅋ', '啊，沒什麼，只是想問一首歌ㅋㅋ'],
+    ['형원', '뭔데 보내봐', '哪首？傳來看看。']
+  ]);
+});
+
+test('Stage Seven scheduled Jooheon and Changkyun prompts use private-chat banmal with aligned Traditional Chinese', () => {
+  const h = createHarness();
+  h.story.worldEvents = { scheduledAt: 1792800000000 };
+  h.sandbox.__optionTest.scheduleStageSevenEvents();
+  const byId = new Map(h.scheduledMessages.map(([id, chatId, from, text, translation]) => [id, { chatId, from, text, translation }]));
+  assert.deepEqual(byId.get('lost-phone-shownu-checkin-v1:stage-seven:jooheon-song'), {
+    chatId: 'jooheon', from: '주헌', text: '형, 전에 추천해 준 곡 제목 뭐였지? 다시 알려 줘 ㅋㅋ', translation: '哥，你之前推薦的那首歌叫什麼來著？再告訴我一下ㅋㅋ'
+  });
+  assert.deepEqual(byId.get('lost-phone-shownu-checkin-v1:stage-seven:changkyun-video'), {
+    chatId: 'changkyun', from: '창균', text: '형, 마지막 컷 한 번만 봐 줄래?', translation: '哥，可以幫我看一下最後一個鏡頭嗎？'
+  });
+  assert.equal(h.scheduledMessages.find(([id]) => id.endsWith(':jooheon-song'))[5], 1792800330000);
+  assert.equal(h.scheduledMessages.find(([id]) => id.endsWith(':changkyun-video'))[5], 1792800390000);
+});
+
+test('only unsent pending Stage Seven prompts are refreshed in old saves; sent history and event IDs stay intact', () => {
+  const h = createHarness();
+  const pending = {
+    id: 'legacy:queued-jooheon-prompt', status: 'pending', scheduledAt: 1792800330000,
+    payload: { preview: 'old preview', message: { id: 'legacy:queued-jooheon-prompt', text: 'old text', translation: 'old translation' } }
+  };
+  assert.equal(h.sandbox.stageSevenRefreshPendingPrompt(pending, 'jooheon', '형, 전에 추천해 준 곡 제목 뭐였지? 다시 알려 줘 ㅋㅋ', '哥，你之前推薦的那首歌叫什麼來著？再告訴我一下ㅋㅋ'), true);
+  assert.equal(pending.id, 'legacy:queued-jooheon-prompt');
+  assert.equal(pending.scheduledAt, 1792800330000);
+  assert.equal(pending.payload.message.text, '형, 전에 추천해 준 곡 제목 뭐였지? 다시 알려 줘 ㅋㅋ');
+  assert.equal(pending.payload.message.translation, '哥，你之前推薦的那首歌叫什麼來著？再告訴我一下ㅋㅋ');
+  assert.equal(h.save.eventStoreSaves, 1);
+  const completed = structuredClone(pending);
+  completed.status = 'completed';
+  completed.payload.message.text = 'already sent';
+  assert.equal(h.sandbox.stageSevenRefreshPendingPrompt(completed, 'jooheon', 'new text', '新文字'), false);
+  assert.equal(completed.payload.message.text, 'already sent');
+  h.chats.find(chat => chat.id === 'jooheon').messages.push({ id: 'legacy:queued-jooheon-prompt' });
+  assert.equal(h.sandbox.stageSevenRefreshPendingPrompt(pending, 'jooheon', 'new text', '新文字'), false, 'existing delivered source prevents migration');
+});
+
+test('Stage Seven replies and Stage Eleven active messages keep the two members conversational in context', () => {
+  const h = createHarness();
+  const replies = h.sandbox.__optionTest.stageSevenOrdinaryReply;
+  assert.deepEqual(JSON.parse(JSON.stringify(replies('jooheon', 'send-song'))), { from: '주헌', text: '고마워! 찾으면 보내 줘.', translation: '謝謝！找到後再傳給我。' });
+  assert.deepEqual(JSON.parse(JSON.stringify(replies('jooheon', 'later-song'))), { from: '주헌', text: '응, 형 편할 때 보내 줘!', translation: '好，方便時再傳給我！' });
+  assert.deepEqual(JSON.parse(JSON.stringify(replies('changkyun', 'checked-cut'))), { from: '창균', text: '오케이. 그럼 그 버전으로 정리할게.', translation: '好，那我就照那個版本整理。' });
+  assert.deepEqual(JSON.parse(JSON.stringify(replies('changkyun', 'later-cut'))), { from: '창균', text: '응. 시간 될 때 확인해 줘.', translation: '好，有空時再麻煩你確認。' });
+  for (const [chatId, expected] of Object.entries({
+    jooheon: ['오늘 녹음 괜찮았어?', '응! 생각보다 잘 끝났어 ㅎㅎ', '전에 말한 곡 제목 찾아봤어. 이따 보내줄게.'],
+    changkyun: ['요즘 듣는 앨범 있어?', '요즘 예전 앨범 다시 듣고 있어. 생각보다 새롭더라.', '마지막 컷 확인했어. 이 버전 괜찮아.']
+  })) {
+    const items = h.sandbox.__optionTest.stageElevenActiveCatalog[chatId];
+    for (const phrase of expected) assert.ok(items.some(item => item.text === phrase || item.reply === phrase), `${chatId}: missing contextual line ${phrase}`);
+    assert.ok(items.every(item => item.translation && item.translation !== item.text));
+  }
+});
+
+test('Stage Twelve Jooheon and Changkyun multi-turn dialogue uses casual phrasing and faithful translations', () => {
+  const flows = createHarness().sandbox.__optionTest.STAGE_TWELVE_FLOWS;
+  const jooheon = flows.jooheon['music-process'].stages;
+  const changkyun = flows.changkyun['listening-habit'].stages;
+  assert.equal(jooheon.start.find(item => item.id === 'music-process-break').text, '작업이 잘 안 풀릴 때 잠깐 쉬어?');
+  assert.equal(jooheon.start.find(item => item.id === 'music-process-break').reply, '응, 잠깐 딴 거 하다가 다시 해. 계속 붙잡고 있으면 더 막히더라.');
+  assert.equal(jooheon.start.find(item => item.id === 'music-process-break').replyTranslation, '會啊，先做點別的再回來。一直卡著反而更容易想不出來。');
+  assert.equal(jooheon['capture-method'].find(item => item.id === 'capture-ask').reply, '한 번 듣고, 좀 있다가 다시 들어봐.');
+  assert.equal(changkyun.start.find(item => item.id === 'listening-order').reply, '응. 순서대로 들으면 앨범 흐름이 잘 느껴져. 형은?');
+  assert.equal(changkyun.start.find(item => item.id === 'listening-order').replyTranslation, '嗯。照順序聽比較能感覺到整張專輯的脈絡。哥呢？');
+  assert.equal(changkyun.start.find(item => item.id === 'listening-night').reply, '요즘은 편하게 들을 수 있는 걸 찾게 돼. 가사보다 분위기가 먼저 느껴지는 곡들.');
+  assert.equal(changkyun['night-listening-answer'].find(item => item.id === 'night-listening-quiet').reply, '응. 집중해서 듣기보단 그냥 편하게 틀어 놓기 좋은 곡들.');
+  for (const stages of [jooheon, changkyun]) {
+    for (const choices of Object.values(stages)) for (const item of choices) {
+      assert.ok(item.text && item.translation && item.reply && item.replyTranslation, `${item.id} needs Korean and Traditional Chinese`);
+      assert.notEqual(item.text, item.translation, `${item.id}: player translation must not duplicate Korean`);
+      assert.notEqual(item.reply, item.replyTranslation, `${item.id}: character translation must not duplicate Korean`);
+    }
   }
 });
