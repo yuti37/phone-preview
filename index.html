@@ -425,6 +425,46 @@
 #app-notes .notes-detail-footer button{width:44px;height:38px;display:grid;place-items:center;background:transparent;color:#a87900}
 #app-notes .notes-detail-footer svg{width:23px;height:23px}
 
+/* Read-only Calendar; all layout rules are scoped to this app. */
+#app-calendar{background:#fafafa;color:#19191d}
+.phone:has(#app-calendar.active) .statusbar{color:#111;text-shadow:none}
+#app-calendar .calendar-shell{position:absolute;inset:0 0 24px;display:flex;flex-direction:column;padding-top:max(40px,env(safe-area-inset-top,0px));min-height:0}
+#app-calendar .calendar-header{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:52px;padding:4px 16px;flex:none;border-bottom:1px solid #e9e9ed}
+#app-calendar .calendar-header h1{font-size:19px;margin:0}
+#app-calendar button{font:inherit}
+#app-calendar .calendar-header button,#app-calendar .calendar-month button,#app-calendar .calendar-footer button{min-width:44px;min-height:44px;color:#c83036;background:transparent;padding:5px 8px}
+#app-calendar .calendar-header small{font-size:11px;color:#888}
+#app-calendar .calendar-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:8px 14px 24px}
+#app-calendar .calendar-month{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#app-calendar .calendar-month h2{font-size:25px;letter-spacing:-.6px;margin:7px 0}
+#app-calendar .calendar-week,#app-calendar .calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px}
+#app-calendar .calendar-week{font-size:12px;color:#666;text-align:center;padding:10px 0 7px}
+#app-calendar .calendar-week span:first-child{color:#b84b50}
+#app-calendar .calendar-day{min-width:0;min-height:42px;padding:2px;background:transparent;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#222}
+#app-calendar .calendar-day strong{font-size:16px;font-weight:500;border-radius:50%;width:29px;height:29px;display:grid;place-items:center}
+#app-calendar .calendar-day.today strong{color:#d2363e;font-weight:750}
+#app-calendar .calendar-day.selected{background:#f0e7e8}
+#app-calendar .calendar-day.selected strong{background:#cf3540;color:#fff}
+#app-calendar .calendar-dots{height:5px;display:flex;gap:2px;justify-content:center}
+#app-calendar .calendar-dot{display:inline-block;flex:none;width:4px;height:4px;border-radius:50%;background:var(--calendar-color)}
+#app-calendar .calendar-work{--calendar-color:#597ba7}#app-calendar .calendar-members{--calendar-color:#658576}#app-calendar .calendar-personal{--calendar-color:#a38163}
+#app-calendar .calendar-agenda{margin-top:16px;border-top:1px solid #e3e3e8;padding-top:12px}
+#app-calendar .calendar-agenda h3{font-size:15px;margin:3px 0 10px}
+#app-calendar .calendar-event{display:block;width:100%;text-align:left;background:#fff;border:1px solid #ececef;border-left:3px solid var(--calendar-color);border-radius:10px;padding:13px;margin:8px 0;overflow-wrap:anywhere}
+#app-calendar .calendar-event strong{display:block;font-size:16px;font-weight:650}
+#app-calendar .calendar-event small{display:block;color:#74747c;font-size:12px;line-height:1.5;margin-top:4px}
+#app-calendar .calendar-empty{padding:24px 4px;color:#888;text-align:center;font-size:14px}
+#app-calendar .calendar-footer{flex:none;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:3px 14px calc(3px + env(safe-area-inset-bottom,0px));border-top:1px solid #e3e3e8}
+#app-calendar .calendar-legend{display:flex;gap:8px;font-size:11px;color:#666;flex-wrap:wrap}
+#app-calendar .calendar-legend span{display:flex;align-items:center;gap:4px}
+#app-calendar .calendar-detail h2{font-size:26px;line-height:1.3;margin:15px 0 8px;overflow-wrap:anywhere}
+#app-calendar .calendar-translation{font-size:13px;color:#71717b;line-height:1.6;white-space:pre-wrap;margin:5px 0 12px}
+#app-calendar .calendar-detail dl{margin:18px 0;background:#fff;border-radius:14px;padding:0 15px}
+#app-calendar .calendar-detail dt{font-size:12px;color:#888;padding-top:14px}
+#app-calendar .calendar-detail dd{margin:6px 0 0;padding-bottom:14px;font-size:15px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;border-bottom:1px solid #eee}
+#app-calendar .calendar-detail dd:last-child{border-bottom:0}
+#app-calendar>.app-bottom-bar{background:#fafafa}#app-calendar>.app-bottom-bar .home-indicator{background:#17171a}
+
 /* Settings app */
 .settings-app{background:#f2f1f6;color:#151519}
 .settings-title{position:absolute;top:86px;left:20px}.settings-title h1{margin:0;font-size:35px;line-height:1.1;letter-spacing:-1px}
@@ -1068,6 +1108,14 @@ const CONFIG = {
       <div class="photos-viewer-caption"><strong id="photos-viewer-album"></strong><span id="photos-viewer-index"></span></div>
     </section>
   </section>
+  <section class="screen app-screen" id="app-calendar" aria-label="캘린더">
+    <div class="calendar-shell">
+      <header class="calendar-header"><button type="button" id="calendar-back" data-calendar-action="back">‹ 홈</button><h1>캘린더</h1><small>읽기 전용</small></header>
+      <main class="calendar-scroll" id="calendar-content"></main>
+      <footer class="calendar-footer"><button type="button" data-calendar-action="today">오늘</button><div class="calendar-legend"><span class="calendar-work"><i class="calendar-dot"></i>업무</span><span class="calendar-members"><i class="calendar-dot"></i>멤버</span><span class="calendar-personal"><i class="calendar-dot"></i>개인</span></div></footer>
+    </div>
+    <div class="app-bottom-bar"><div class="home-indicator" data-home></div></div>
+  </section>
   <section class="screen app-screen notes-app" id="app-notes">
     <div class="notes-toolbar"><button class="notes-round" data-home aria-label="뒤로">‹</button><span></span><button class="notes-round" id="notes-more" aria-label="더보기 — 읽기 전용" disabled>•••</button></div>
     <div class="notes-heading"><h1>모든 iCloud</h1><p id="notes-count">2개의 메모</p></div>
@@ -1310,7 +1358,7 @@ function markShownuEventRead(){const event=readPhoneEvent();if(event?.status==='
 function initializePhoneEvents(){initializeGameEventStore();preparePhoneEventsForStory();const ordered=gameEventMemory.events.slice().sort(eventOrder);processingGameEvents=true;try{for(const event of ordered){if(event.status==='completed')executeGameEvent(event,{replay:true,suppressNotifications:true});else if(event.status==='triggered'||event.status==='pending'&&Number(event.scheduledAt)<=Date.now()||event.status==='failed'&&Number(event.retryAt)>0&&Number(event.retryAt)<=Date.now())executeGameEvent(event,{suppressNotifications:true})}}finally{processingGameEvents=false}renderLockNotifications();scheduleGameEvents()}
 function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function setWallpaper(){if(CONFIG.wallpaper){const w=CONFIG.wallpaper;if(/^(data:image\/|https?:\/\/)/.test(w)||!/(gradient\(|^#|^rgb)/i.test(w))$('#wallpaper').style.background=`center/cover no-repeat url("${w.replace(/"/g,'%22')}")`;else $('#wallpaper').style.background=w}}
-function showScreen(id){if(!phoneUnlocked&&!['lock-screen','passcode-screen'].includes(id)){showPasscodeScreen();return}if(id==='app-instagram'||id==='app-kakao')lockOpeningRoute(id);currentScreen=id;screens.forEach(s=>s.classList.toggle('active',s.id===id));$('#passcode-screen').setAttribute('aria-hidden',id==='passcode-screen'?'false':'true');$('#profile-full').classList.remove('active');$('#chat-room').classList.remove('active');$('#player-expanded').classList.remove('active');if(id==='app-spotify')renderSpotify();if(id==='app-kakao')setKakaoTab(activeKakaoTab||'friends');if(id==='app-x')renderTweets();if(id==='app-phone'){renderCalls();renderPhoneContacts();setPhoneTab(activePhoneTab)}if(id==='app-notes')renderNotes();if(id==='app-reminders')renderReminders();if(id==='app-clock')renderClockAlarms()}
+function showScreen(id){if(!phoneUnlocked&&!['lock-screen','passcode-screen'].includes(id)){showPasscodeScreen();return}if(id==='app-instagram'||id==='app-kakao')lockOpeningRoute(id);currentScreen=id;screens.forEach(s=>s.classList.toggle('active',s.id===id));$('#passcode-screen').setAttribute('aria-hidden',id==='passcode-screen'?'false':'true');$('#profile-full').classList.remove('active');$('#chat-room').classList.remove('active');$('#player-expanded').classList.remove('active');if(id==='app-spotify')renderSpotify();if(id==='app-kakao')setKakaoTab(activeKakaoTab||'friends');if(id==='app-x')renderTweets();if(id==='app-phone'){renderCalls();renderPhoneContacts();setPhoneTab(activePhoneTab)}if(id==='app-notes')renderNotes();if(id==='app-calendar')renderCalendar();if(id==='app-reminders')renderReminders();if(id==='app-clock')renderClockAlarms()}
 function showPasscodeScreen(){if(phoneUnlocked)return;passcodeInput='';updatePasscodeDots();$('#passcode-error').textContent='';showScreen('passcode-screen')}
 function updatePasscodeDots(){ $$('#passcode-dots span').forEach((dot,index)=>dot.classList.toggle('filled',index<passcodeInput.length)) }
 function enterPasscodeDigit(digit){if(phoneUnlocked||currentScreen!=='passcode-screen'||passcodeInput.length>=4||!/^[0-9]$/.test(digit))return;passcodeInput+=digit;updatePasscodeDots();if(passcodeInput.length===4){if(passcodeInput===IPHONE_PASSCODE){phoneUnlocked=true;$('#phone').classList.add('unlocking');setTimeout(()=>{$('#phone').classList.remove('unlocking');if(pendingNotificationDestination){const destination=pendingNotificationDestination;pendingNotificationDestination=null;routeToNotificationDestination(destination)}else showScreen('home-screen');resumeLostPhoneCallPresentation()},220)}else{$('#passcode-error').textContent='암호가 올바르지 않습니다. 다시 시도하십시오.';$('#passcode-dots').classList.remove('passcode-shake');void $('#passcode-dots').offsetWidth;$('#passcode-dots').classList.add('passcode-shake');passcodeInput='';setTimeout(()=>$('#passcode-dots').classList.remove('passcode-shake'),420);updatePasscodeDots()}}}
@@ -1349,6 +1397,55 @@ const appById=Object.fromEntries(apps.map(a=>[a.id,a]));
 const homePageApps=[['facetime','calendar','gallery','camera','mail','notes','reminders','clock','kakao','x','appstore','maps','health','settings','instagram','youtube']];
 function renderHomePages(){$('#app-grid').innerHTML=homePageApps[0].map(id=>appButton(appById[id])).join('')}
 renderHomePages();
+// Calendar is a read-only projection of existing history and saved decisions.
+// Unknown appointment times stay unknown; message send times are not appointment times.
+const CALENDAR_CATEGORIES=Object.freeze({work:{label:'업무',translation:'工作'},members:{label:'멤버',translation:'成員相關'},personal:{label:'개인',translation:'私人行程'}});
+const CALENDAR_HISTORY_V1=Object.freeze([
+ {id:'calendar:rehearsal:20261020',date:'2026-10-20',category:'work',title:'리허설',translation:'彩排',sources:[['manager','phone-sim-stage10-history:manager:20-a'],['manager','phone-sim-stage10-history:manager:20-b']]},
+ {id:'calendar:interview:20261021',date:'2026-10-21',category:'work',title:'인터뷰',translation:'訪問',location:'3층 라운지',locationTranslation:'三樓休息區',sources:[['manager','phone-sim-stage10-history:manager:21-a'],['manager','phone-sim-stage10-history:manager:21-b']]},
+ {id:'calendar:venue:20261022',date:'2026-10-22',category:'work',title:'공연장 일정',translation:'演出場館工作',sources:[['manager','phone-sim-stage10-history:manager:22-a'],['manager','phone-sim-stage10-history:manager:22-b']]},
+ {id:'calendar:meal:20261021',date:'2026-10-21',category:'members',title:'멤버들과 저녁',translation:'和成員吃晚餐',sources:[['group','phone-sim-stage14:meal-20261021:8']]}
+]);
+const calendarViewState={month:null,selectedDate:null,eventId:null,scrollTop:0};
+function calendarDateParts(key){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(key||''));if(!m)return null;const year=+m[1],month=+m[2],day=+m[3];if(year<100||year>9999||month<1||month>12||day<1||day>calendarDaysInMonth(year,month))return null;return {year,month,day}}
+function calendarDaysInMonth(year,month){return new Date(Date.UTC(year,month,0)).getUTCDate()}
+function calendarDateKey(year,month,day){return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`}
+function calendarMonthCells(monthKey){const p=calendarDateParts(`${monthKey}-01`);if(!p)return [];const offset=new Date(Date.UTC(p.year,p.month-1,1)).getUTCDay(),cells=Array(offset).fill(null);for(let day=1;day<=calendarDaysInMonth(p.year,p.month);day++)cells.push(calendarDateKey(p.year,p.month,day));while(cells.length%7)cells.push(null);return cells}
+function calendarSource(chatId,id){return (CONFIG.chats||[]).find(chat=>chat.id===chatId)?.messages?.find(message=>message?.id===id)||null}
+function calendarMessageDate(message){try{const key=message?kakaoMessageDateKey(message):'';return calendarDateParts(key)?key:null}catch{return null}}
+function calendarStoryToday(){const dates=(CONFIG.chats||[]).flatMap(chat=>Array.isArray(chat.messages)?chat.messages:[]).map(calendarMessageDate).filter(Boolean).sort();return dates.at(-1)||'2026-10-24'}
+function calendarEvents(){
+ const results=[];
+ for(const definition of CALENDAR_HISTORY_V1){try{const sources=definition.sources.map(([chat,id])=>calendarSource(chat,id));if(sources.every(message=>message&&calendarMessageDate(message)===definition.date))results.push({...definition,note:sources[0].text,noteTranslation:sources[0].translation})}catch{/* A broken reference must not stop the app. */}}
+ // This original invitation is already accepted in historical chat, not a new player decision.
+ const shownu=(CONFIG.chats||[]).find(chat=>chat.id==='shownu')?.messages||[],invite=shownu.find(message=>message?.id==='after-work-drinks-shownu-v1:invite');
+ const accepted=invite&&shownu.find(message=>message?.from==='형원'&&message?.time==='18:14'&&calendarMessageDate(message)===calendarMessageDate(invite)&&message?.text==='좋아. 어디서 볼까?');
+ if(accepted&&calendarMessageDate(invite))results.push({id:'calendar:after-work-drinks-shownu-v1',date:calendarMessageDate(invite),category:'personal',title:'퇴근 후 한잔',translation:'下班後喝一杯',note:invite.text,noteTranslation:invite.translation,sourceId:invite.id});
+ // Read saved event-scoped decisions directly: no ensure/migration functions or storage writes.
+ const group=(CONFIG.chats||[]).find(chat=>chat.id==='group')?.messages||[],seven=lostPhoneStory?.stageSeven;
+ const decisions=Object.values(seven?.groupMealDecisions||{}).filter(record=>record&&typeof record==='object');
+ const legacy=seven?.groups?.['group-meal'];
+ if(legacy?.selectedOptionId&&legacy.playerMessageId&&group.some(message=>message.id===legacy.playerMessageId)&&!decisions.some(record=>record.sourceEventId===legacy.sourceEventId))decisions.push({eventId:String(legacy.sourceEventId||'').replace(/:\d+$/,''),sourceEventId:legacy.sourceEventId,status:({join:'attending',pass:'declining','ask-menu':'asking'})[legacy.selectedOptionId]});
+ for(const decision of decisions){try{if(decision.status!=='attending'||!decision.eventId)continue;const source=group.find(message=>message?.id===decision.sourceEventId);const date=calendarMessageDate(source);if(!date)continue;results.push({id:`calendar:group-meal:${decision.eventId}`,date,category:'members',title:'함께 저녁 먹기',translation:'一起吃晚餐',note:source.text,noteTranslation:source.translation,sourceId:source.id})}catch{/* Ignore only the malformed decision. */}}
+ return [...new Map(results.map(event=>[event.id,event])).values()].sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
+}
+function calendarSelectDate(date){if(!calendarDateParts(date))return false;calendarViewState.selectedDate=date;calendarViewState.month=date.slice(0,7);calendarViewState.eventId=null;calendarViewState.scrollTop=0;renderCalendar();$('#calendar-content').scrollTop=0;return true}
+function calendarShiftMonth(delta){const current=calendarDateParts(`${calendarViewState.month||calendarStoryToday().slice(0,7)}-01`);if(!current)return false;const shifted=new Date(Date.UTC(current.year,current.month-1+delta,1)),year=shifted.getUTCFullYear(),month=shifted.getUTCMonth()+1;if(year<100||year>9999)return false;const day=Math.min(calendarDateParts(calendarViewState.selectedDate)?.day||1,calendarDaysInMonth(year,month));return calendarSelectDate(calendarDateKey(year,month,day))}
+function calendarOpenEvent(id){if(!calendarEvents().some(event=>event.id===id))return false;calendarViewState.scrollTop=$('#calendar-content').scrollTop;calendarViewState.eventId=id;renderCalendar();return true}
+function calendarReturn(){if(calendarViewState.eventId){calendarViewState.eventId=null;renderCalendar();$('#calendar-content').scrollTop=calendarViewState.scrollTop}else showScreen('home-screen')}
+function calendarLabel(date){const p=calendarDateParts(date);if(!p)return '';return `${p.year}년 ${p.month}월 ${p.day}일 ${['일','월','화','수','목','금','토'][new Date(Date.UTC(p.year,p.month-1,p.day)).getUTCDay()]}요일`}
+function calendarEventDetail(event){const category=CALENDAR_CATEGORIES[event.category]||CALENDAR_CATEGORIES.personal;const esc=escapeHtml;return `<section class="calendar-detail"><h2>${esc(event.title)}</h2><p class="calendar-translation" lang="zh-Hant">${esc(event.translation||'')}</p><dl><dt>날짜</dt><dd>${esc(calendarLabel(event.date))}</dd><dt>시간</dt><dd>${esc(event.start?(event.end?`${event.start} – ${event.end}`:event.start):'시간 미정')}</dd>${event.location?`<dt>장소</dt><dd>${esc(event.location)}${event.locationTranslation?`<p class="calendar-translation" lang="zh-Hant">${esc(event.locationTranslation)}</p>`:''}</dd>`:''}<dt>캘린더</dt><dd>${esc(category.label)}<p class="calendar-translation" lang="zh-Hant">${esc(category.translation)}</p></dd>${event.note?`<dt>메모</dt><dd>${esc(event.note)}${event.noteTranslation?`<p class="calendar-translation" lang="zh-Hant">${esc(event.noteTranslation)}</p>`:''}</dd>`:''}</dl></section>`}
+function renderCalendar(){
+ const root=$('#calendar-content');if(!root)return;
+ const today=calendarStoryToday();if(!calendarViewState.selectedDate)calendarViewState.selectedDate=today;if(!calendarViewState.month)calendarViewState.month=calendarViewState.selectedDate.slice(0,7);
+ const events=calendarEvents(),selected=events.find(event=>event.id===calendarViewState.eventId);
+ $('#calendar-back').textContent=selected?'‹ 캘린더':'‹ 홈';
+ if(selected){root.innerHTML=calendarEventDetail(selected);root.scrollTop=0;return}
+ calendarViewState.eventId=null;const p=calendarDateParts(`${calendarViewState.month}-01`),agenda=events.filter(event=>event.date===calendarViewState.selectedDate);
+ root.innerHTML=`<div class="calendar-month"><h2>${p.year}년 ${p.month}월</h2><div><button type="button" data-calendar-action="previous" aria-label="이전 달">‹</button><button type="button" data-calendar-action="next" aria-label="다음 달">›</button></div></div><div class="calendar-week" aria-hidden="true">${['일','월','화','수','목','금','토'].map(day=>`<span>${day}</span>`).join('')}</div><div class="calendar-grid" aria-label="월별 날짜">${calendarMonthCells(calendarViewState.month).map(date=>date?`<button type="button" data-calendar-date="${date}" aria-label="${escapeHtml(calendarLabel(date))}${events.some(event=>event.date===date)?', 일정 있음':''}" aria-pressed="${date===calendarViewState.selectedDate}" ${date===today?'aria-current="date"':''} class="calendar-day${date===today?' today':''}${date===calendarViewState.selectedDate?' selected':''}"><strong>${calendarDateParts(date).day}</strong><span class="calendar-dots">${[...new Set(events.filter(event=>event.date===date).map(event=>event.category))].map(category=>`<i class="calendar-dot calendar-${category}"></i>`).join('')}</span></button>`:'<span aria-hidden="true"></span>').join('')}</div><section class="calendar-agenda"><h3>${escapeHtml(calendarLabel(calendarViewState.selectedDate))}</h3>${agenda.length?agenda.map(event=>`<button type="button" class="calendar-event calendar-${event.category}" data-calendar-event="${escapeHtml(event.id)}"><strong>${escapeHtml(event.title)}</strong><small lang="zh-Hant">${escapeHtml(event.translation)}</small><small>${event.start?escapeHtml(event.start):'시간 미정'} · ${CALENDAR_CATEGORIES[event.category].label}</small></button>`).join(''):'<p class="calendar-empty">일정이 없습니다.</p>'}</section>`;
+}
+$('#app-calendar').addEventListener('click',event=>{const day=event.target.closest('[data-calendar-date]');if(day){calendarSelectDate(day.dataset.calendarDate);return}const item=event.target.closest('[data-calendar-event]');if(item){calendarOpenEvent(item.dataset.calendarEvent);return}const action=event.target.closest('[data-calendar-action]')?.dataset.calendarAction;if(action==='previous')calendarShiftMonth(-1);else if(action==='next')calendarShiftMonth(1);else if(action==='today')calendarSelectDate(calendarStoryToday());else if(action==='back')calendarReturn()});
+
 const notesViewState={selectedId:null,listScrollTop:0,query:''};
 function filteredNotes(query=notesViewState.query){const q=String(query||'').trim().toLocaleLowerCase();return (CONFIG.notes||[]).filter(note=>`${note.title||''} ${note.body||''} ${note.translation||''}`.toLocaleLowerCase().includes(q))}
 function renderNotes(query=notesViewState.query){
@@ -1385,7 +1482,7 @@ function renderClockAlarms(){
 }
 const dockApps=[{id:'phone',name:'전화',cls:'ico-phone',kind:'phone'},{id:'safari',name:'Safari',cls:'ico-safari',kind:'safari',iconSrc:'assets/safari-icon.png'},{id:'messages',name:'메시지',cls:'ico-msg',kind:'message'},{id:'spotify',name:'음악',cls:'ico-music',kind:'music',iconSrc:'assets/apple-music-icon.png'}];
 $('#dock').innerHTML=dockApps.map(a=>appButton(a,true)).join('');
-phone.addEventListener('click',e=>{const btn=e.target.closest('[data-app]');if(!btn)return;if(!phoneUnlocked){showPasscodeScreen();return}const id=btn.dataset.app;const map={phone:'app-phone',kakao:'app-kakao',x:'app-x',spotify:'app-spotify',youtube:'app-youtube',gallery:'app-gallery',notes:'app-notes',reminders:'app-reminders',clock:'app-clock',maps:'app-maps',settings:'app-settings'};if(id==='instagram'){launchInstagram();return}if(id==='safari'){showToast('Safari는 홈 화면 데모 아이콘입니다.');return}if(['messages','camera','facetime','calendar','mail','tv','podcasts','appstore','health'].includes(id)){showToast(`${btn.getAttribute('aria-label')} 앱 데모`);return}if(map[id])showScreen(map[id])});
+phone.addEventListener('click',e=>{const btn=e.target.closest('[data-app]');if(!btn)return;if(!phoneUnlocked){showPasscodeScreen();return}const id=btn.dataset.app;const map={phone:'app-phone',kakao:'app-kakao',x:'app-x',spotify:'app-spotify',youtube:'app-youtube',gallery:'app-gallery',calendar:'app-calendar',notes:'app-notes',reminders:'app-reminders',clock:'app-clock',maps:'app-maps',settings:'app-settings'};if(id==='instagram'){launchInstagram();return}if(id==='safari'){showToast('Safari는 홈 화면 데모 아이콘입니다.');return}if(['messages','camera','facetime','mail','tv','podcasts','appstore','health'].includes(id)){showToast(`${btn.getAttribute('aria-label')} 앱 데모`);return}if(map[id])showScreen(map[id])});
 $('#home-search').addEventListener('click',()=>showToast('검색'));
 $('#notes-query').addEventListener('input',e=>{notesViewState.listScrollTop=0;renderNotes(e.target.value)});
 $('#app-notes').addEventListener('click',e=>{const row=e.target.closest('[data-note-id]');if(row){openNote(row.dataset.noteId);return}if(e.target.closest('[data-notes-list]'))closeNoteDetail()});
