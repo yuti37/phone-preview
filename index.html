@@ -772,6 +772,20 @@
 .instagram-app .ig-bottom-nav .ig-account-avatar.ig-nav-avatar{width:25px;height:25px;flex:0 0 25px;border:1.5px solid transparent;font-size:11px}
 .instagram-app .ig-bottom-nav button.active .ig-account-avatar.ig-nav-avatar{border-color:#17171a}
 @media(max-width:360px){.instagram-app .ig-profile-top{column-gap:12px}.instagram-app .ig-profile-buttons{gap:6px}.instagram-app .ig-profile-buttons button{padding-left:6px;padding-right:6px}}
+/* Only the pending drinking-night card makes the home content scrollable. */
+#home-content{display:contents}
+#home-screen.has-morning-step #home-content{display:block;position:absolute;inset:max(40px,env(safe-area-inset-top,0px)) 0 calc(196px + env(safe-area-inset-bottom,0px));z-index:1;overflow-x:hidden;overflow-y:auto;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;padding:inherit;padding-top:14px;padding-bottom:16px;scrollbar-width:none}
+#home-screen.has-morning-step #home-content::-webkit-scrollbar{display:none}
+#home-screen .morning-step-card{position:relative;margin:18px 0 0;padding:14px 15px;border:1px solid #ffffff55;border-radius:21px;background:rgba(235,242,249,.82);color:#263449;box-shadow:0 4px 16px #17304a16;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);text-shadow:none}
+#home-screen .morning-step-card[hidden]{display:none}
+#home-screen .morning-step-card h2{margin:0;font-size:14px;line-height:1.4;font-weight:700}
+#home-screen .morning-step-card p{margin:5px 0 10px;font-size:12px;line-height:1.5;color:#48576a;overflow-wrap:anywhere}
+#home-screen .morning-step-card button{width:100%;min-height:44px;padding:10px 12px;border-radius:13px;background:#ffffffd9;color:#235187;font-size:13px;font-weight:650;touch-action:manipulation}
+#home-screen .morning-step-card button:disabled{opacity:.5;cursor:default}
+#home-screen .morning-step-card .morning-step-status{margin:8px 0 0;font-size:11px;color:#69453d}
+#home-screen .morning-step-card .morning-step-status:empty{display:none}
+@media(max-height:880px) and (min-height:761px){#home-screen.has-morning-step #home-content{bottom:calc(186px + env(safe-area-inset-bottom,0px))}}
+@media(max-height:760px){#home-screen.has-morning-step #home-content{bottom:calc(136px + env(safe-area-inset-bottom,0px));padding-top:9px}#home-screen .morning-step-card{padding:12px;margin-top:14px}}
 </style>
 <style>
 /* External game launch menu; deliberately separate from the simulated phone. */
@@ -1019,11 +1033,19 @@ const CONFIG = {
     </div>
   </section>
   <section class="screen home-screen" id="home-screen">
+    <div id="home-content">
     <div class="widgets">
       <div class="widget-column"><div class="widget weather-widget"><div class="weather-place" id="weather-place">서울</div><div class="weather-temp" id="weather-temp">18°</div><div class="weather-condition"><span class="weather-symbol" aria-hidden="true">☁︎</span><span id="weather-desc">구름 조금</span></div><div class="weather-range" id="weather-range">최고 20° · 최저 12°</div></div><div class="widget-caption">날씨</div></div>
       <div class="widget-column"><div class="widget calendar-widget"><div class="calendar-weekday">토요일</div><div class="calendar-date">24</div><div class="calendar-events" id="event-list"></div></div><div class="widget-caption">캘린더</div></div>
     </div>
     <div class="apps-grid home-page-grid active" id="app-grid"></div>
+    <section class="morning-step-card" id="morning-step-card" aria-labelledby="morning-step-title" hidden>
+      <h2 id="morning-step-title">하루 마무리</h2>
+      <p>다른 앱을 더 둘러보거나 다음 날 아침으로 넘어갈 수 있어요.</p>
+      <button id="morning-step-next" type="button">다음 날 아침</button>
+      <p class="morning-step-status" id="morning-step-status" role="status" aria-live="polite"></p>
+    </section>
+    </div>
     <button class="home-search" id="home-search" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>검색</button>
     <div class="dock" id="dock"></div>
   </section>
@@ -1326,7 +1348,7 @@ function eventOrder(a,b){return (Number(a.scheduledAt)||Number(a.createdAt)||0)-
 function sortNotifications(){gameEventMemory.notifications.sort((a,b)=>(Number(b.createdAt)||0)-(Number(a.createdAt)||0)||String(a.id).localeCompare(String(b.id)))}
 function migratePhoneEvent(){let legacy=null;try{legacy=JSON.parse(localStorage.getItem(PHONE_EVENT_STORAGE_KEY)||'null')}catch{}if(!legacy||legacy.id!==SHOWNu_HANGUP_EVENT_ID)return;let event=getGameEvent(legacy.id);if(!event){const delivered=legacy.status==='delivered'||legacy.status==='completed',message=legacy.message||{};event={id:legacy.id,type:'kkt-message',source:'kakao',createdAt:Number(legacy.triggeredAt)||Date.now(),scheduledAt:Number(legacy.deliverAt)||null,status:delivered?'completed':'pending',payload:{chatId:'shownu',message:{...message,id:message.id||legacy.id,from:message.from||'셔누',text:message.text||'형원아 바빠?',translation:message.translation||'亨源啊，你在忙嗎？'}},shouldNotify:!legacy.read,effects:{chatRead:!!legacy.read},notificationId:null,notificationCreated:false,attempts:0};gameEventMemory.events.push(event);if(delivered&&!legacy.read){const notification={id:`notification:${event.id}`,eventId:event.id,source:'카카오톡',app:'kakao',sender:'셔누형',summary:event.payload.message.text,createdAt:Number(legacy.deliveredAt)||Date.now(),destination:{screen:'app-kakao',chatId:'shownu'},readAt:null,dismissedAt:null};gameEventMemory.notifications.push(notification);event.notificationId=notification.id;event.notificationCreated=true;event.shouldNotify=true}}if(!['completed','cancelled'].includes(event.status)){event.status='cancelled';event.cancelledAt=event.cancelledAt||Date.now();event.shouldNotify=false;event.effects={...(event.effects||{}),retired:true};try{localStorage.removeItem(PHONE_EVENT_STORAGE_KEY)}catch{}}sortNotifications();saveGameEventStore()}
 function initializeGameEventStore(){gameEventMemory=readGameEventStore();migratePhoneEvent()}
-function ensureGameNotification(event){if(!event.shouldNotify||event.notificationCreated)return null;if(typeof narrativeEventEligibility==='function'&&!narrativeEventEligibility(event).allowed)return null;const existing=gameEventMemory.notifications.find(item=>item.eventId===event.id);if(existing){event.notificationId=existing.id;event.notificationCreated=true;saveGameEventStore();return existing}const payload=event.payload||{},notification={id:`notification:${event.id}`,eventId:event.id,source:payload.notificationSource||({kakao:'카카오톡',instagram:'Instagram',phone:'전화'}[event.source]||event.source||'알림'),app:payload.app||event.source||'',sender:payload.sender||payload.title||payload.from||'',summary:payload.preview||payload.message?.text||payload.summary||'새 알림이 있습니다.',createdAt:Date.now(),destination:payload.destination||{screen:payload.screen||'home-screen',chatId:payload.chatId||null,contentId:payload.contentId||null},readAt:null,dismissedAt:null};gameEventMemory.notifications.push(notification);event.notificationId=notification.id;event.notificationCreated=true;sortNotifications();saveGameEventStore();return notification}
+function ensureGameNotification(event){if(!event.shouldNotify||event.notificationCreated)return null;if(typeof narrativeEventEligibility==='function'&&!narrativeEventEligibility(event).allowed)return null;const existing=gameEventMemory.notifications.find(item=>item.eventId===event.id);if(existing){event.notificationId=existing.id;event.notificationCreated=true;saveGameEventStore();return existing}const payload=event.payload||{},notification={id:`notification:${event.id}`,eventId:event.id,source:payload.notificationSource||({kakao:'카카오톡',instagram:'Instagram',phone:'전화'}[event.source]||event.source||'알림'),app:payload.app||event.source||'',sender:payload.sender||payload.title||payload.from||'',summary:payload.preview||payload.message?.text||payload.summary||'새 알림이 있습니다.',createdAt:Date.now(),storyTimestamp:Number(payload.message?.storyTimestamp)||null,destination:payload.destination||{screen:payload.screen||'home-screen',chatId:payload.chatId||null,contentId:payload.contentId||null},readAt:null,dismissedAt:null};gameEventMemory.notifications.push(notification);event.notificationId=notification.id;event.notificationCreated=true;sortNotifications();saveGameEventStore();return notification}
 function notifyGameEvent(notification){if(!notification)return;renderLockNotifications();if(phoneUnlocked){showNotificationBanner(notification)}else renderLockNotifications()}
 function createGameEvent({id,type,source,payload={},createdAt=Date.now(),scheduledAt=null,shouldNotify=true}={}){if(!id||!type)return null;const existing=getGameEvent(id);if(existing)return existing;const event={id,type,source:source||'system',createdAt:Number(createdAt)||Date.now(),scheduledAt:Number(scheduledAt)||null,status:'pending',payload,shouldNotify:!!shouldNotify,notificationId:null,notificationCreated:false,effects:{},attempts:0};gameEventMemory.events.push(event);gameEventMemory.events.sort(eventOrder);if(typeof stampNarrativeMessage==='function')stampNarrativeMessage(event);if(typeof validateNarrativeEvent==='function')validateNarrativeEvent(event);saveGameEventStore();scheduleGameEvents();return event}
 function createGameNotificationForEvent(event,options={}){return ensureGameNotification(event,options)}
@@ -1358,7 +1380,7 @@ function markShownuEventRead(){const event=readPhoneEvent();if(event?.status==='
 function initializePhoneEvents(){processingGameEvents=true;try{initializeGameEventStore();if(typeof prepareEventIntegration==='function')prepareEventIntegration();preparePhoneEventsForStory();const ordered=gameEventMemory.events.slice().sort(eventOrder);for(const event of ordered){if(event.status==='completed')executeGameEvent(event,{replay:true,suppressNotifications:true});else if(event.status==='triggered'||event.status==='pending'&&Number(event.scheduledAt)<=Date.now()||event.status==='failed'&&Number(event.retryAt)>0&&Number(event.retryAt)<=Date.now())executeGameEvent(event,{suppressNotifications:true})}}finally{processingGameEvents=false}renderLockNotifications();scheduleGameEvents()}
 function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function setWallpaper(){if(CONFIG.wallpaper){const w=CONFIG.wallpaper;if(/^(data:image\/|https?:\/\/)/.test(w)||!/(gradient\(|^#|^rgb)/i.test(w))$('#wallpaper').style.background=`center/cover no-repeat url("${w.replace(/"/g,'%22')}")`;else $('#wallpaper').style.background=w}}
-function showScreen(id){if(!phoneUnlocked&&!['lock-screen','passcode-screen'].includes(id)){showPasscodeScreen();return}if(id==='app-instagram'||id==='app-kakao')lockOpeningRoute(id);currentScreen=id;screens.forEach(s=>s.classList.toggle('active',s.id===id));$('#passcode-screen').setAttribute('aria-hidden',id==='passcode-screen'?'false':'true');$('#profile-full').classList.remove('active');$('#chat-room').classList.remove('active');$('#player-expanded').classList.remove('active');if(id==='app-spotify')renderSpotify();if(id==='app-kakao')setKakaoTab(activeKakaoTab||'friends');if(id==='app-x')renderTweets();if(id==='app-phone'){renderCalls();renderPhoneContacts();setPhoneTab(activePhoneTab)}if(id==='app-notes')renderNotes();if(id==='app-calendar')renderCalendar();if(id==='app-reminders')renderReminders();if(id==='app-clock')renderClockAlarms()}
+function showScreen(id){if(!phoneUnlocked&&!['lock-screen','passcode-screen'].includes(id)){showPasscodeScreen();return}if(id==='app-instagram'||id==='app-kakao')lockOpeningRoute(id);currentScreen=id;screens.forEach(s=>s.classList.toggle('active',s.id===id));$('#passcode-screen').setAttribute('aria-hidden',id==='passcode-screen'?'false':'true');$('#profile-full').classList.remove('active');$('#chat-room').classList.remove('active');$('#player-expanded').classList.remove('active');if(id==='app-spotify')renderSpotify();if(id==='app-kakao')setKakaoTab(activeKakaoTab||'friends');if(id==='app-x')renderTweets();if(id==='app-phone'){renderCalls();renderPhoneContacts();setPhoneTab(activePhoneTab)}if(id==='app-notes')renderNotes();if(id==='app-calendar')renderCalendar();if(id==='app-reminders')renderReminders();if(id==='app-clock')renderClockAlarms();if(id==='home-screen'&&typeof renderHomeMorningCard==='function')renderHomeMorningCard()}
 function showPasscodeScreen(){if(phoneUnlocked)return;passcodeInput='';updatePasscodeDots();$('#passcode-error').textContent='';showScreen('passcode-screen')}
 function updatePasscodeDots(){ $$('#passcode-dots span').forEach((dot,index)=>dot.classList.toggle('filled',index<passcodeInput.length)) }
 function enterPasscodeDigit(digit){if(phoneUnlocked||currentScreen!=='passcode-screen'||passcodeInput.length>=4||!/^[0-9]$/.test(digit))return;passcodeInput+=digit;updatePasscodeDots();if(passcodeInput.length===4){if(passcodeInput===IPHONE_PASSCODE){phoneUnlocked=true;$('#phone').classList.add('unlocking');setTimeout(()=>{$('#phone').classList.remove('unlocking');if(pendingNotificationDestination){const destination=pendingNotificationDestination;pendingNotificationDestination=null;routeToNotificationDestination(destination)}else showScreen('home-screen');resumeLostPhoneCallPresentation()},220)}else{$('#passcode-error').textContent='암호가 올바르지 않습니다. 다시 시도하십시오.';$('#passcode-dots').classList.remove('passcode-shake');void $('#passcode-dots').offsetWidth;$('#passcode-dots').classList.add('passcode-shake');passcodeInput='';setTimeout(()=>$('#passcode-dots').classList.remove('passcode-shake'),420);updatePasscodeDots()}}}
@@ -1499,7 +1521,7 @@ $('#clock-alarm-list').addEventListener('click',e=>{const toggle=e.target.closes
 $$('[data-clock-tab]').forEach(button=>button.addEventListener('click',()=>{if(button.dataset.clockTab!=='alarm')showToast(`${button.textContent.trim()} 기능은 시뮬레이션 중입니다.`);$$('[data-clock-tab]').forEach(tab=>tab.classList.toggle('selected',tab===button))}));
 $('#settings-body').addEventListener('click',e=>{const toggle=e.target.closest('[data-setting-toggle]');if(toggle){toggle.classList.toggle('on');return}const row=e.target.closest('[data-setting-info]');if(row)showToast(`${row.dataset.settingInfo} 설정`)});
 $('#settings-query').addEventListener('input',e=>{const q=e.target.value.trim().toLocaleLowerCase();$$('#settings-body [data-setting-info]').forEach(row=>row.hidden=!row.textContent.toLocaleLowerCase().includes(q))});
-function updateTime(){const now=new Date();const hh=now.getHours()%12||12;const mm=String(now.getMinutes()).padStart(2,'0');const time=`${hh}:${mm}`;$('#status-time').textContent=time;$('#lock-clock').textContent=time;$('#passcode-clock').textContent=time;const days=['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];const storyDate=typeof narrativeDisplayDate==='function'?narrativeDisplayDate():now,date=`${storyDate.getMonth()+1}월 ${storyDate.getDate()}일 ${days[storyDate.getDay()]}`;$('#lock-date').textContent=date;$('#passcode-date').textContent=date}
+function updateTime(){const now=typeof narrativeClockDate==='function'?narrativeClockDate():new Date();const hh=now.getHours()%12||12;const mm=String(now.getMinutes()).padStart(2,'0');const time=`${hh}:${mm}`;$('#status-time').textContent=time;$('#lock-clock').textContent=time;$('#passcode-clock').textContent=time;const days=['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];const storyDate=typeof narrativeDisplayDate==='function'?narrativeDisplayDate():now,date=`${storyDate.getMonth()+1}월 ${storyDate.getDate()}일 ${days[storyDate.getDay()]}`;$('#lock-date').textContent=date;$('#passcode-date').textContent=date}
 setInterval(updateTime,15000);updateTime();setWallpaper();
 $('#weather-place').textContent=CONFIG.weather.place;$('#weather-temp').textContent=CONFIG.weather.temp;$('#weather-desc').textContent=CONFIG.weather.desc;$('#weather-range').textContent=`최고 ${CONFIG.weather.high} · 최저 ${CONFIG.weather.low}`;
 $('#event-list').innerHTML=CONFIG.events.slice(0,2).map(e=>`<div class="event-row"><div class="event-time">${escapeHtml(e.time)}</div><div class="event-title"><span class="event-dot"></span>${escapeHtml(e.title)}</div></div>`).join('');
@@ -2729,7 +2751,8 @@ stage13PhotoDebugUpdate();
 function narrativeCallInProgress(){return ['ringing','connected'].includes(lostPhoneStory?.openingCall?.status)||['ringing','connected'].includes(lostPhoneStory?.call?.status)}
 function narrativeDrinkingFocus(){const d=lostPhoneStory?.stageSeven?.drinkingNight;return !!d&&!d.legacyCompleted&&(['tipsy','deeper','boundary','morning'].includes(d.stage)||d.stage==='invite'&&!!d.interactionStarted||!!d.pendingReply)}
 function narrativeDisplayDate(){try{return new Date(narrativeStoryTimestamp())}catch{return new Date(2026,9,23,18,12)}}
-function narrativeStoryTimestamp(){const d=lostPhoneStory?.stageSeven?.drinkingNight;return Math.max(new Date(2026,9,23,18,12).getTime(),Number(d?.lastStoryTimestamp)||0,Number(lostPhoneStory?.eventIntegration?.contactStoryTimestamp)||0)}
+function narrativeClockDate(){try{return Number(lostPhoneStory?.stageSeven?.drinkingNight?.morningStoryTimestamp)?narrativeDisplayDate():new Date()}catch{return new Date()}}
+function narrativeStoryTimestamp(){const d=lostPhoneStory?.stageSeven?.drinkingNight;return Math.max(new Date(2026,9,23,18,12).getTime(),Number(d?.lastStoryTimestamp)||0,Number(lostPhoneStory?.eventIntegration?.contactStoryTimestamp)||0,Number(d?.morningStoryTimestamp)||0)}
 function narrativeOriginalEvent(event){const id=String(event?.id||'');return ['instagram-opening-call','lost-phone-incoming-call','lost-phone-call-timeout','lost-phone-convergence'].includes(event?.type)||id.startsWith('lost-phone-shownu-checkin-v1:instagram-first-call')||id.startsWith('lost-phone-shownu-checkin-v1:call:')||id.includes(':convergence:')||id.includes(':world:shownu-after-call:')||/^lost-phone-shownu-checkin-v1:reply-(home|why|outside):/.test(id)}
 function narrativeEventEligibility(event,{history=false}={}){
  const result=(phase,reason)=>({allowed:['eligible','in-progress','completed'].includes(phase),phase,reason});
@@ -2798,7 +2821,7 @@ function validateNarrativeEvent(event){
  event.status=eligibility.phase==='not-applicable'?'inapplicable':'deferred';event.qualification={phase:eligibility.phase,reason:eligibility.reason};delete event.retryAt;return false;
 }
 function revalidateNarrativeEvents(){for(const event of gameEventMemory.events||[])if(event&&!['completed','cancelled','inapplicable'].includes(event.status))validateNarrativeEvent(event)}
-function resumeNarrativeEvents(){revalidateNarrativeEvents();saveGameEventStore();scheduleGameEvents()}
+function resumeNarrativeEvents(){revalidateNarrativeEvents();saveGameEventStore();scheduleGameEvents();if(typeof renderHomeMorningCard==='function')renderHomeMorningCard()}
 function narrativeNotificationVisible(notification){const event=getGameEvent(notification.eventId);return !event||event.status==='completed'||narrativeEventEligibility(event).allowed}
 function narrativeInitialReplyEligible(){return !narrativeDrinkingFocus()&&!narrativeCallInProgress()&&(CONFIG.chats.find(c=>c.id==='shownu')?.messages||[]).some(m=>['missing-phone-checkin-1','missing-phone-checkin-2'].includes(m.id))}
 function narrativeEnterDrinkingFocus(){const d=lostPhoneStory?.stageSeven?.drinkingNight;if(!d||d.legacyCompleted||d.stage!=='invite')return;d.interactionStarted=true;saveLostPhoneStory();resumeNarrativeEvents()}
@@ -2891,11 +2914,11 @@ function drinkingNightMorningBranch(state=drinkingNightState()){
  if(state?.choices?.boundary?.optionId==='only')return 'different';
  return ['glad','comfortable'].includes(state?.choices?.tipsy?.optionId)||['waited','stay'].includes(state?.choices?.deeper?.optionId)?'happy':'ordinary';
 }
-function drinkingNightFinishStage(next){const state=drinkingNightState();state.stage=next;if(next==='morning-pending'){state.morningBranch=drinkingNightMorningBranch(state);state.morningStatus='awaiting-story-time';}if(next==='complete')state.completed=true;const saved=saveLostPhoneStory();if(saved&&typeof resumeNarrativeEvents==='function')resumeNarrativeEvents();return saved}
+function drinkingNightFinishStage(next){const state=drinkingNightState();state.stage=next;if(next==='morning-pending'){state.morningBranch=drinkingNightMorningBranch(state);state.morningStatus='awaiting-story-time';}if(next==='complete'){state.completed=true;if(state.morningStoryTimestamp)state.morningStatus='completed';}const saved=saveLostPhoneStory();if(saved&&typeof resumeNarrativeEvents==='function')resumeNarrativeEvents();return saved}
 function drinkingNightOptions(){const state=drinkingNightState();if(!drinkingNightActive()||state.pendingReply||(typeof narrativeCallInProgress==='function'&&narrativeCallInProgress()))return [];const choices=state.stage==='morning'?DRINKING_MORNING[state.morningBranch]?.options:DRINKING_NIGHT_CHOICES[state.stage];return (choices||[]).filter(option=>!state.usedChoiceIds.includes(`${state.stage}:${option[0]}`)&&narrativeEventEligibility({id:`${DRINKING_NIGHT_ID}:choice:${state.stage}:${option[0]}`,type:'drinking-player-choice',payload:{stage:state.stage,optionId:option[0]}}).allowed)}
 function drinkingNightCurrent(chatId){const state=drinkingNightState();if(chatId!=='shownu'||!drinkingNightActive()||!stageSevenSourceExists('shownu',state.sourceMessageId))return null;return {group:{id:`${DRINKING_NIGHT_ID}:interactive:${state.stage}`,chatId:'shownu',sourceEventId:state.sourceMessageId,status:state.pendingReply?'waiting':'pending'},options:drinkingNightOptions()}}
 function drinkingNightFocusMessage(){const state=drinkingNightState(),root=$('#chat-messages');if(!state||!root)return;const id=state.pendingReply?.player?.id||state.sourceMessageId;const row=Array.from(root.querySelectorAll('[data-message-id]')).find(item=>item.dataset.messageId===id);row?.scrollIntoView?.({block:'nearest'});}
-function drinkingNightRefresh(){if(activeChat?.id==='shownu'&&$('#chat-room')?.classList.contains('active')){renderChatMessages();renderAfterWorkPanel()}renderKakaoChats()}
+function drinkingNightRefresh(){if(typeof renderHomeMorningCard==='function')renderHomeMorningCard();if(activeChat?.id==='shownu'&&$('#chat-room')?.classList.contains('active')){renderChatMessages();renderAfterWorkPanel()}renderKakaoChats()}
 function drinkingNightDelivered(event){const state=drinkingNightState(),message=event?.payload?.message;if(!drinkingNightManaged()||!message||!String(message.id).startsWith(`${DRINKING_NIGHT_ID}:interactive:`))return;if(!stageSevenSourceExists('shownu',message.id))return;if(typeof sortShownuTimeline==='function')sortShownuTimeline();const pending=state.pendingReply;if(!pending)return;if(message.id===pending.player?.id&&!state.sentMessageIds.includes(message.id))state.sentMessageIds.push(message.id);if(message.id!==pending.reply.id)return;if(!state.replyMessageIds.includes(message.id))state.replyMessageIds.push(message.id);const choice=state.choices[pending.stage];if(choice&&pending.optionId===choice.optionId){choice.replyDelivered=true;if(!state.shownuReceivedChoiceIds.includes(`${pending.stage}:${pending.optionId}`))state.shownuReceivedChoiceIds.push(`${pending.stage}:${pending.optionId}`)}state.sourceMessageId=message.id;state.pendingReply=null;drinkingNightFinishStage(pending.next);drinkingNightRefresh()}
 function drinkingNightResumePending(){const state=drinkingNightState(),pending=state?.pendingReply;if(!drinkingNightManaged()||!pending)return;for(const copy of [pending.player,pending.reply].filter(Boolean)){if(stageSevenSourceExists('shownu',copy.id)){drinkingNightDelivered({payload:{message:copy}});continue}const event=stageSevenQueueMessage(copy.id,'shownu',copy.from,copy.text,copy.translation,0,{notify:copy.from==='셔누',storyTimestamp:copy.storyTimestamp});if(!event)throw new Error('술 약속 메시지를 저장하지 못했습니다.')}saveLostPhoneStory()}
 function drinkingNightSelect(groupId,optionId){
@@ -2912,8 +2935,59 @@ function drinkingNightSelect(groupId,optionId){
  state.pendingReply={stage,optionId,next:option[5],player:{id:playerId,from:'형원',text:option[1],translation:option[2],storyTimestamp:at},reply:{id:replyId,from:'셔누',text:option[3],translation:option[4],storyTimestamp:at+60000}};
  if(!saveLostPhoneStory())return rollback();drinkingNightResumePending();drinkingNightRefresh();return true;
 }
-// Future game-clock integration point. No UI, timer or real-time observer calls this.
-function activateDrinkingMorning(storyDate){const state=drinkingNightState();if(!drinkingNightManaged()||state.stage!=='morning-pending'||state.pendingReply||storyDate!==state.morningDate)return false;const branch=DRINKING_MORNING[state.morningBranch],id=`${DRINKING_NIGHT_ID}:interactive:morning:${state.morningBranch}:prompt`;state.stage='morning';state.pendingReply={stage:'morning-prompt',next:'morning',reply:{id,from:'셔누',text:branch.text,translation:branch.translation,storyTimestamp:new Date(state.morningDate+'T09:12:00').getTime()}};saveLostPhoneStory();drinkingNightResumePending();return true}
+// The only exposed time transition: an explicit player action after this night.
+// Reuse the original morning branch, prompt ID and shared message queue.
+function drinkingMorningTransitionInfo(){
+ const state=drinkingNightState();
+ if(!drinkingNightManaged()||state.stage!=='morning-pending'||state.pendingReply||state.completed||state.recoveryIssue||state.invitationStatus!=='confirmed'||state.choices?.invite?.optionId!=='join'||state.morningStatus!=='awaiting-story-time'||state.morningDate!=='2026-10-24'||state.morningStoryTimestamp)return null;
+ const verify=stage=>{
+  const choice=state.choices?.[stage],option=(DRINKING_NIGHT_CHOICES[stage]||[]).find(item=>item[0]===choice?.optionId);
+  if(!choice||!option)return null;
+  if(!option[3])return choice.skipped===true?option:null;
+  const playerId=`${DRINKING_NIGHT_ID}:interactive:${stage}:${option[0]}:player`,replyId=`${DRINKING_NIGHT_ID}:interactive:${stage}:${option[0]}:shownu`;
+  if(choice.playerId!==playerId||choice.replyId!==replyId)return null;
+  const delivered=id=>stageSevenSourceExists('shownu',id)||getGameEvent(id)?.status==='completed';
+  return delivered(playerId)&&delivered(replyId)?option:null;
+ };
+ if(!verify('invite')||!verify('tipsy'))return null;
+ const deeper=verify('deeper');if(!deeper)return null;
+ const end=deeper[5]==='morning-pending'?deeper:verify('boundary');if(end?.[5]!=='morning-pending')return null;
+ const branch=drinkingNightMorningBranch(state),copy=DRINKING_MORNING[branch],timestamp=new Date(state.morningDate+'T09:12:00').getTime();
+ if(branch!==state.morningBranch||!copy||narrativeStoryTimestamp()>timestamp)return null;
+ const id=`${DRINKING_NIGHT_ID}:interactive:morning:${branch}:prompt`;
+ if(getGameEvent(id)||stageSevenSourceExists('shownu',id))return null;
+ return {date:state.morningDate,branch,timestamp,id,copy};
+}
+function renderHomeMorningCard(){
+ const card=$('#morning-step-card'),home=$('#home-screen'),button=$('#morning-step-next');if(!card||!home||!button)return;
+ const info=drinkingMorningTransitionInfo();card.hidden=!info;
+ if(info)home.classList.add('has-morning-step');else home.classList.remove('has-morning-step');
+ button.disabled=!info||narrativeCallInProgress();
+ const date=narrativeDisplayDate(),weekday=$('#home-screen .calendar-weekday'),day=$('#home-screen .calendar-date'),icon=$('#home-screen [data-app="calendar"] text');
+ if(weekday)weekday.textContent=['일요일','월요일','화요일','수요일','목요일','금요일','토요일'][date.getDay()];
+ if(day)day.textContent=String(date.getDate());if(icon)icon.textContent=String(date.getDate());
+}
+function activateDrinkingMorning(storyDate){
+ const state=drinkingNightState(),info=drinkingMorningTransitionInfo();
+ if(!info||storyDate!==info.date||narrativeCallInProgress())return false;
+ if(!saveGameEventStore())return false;
+ const previous=JSON.stringify(state);
+ state.morningStoryTimestamp=info.timestamp;state.morningStatus='active';state.stage='morning';
+ state.pendingReply={stage:'morning-prompt',next:'morning',reply:{id:info.id,from:'셔누',text:info.copy.text,translation:info.copy.translation,storyTimestamp:info.timestamp}};
+ if(!saveLostPhoneStory()){for(const key of Object.keys(state))delete state[key];Object.assign(state,JSON.parse(previous));return false;}
+ // A saved pending prompt is resumed by the existing startup path if interrupted.
+ drinkingNightResumePending();drinkingNightRefresh();if(typeof updateTime==='function')updateTime();return true;
+}
+function advanceHomeDrinkingMorning(){
+ if(!phoneUnlocked||currentScreen!=='home-screen')return false;
+ const status=$('#morning-step-status');if(status)status.textContent='';
+ const state=drinkingNightState();
+ try{if(activateDrinkingMorning(state?.morningDate))return true;}catch{/* Keep the saved pending delivery for the normal restore path. */}
+ if(status)status.textContent='지금은 넘어갈 수 없습니다. 진행 상황은 그대로 유지됩니다.';
+ renderHomeMorningCard();return false;
+}
+$('#morning-step-next')?.addEventListener('click',advanceHomeDrinkingMorning);
+
 function initializeDrinkingNight(legacySave=false,{resume=true}={}){
  if(!lostPhoneStory)return;lostPhoneStory.stageSeven=lostPhoneStory.stageSeven&&typeof lostPhoneStory.stageSeven==='object'&&!Array.isArray(lostPhoneStory.stageSeven)?lostPhoneStory.stageSeven:{};let state=drinkingNightState();
  if(!state||typeof state!=='object'||Array.isArray(state)){const date=kakaoMessageDate(CONFIG.chats.find(chat=>chat.id==='shownu')?.messages.find(message=>message.id===`${DRINKING_NIGHT_ID}:invite`)),next=date?new Date(date.getFullYear(),date.getMonth(),date.getDate()+1):null;state=lostPhoneStory.stageSeven.drinkingNight={version:1,perspective:'hyungwon',legacyCompleted:false,stage:'invite',completed:false,invitationStatus:'pending',choices:{},usedChoiceIds:[],sentMessageIds:[],replyMessageIds:[],shownuReceivedChoiceIds:[],pendingReply:null,sourceMessageId:`${DRINKING_NIGHT_ID}:invite`,morningDate:next?`${next.getFullYear()}-${String(next.getMonth()+1).padStart(2,'0')}-${String(next.getDate()).padStart(2,'0')}`:null};}
@@ -3025,6 +3099,7 @@ function initializeGameOnce(){
     // Reconcile interrupted calls first, then release only still-qualified deferred work.
     if(typeof resumeNarrativeEvents==='function')resumeNarrativeEvents();
     gameInitializationStatus='started';
+    if(typeof renderHomeMorningCard==='function')renderHomeMorningCard();if(typeof updateTime==='function')updateTime();
     $('#game-launch-menu').hidden=true;$('#launch-confirm').hidden=true;phone.inert=false;
     return true;
   }catch(error){
