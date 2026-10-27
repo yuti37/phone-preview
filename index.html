@@ -713,6 +713,17 @@
 .instagram-app .ig-bottom-nav button.active .ig-account-avatar.ig-nav-avatar{border-color:#17171a}
 @media(max-width:360px){.instagram-app .ig-profile-top{column-gap:12px}.instagram-app .ig-profile-buttons{gap:6px}.instagram-app .ig-profile-buttons button{padding-left:6px;padding-right:6px}}
 </style>
+<style>
+/* External game launch menu; deliberately separate from the simulated phone. */
+#game-launch-menu{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:calc(24px + env(safe-area-inset-top)) 22px calc(24px + env(safe-area-inset-bottom));background:radial-gradient(ellipse at 50% 18%,#41475c 0,#20212d 47%,#111218 100%);color:#f7f7fb;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+#game-launch-menu[hidden],#launch-confirm[hidden]{display:none}
+.launch-card{width:min(100%,360px);padding:34px 24px 25px;border:1px solid #ffffff22;border-radius:28px;background:linear-gradient(155deg,#ffffff13,#ffffff08);box-shadow:0 24px 70px #0005;backdrop-filter:blur(24px);text-align:center}
+.launch-mark{width:56px;height:56px;margin:0 auto 20px;border:1px solid #ffffff33;border-radius:19px;display:grid;place-items:center;background:#ffffff12;font-size:25px}
+.launch-title{margin:0;font-size:22px;letter-spacing:-.5px;font-weight:700}.launch-caption{margin:10px 0 26px;color:#c2c4cf;font-size:12px;line-height:1.65}
+.launch-actions{display:grid;gap:10px}.launch-action{min-height:54px;border-radius:16px;padding:12px 16px;font-size:15px;font-weight:700;touch-action:manipulation;background:#f7f7fa;color:#20212a}.launch-action.primary{background:#fee500;color:#27251d}.launch-action:disabled{opacity:.42;cursor:not-allowed}.launch-status{min-height:18px;margin:14px 2px 0;color:#f2c7bf;font-size:11px;line-height:1.5}
+#launch-confirm{position:fixed;inset:0;z-index:10001;display:grid;place-items:center;padding:24px;background:#090a10b8;backdrop-filter:blur(8px);color:#20212a}
+.launch-dialog{width:min(100%,340px);padding:22px 20px 14px;border-radius:22px;background:#f8f8fb;box-shadow:0 18px 60px #0007;text-align:center}.launch-dialog h2{margin:0 0 10px;font-size:17px}.launch-dialog p{margin:0 0 20px;color:#636571;font-size:13px;line-height:1.65}.launch-dialog-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.launch-dialog-actions button{min-height:46px;padding:9px;border-radius:13px;background:#e9e9ee;color:#292a32;font-size:13px;font-weight:650;touch-action:manipulation}.launch-dialog-actions .destructive{background:#ff453a;color:white}
+</style>
 </head>
 <body>
 <!-- All narrative content is fictional simulation material. Edit the CONFIG object below to customize it. -->
@@ -1119,6 +1130,28 @@ const CONFIG = {
   <section class="phone-record-sheet" id="phone-record-sheet" aria-modal="true" role="dialog" hidden><div class="phone-record-card"><button class="phone-record-close" id="phone-record-close" type="button" aria-label="닫기">×</button><h2 id="phone-record-title"></h2><div id="phone-record-copy"></div></div></section>
   <div class="toast" id="toast"></div>
 </div>
+<section id="game-launch-menu" aria-label="게임 시작 메뉴" aria-modal="true" role="dialog">
+  <div class="launch-card">
+    <div class="launch-mark" aria-hidden="true">⌕</div>
+    <h1 class="launch-title">주운 휴대폰</h1>
+    <p class="launch-caption">휴대폰 안에 남겨진 일상을 천천히 살펴보세요.</p>
+    <div class="launch-actions">
+      <button class="launch-action primary" id="launch-continue" type="button">이어하기</button>
+      <button class="launch-action" id="launch-new" type="button">처음부터</button>
+    </div>
+    <p class="launch-status" id="launch-status" aria-live="polite"></p>
+  </div>
+</section>
+<section id="launch-confirm" aria-label="새 게임 확인" aria-modal="true" role="dialog" hidden>
+  <div class="launch-dialog">
+    <h2>처음부터 시작할까요?</h2>
+    <p id="launch-confirm-copy">기존 진행 상황이 삭제되고 처음부터 시작됩니다. 계속할까요?</p>
+    <div class="launch-dialog-actions">
+      <button id="launch-cancel" type="button">취소</button>
+      <button class="destructive" id="launch-confirm-new" type="button">처음부터 시작</button>
+    </div>
+  </div>
+</section>
 <script>
 const groupChatConfig = CONFIG.chats.find(c=>c.id==='group');
 if (groupChatConfig && CONFIG.groupMessages) groupChatConfig.messages = CONFIG.groupMessages;
@@ -1510,7 +1543,7 @@ $('#lost-call-actions').addEventListener('click',event=>{const button=event.targ
 $('#lost-phone-call-overlay').addEventListener('click',event=>{if(event.target.closest('#lost-call-answer'))answerLostPhoneCall();else if(event.target.closest('#lost-call-decline'))declineLostPhoneCall();else if(event.target.closest('#lost-call-hangup'))finishLostPhoneCall('answered')});
 $('#phone-record-close').addEventListener('click',()=>$('#phone-record-sheet').hidden=true);
 $('#phone-record-sheet').addEventListener('click',event=>{if(event.target===$('#phone-record-sheet'))$('#phone-record-sheet').hidden=true});
-setInterval(()=>{const call=callStory();if(call?.status==='connected'&&!$('#lost-phone-call-overlay').hidden)$('#lost-call-timer').textContent=formatCallDuration(Math.floor((Date.now()-(Number(call.connectedAt)||Date.now()))/1000))},1000);
+let lostPhoneCallDisplayTimer=null;function startLostPhoneCallDisplayTimer(){if(lostPhoneCallDisplayTimer!==null)return;lostPhoneCallDisplayTimer=setInterval(()=>{const call=callStory();if(call?.status==='connected'&&!$('#lost-phone-call-overlay').hidden)$('#lost-call-timer').textContent=formatCallDuration(Math.floor((Date.now()-(Number(call.connectedAt)||Date.now()))/1000))},1000)}
 function scheduleLostPhoneCall(reason,delay=120000){const call=callStory();if(!call||lostPhoneStory.openingRoute!=='kakaotalk_first'||call.records.length||['ringing','connected'].includes(call.status)||lostPhoneStory.truthToldAt||call.callSuppressedAt)return null;call.scheduleSerials=call.scheduleSerials||{};let serial=Number(call.scheduleSerials[reason])||1,id=`${LOST_PHONE_STORY_ID}:call:${reason}${serial===1?'':`-${serial}`}`,existing=getGameEvent(id);while(existing&&['cancelled','completed'].includes(existing.status)){serial++;id=`${LOST_PHONE_STORY_ID}:call:${reason}-${serial}`;existing=getGameEvent(id)}if(existing){call.scheduleSerials[reason]=serial;call.scheduledCallId=id;saveLostPhoneCallStory();return existing}const now=Date.now();call.scheduleSerials[reason]=serial;call.scheduledCallId=id;saveLostPhoneCallStory();return createGameEvent({id,type:'lost-phone-incoming-call',source:'phone',createdAt:now,scheduledAt:now+delay,shouldNotify:true,payload:{app:'phone',notificationSource:'전화',sender:'셔누형',preview:'셔누형에게 전화가 왔습니다.',destination:{screen:'app-phone'},reason}})}
 function restoreLostPhoneCallTimeout(){const call=callStory();if(call?.status!=='ringing')return;let timeout=call.timeoutEventId&&getGameEvent(call.timeoutEventId);if(!timeout){timeout=createGameEvent({id:`${call.eventId}:ring-timeout`,type:'lost-phone-call-timeout',source:'phone',createdAt:call.startedAt||Date.now(),scheduledAt:(Number(call.startedAt)||Date.now())+25000,shouldNotify:false,payload:{callId:call.eventId}});call.timeoutEventId=timeout?.id||null;saveLostPhoneCallStory()}else if(['completed','cancelled'].includes(timeout.status)){finishLostPhoneCall('missed');return}resumeLostPhoneCallPresentation()}
 function cancelScheduledLostPhoneCall(){const call=callStory();if(!call?.scheduledCallId)return false;const event=getGameEvent(call.scheduledCallId);if(!lostPhoneStory.truthToldAt&&lostPhoneStory.phase==='replied'&&lostPhoneStory.selectedBranch==='reply-outside'&&event?.payload?.reason==='outside-reply'&&event.status==='pending')return false;return cancelGameEvent(call.scheduledCallId)}
@@ -1532,7 +1565,7 @@ function restoreLostPhonePostCallMessage(){const call=callStory();if(!call?.even
 function preparePhoneEventsForStory(){retireLegacyAfterWorkEvents();let changed=false;const legacyIg=getGameEvent(SHOWNu_HANGUP_EVENT_ID);if(legacyIg&&['pending','triggered','failed'].includes(legacyIg.status)){legacyIg.status='cancelled';legacyIg.cancelledAt=legacyIg.cancelledAt||Date.now();legacyIg.shouldNotify=false;legacyIg.effects={...(legacyIg.effects||{}),retired:true};changed=true}if(lostPhoneStory?.openingRoute==='legacy_unknown'||lostPhoneStory?.openingRoute==='instagram_first'){for(const event of gameEventMemory.events){const active=lostPhoneStory.call?.eventId===event.id&&['ringing','connected'].includes(lostPhoneStory.call?.status);if(event.type==='lost-phone-incoming-call'&&['first-checkin','outside-reply'].includes(event.payload?.reason)&&['pending','triggered','failed'].includes(event.status)&&!active){event.status='cancelled';event.cancelledAt=event.cancelledAt||Date.now();event.shouldNotify=false;event.effects={...(event.effects||{}),retiredByOpeningRoute:true};changed=true}}}if(changed)saveGameEventStore()}
 function ensureInstagramOpeningCallLog(){const opening=lostPhoneStory?.openingCall;if(!opening?.recordCreated||!opening.endedAt)return;const group=CONFIG.calls[0];if(!group||group.items.some(item=>item.eventId===opening.eventId))return;const date=new Date(opening.endedAt),outcome=opening.status;group.items.unshift({eventId:opening.eventId,contact:'셔누형',type:outcome==='completed'?'수신':outcome==='interrupted'?'통화 중 종료':outcome==='declined'?'거절':'부재중',time:`${date.getHours()<12?'오전':'오후'} ${date.getHours()%12||12}:${String(date.getMinutes()).padStart(2,'0')}`,count:''})}
 function reconcileInstagramOpeningCall(){const opening=lostPhoneStory?.openingCall;if(opening&&['ringing','connected'].includes(opening.status)){opening.status=opening.status==='ringing'?'missed':'interrupted';opening.endReason=opening.status;opening.endedAt=opening.endedAt||Date.now();opening.recordCreated=true;instagramState.callStatus=opening.status==='missed'?'missed':'hung-up';instagramState.unlocked=true;saveInstagramState();saveLostPhoneStory()}ensureInstagramOpeningCallLog();if(lostPhoneStory?.openingRoute==='instagram_first'&&(!opening||opening.status==='scheduled'))scheduleInstagramOpeningCall()}
-lostPhoneStory=readLostPhoneStory();if(lostPhoneStory&&(!Number(lostPhoneStory.openingRouteVersion)||lostPhoneStory.openingRouteVersion<1)){lostPhoneStory.openingRoute='legacy_unknown';lostPhoneStory.openingRouteVersion=1;lostPhoneStory.openingRouteLockedAt=lostPhoneStory.openingRouteLockedAt||Date.now();saveLostPhoneStory()}registerAfterWorkHandlers();
+registerAfterWorkHandlers();
 // Route-specific story state and effects share the existing persistent phone event queue.
 function ensureLostPhoneStoryExtensions(){if(!lostPhoneStory)return;lostPhoneStory.igMessages=Array.isArray(lostPhoneStory.igMessages)?lostPhoneStory.igMessages:[];lostPhoneStory.igMessageSequence=Number(lostPhoneStory.igMessageSequence)||0;lostPhoneStory.igCall=lostPhoneStory.igCall||{stage:'idle',choiceIds:[]};lostPhoneStory.igCall.choiceIds=Array.isArray(lostPhoneStory.igCall.choiceIds)?lostPhoneStory.igCall.choiceIds:[];lostPhoneStory.characterKnowledge=lostPhoneStory.characterKnowledge||{};const defaults={shownu:{},kihyun:{knowsCrush:true,suspectsCrush:true,crushCertainty:'almost-certain'},minhyuk:{suspectsCrush:true,crushCertainty:'possible'},jooheon:{},changkyun:{noticedDetails:true},manager:{},hyungwon:{knowsOwnCrush:true,believesItIsHidden:true}};for(const id of Object.keys(defaults)){const saved=lostPhoneStory.characterKnowledge[id]||{};lostPhoneStory.characterKnowledge[id]={knowsPhoneLost:false,knowsPossibleStranger:false,knowsPlayerIsFinder:false,knowsPlayerIdentity:false,suspectsImpersonation:false,knowsPlayerImpersonated:false,suspectsCrush:false,knowsCrush:false,crushCertainty:'none',noticedDetails:false,knowledgeSources:{phoneLost:[],stranger:[],finder:[],impersonation:[],crush:[]},disclosedTo:[],...defaults[id],...saved};const knowledge=lostPhoneStory.characterKnowledge[id];knowledge.knowledgeSources=knowledge.knowledgeSources||{};for(const key of ['phoneLost','stranger','finder','impersonation','crush'])knowledge.knowledgeSources[key]=Array.isArray(knowledge.knowledgeSources[key])?knowledge.knowledgeSources[key]:[];knowledge.disclosedTo=Array.isArray(knowledge.disclosedTo)?knowledge.disclosedTo:[]}lostPhoneStory.characterKnowledge.kihyun.knowsCrush=true;lostPhoneStory.characterKnowledge.kihyun.suspectsCrush=true;lostPhoneStory.characterKnowledge.kihyun.crushCertainty='almost-certain';lostPhoneStory.characterKnowledge.hyungwon.knowsOwnCrush=true;lostPhoneStory.characterKnowledge.hyungwon.believesItIsHidden=true;lostPhoneStory.playerHasImpersonated=!!lostPhoneStory.playerHasImpersonated;lostPhoneStory.convergence=lostPhoneStory.convergence||{status:'idle',eventId:null};lostPhoneStory.worldEvents=lostPhoneStory.worldEvents||{scheduledAt:null};lostPhoneStory.kihyunCheckin=lostPhoneStory.kihyunCheckin||{status:'idle',messageId:null,replyId:null};saveLostPhoneStory()}
 ensureLostPhoneStoryExtensions();
@@ -1900,11 +1933,10 @@ stageSevenApplyOption=function(group,option){stageElevenApplyChoiceBase(group,op
 stageElevenWorldEvent=function(event){const p=event?.payload||{},romance=ensureStageElevenState()?.romance,now=Date.now();if(p.kind==='romance-checkin'&&['sent','choice-made','completed','suppressed'].includes(romance?.status))return {notify:false};if(p.kind==='romance-revisit'&&['sent','choice-made','completed','suppressed'].includes(romance?.confessionRevisitStatus))return {notify:false};if(p.kind==='romance-reply'){if(!romance||romance.replyEventIds[event.id]==='completed')return {notify:false};const response=STAGE_ELEVEN_RESPONSES[`${p.groupId}:${p.optionId}`];if(!response){romance.replyEventIds[event.id]='completed';saveLostPhoneStory();return {notify:false}}romance.replyEventIds[event.id]='completed';romance.lastResponseKind=response[2];romance.lastResponseAt=now;stageSevenQueueMessage(p.replyMessageId||`${event.id}:message`,'shownu','셔누',response[0],response[1],0,{notify:true});if(response[2]==='invitation-accepted')romance.invitationStatus='tentatively-accepted';else if(response[2]==='invitation-agreed')romance.invitationStatus='agreed';else if(response[2]==='invitation-pending')romance.invitationStatus='awaiting-date';else if(response[2]==='invitation-deferred')romance.invitationStatus='deferred';if(response[2]==='confession-serious'){romance.confessionStatus='serious';const followId=`${STAGE_ELEVEN_ID}:confession-revisit:event`;if(!getGameEvent(followId)){romance.confessionRevisitStatus='scheduled';stageSevenQueue(followId,'romance-revisit',now+180000,{sourceReplyId:p.replyMessageId})}}saveLostPhoneStory();return {notify:false}}return stageElevenWorldEventBeforeStable(event)};
 registerGameEventHandler('stage-seven-world-event',stageElevenWorldEvent);
 
-// Restore persisted phone events after legacy story events are safely retired.
-initializePhoneEvents();initializeLostPhoneStory();ensureLostPhoneStoryExtensions();backfillStoredMessageTranslations();ensureStageEightNarrativeState();ensureStageFiveKnowledgeSources();ensureStageSixContinuity();ensureStageSevenState();ensureKihyunHistory();ensureStageFiveHistoricMessages();ensureStableKakaoHistoryIds();ensureStageTenTourHistory();if(lostPhoneStory.openingRoute){scheduleStageFiveWorldEvents();scheduleStageSevenEvents()}restoreStageSixWorldEvents();restoreStageSevenOptionGroups();reconcileInstagramOpeningCall();restoreIgDmPostCall();restoreLostPhoneCallTimeout();restoreLostPhonePostCallMessage();
+// Game-state restoration is deferred until the external launch menu choice.
 
 function restoreStageElevenSharedSource(){const state=ensureStageElevenState();const convergenceEvent=gameEventMemory.events.find(event=>String(event.id||'').includes(':convergence:')&&event.payload?.chatId==='shownu'&&event.payload?.message?.id),savedId=lostPhoneStory?.convergence?.messageId||convergenceEvent?.payload?.message?.id;if(!savedId||!stageSevenSourceExists('shownu',savedId))return;STAGE_SEVEN_COPY['shownu-proactive'].sourceEventId=savedId;const group=lostPhoneStory.stageSeven.groups['shownu-proactive'];if(group?.status==='pending'&&!group.selectedOptionId)group.sourceEventId=savedId;if(state.romance.status==='idle'&&!stageSevenDisclosureKnown('shownu'))stageElevenScheduleDrunkCheckin(savedId);saveLostPhoneStory()}
-restoreStageElevenSharedSource();ensureStageElevenPrivateClues();
+// Stage 11 persistent story extensions are restored after launch selection.
 // Developer-only translation audit. Run window.runTranslationAudit() in the browser console.
 function runTranslationAudit(){const issues=[],totals={recordsChecked:0,koreanMessagesChecked:0,sourceMessages:0,renderedMessages:0,choiceTextsChecked:0};const seenStatic=new WeakSet(),hasKorean=value=>/[가-힣]/.test(String(value||'')),hasSimplified=value=>/[这们国为时说话书发车头后点对还开见会没么]/.test(String(value||'')),validTranslation=(value,text)=>typeof value==='string'&&!!value.trim()&&value.trim()!==String(text||'').trim()&&!hasSimplified(value)&&!/翻譯待補|번역\s*(대기|미완료)|old message.*translation/i.test(value);function inspect(room,source,location,message,renderedTranslation,category='message'){if(!message||typeof message!=='object')return;totals.recordsChecked++;if(category==='choice')totals.choiceTextsChecked++;else totals.renderedMessages++;if(!hasKorean(message.text))return;totals.koreanMessagesChecked++;const raw=message.translation,aliases=['zhHant','zh','translationZh','traditionalChinese'].filter(key=>typeof message[key]==='string'&&message[key].trim()),valid=validTranslation(raw,message.text),renderedValid=validTranslation(renderedTranslation,message.text);if(!valid||!renderedValid){const type=!raw||typeof raw!=='string'||!raw.trim()?'missing-translation':String(raw).trim()===String(message.text).trim()?'same-as-source':/翻譯待補|번역\s*(대기|미완료)|old message.*translation/i.test(String(raw))?'placeholder':hasSimplified(raw)?'suspected-simplified-chinese':'renderer-missing';issues.push({room,source,location,messageId:message.id||message.eventId||null,korean:message.text,translationType:!raw&&aliases.length?'translation-field-name-mismatch':type,renderedTranslationMissing:!renderedValid,availableAliasFields:aliases.join(',')})}}function staticInspect(room,source,location,message,renderedTranslation){if(message&&typeof message==='object'){if(seenStatic.has(message))return;seenStatic.add(message)}totals.sourceMessages++;inspect(room,source,location,message,renderedTranslation)}for(const chat of CONFIG.chats||[]){for(let i=0;i<(chat.messages||[]).length;i++){const m=chat.messages[i];staticInspect(chat.title||chat.id,'CONFIG.chats',`CONFIG.chats[${chat.id}].messages[${i}]`,m,getKakaoMessageTranslation(m,chat.id))}}for(let i=0;i<(CONFIG.groupMessages||[]).length;i++){const m=CONFIG.groupMessages[i];staticInspect('밥 먹을 사람','CONFIG.groupMessages',`CONFIG.groupMessages[${i}]`,m,getKakaoMessageTranslation(m))}for(let i=0;i<(CONFIG.instagram?.messages||[]).length;i++){const m=CONFIG.instagram.messages[i];staticInspect("Instagram 通話","CONFIG.instagram.messages",`CONFIG.instagram.messages[${i}]`,m,m.translation)}for(const conversation of CONFIG.instagram?.conversations||[]){for(let i=0;i<(conversation.messages||[]).length;i++){const m=conversation.messages[i];staticInspect(conversation.accountId||conversation.id,'CONFIG.instagram.conversations',`CONFIG.instagram.conversations[${conversation.id}].messages[${i}]`,m,translateIgDmMessage(m))}}for(const event of gameEventMemory?.events||[]){const m=event.payload?.message;if(m)inspect(event.payload?.chatId||event.payload?.app||event.source,`localStorage:${GAME_EVENT_STORE_KEY}`,`events[${event.id}].payload.message`,m,event.type?.startsWith('instagram')?translateIgDmMessage(m):getKakaoMessageTranslation(m,event.payload?.chatId))}for(let i=0;i<(lostPhoneStory?.igMessages||[]).length;i++){const m=lostPhoneStory.igMessages[i];inspect('Instagram 私訊','localStorage:lost-phone-story',`igMessages[${i}]`,m,translateIgDmMessage(m))}for(let i=0;i<(lostPhoneStory?.openingCall?.transcript||[]).length;i++){const m=lostPhoneStory.openingCall.transcript[i];inspect('Instagram 通話','localStorage:lost-phone-story',`openingCall.transcript[${i}]`,m,m.translation)}for(const [groupId,definition] of Object.entries(typeof STAGE_SEVEN_COPY==='object'?STAGE_SEVEN_COPY:{})){for(let i=0;i<(definition.options||[]).length;i++){const option=definition.options[i];inspect(definition.chatId,`STAGE_SEVEN_COPY.${groupId}`,`options[${i}]`,{id:option[0],text:option[1],translation:option[2]},option[2],'choice')}}for(const [id,reply] of Object.entries(typeof LOST_PHONE_REPLIES==='object'?LOST_PHONE_REPLIES:{})){inspect('셔누형',`LOST_PHONE_REPLIES.${id}`,`text`,{id,text:reply.text,translation:reply.translation},reply.translation,'choice');inspect('셔누형',`LOST_PHONE_REPLIES.${id}`,`answer`,{id:`${id}:answer`,text:reply.answer,translation:reply.answerTranslation},reply.answerTranslation,'choice')}for(const [stage,choices] of Object.entries(typeof igCallChoiceData==='object'?igCallChoiceData:{})){for(let i=0;i<choices.length;i++){const choice=choices[i];inspect('Instagram 通話',`igCallChoiceData.${stage}`,`choices[${i}]`,{id:choice.id,text:choice.text,translation:choice.translation},choice.translation,'choice')}}for(const [groupId,group] of Object.entries(lostPhoneStory?.igDmReplyGroups||{})){for(const option of igDmReplyOptions(group)||[])inspect('Instagram 私訊',`igDmReplyOptions:${groupId}`,`option:${option.id}`,{id:option.id,text:option.text,translation:option.translation},option.translation,'choice')}const summary={...totals,issuesFound:issues.length,fullyTranslatedKoreanMessages:totals.koreanMessagesChecked-issues.length,issues};if(typeof console!=='undefined')console.info('[Phone Simulator] Translation audit',summary);return summary}if(typeof window!=='undefined')window.runTranslationAudit=runTranslationAudit;
 // Stage eleven active KKT composer: one data-driven sheet is shared by the input
@@ -1985,13 +2017,13 @@ document.addEventListener('submit',event=>{if(event.target?.id==='chat-form'){ev
 document.addEventListener('keydown',event=>{if(event.target?.id==='chat-input'&&event.key==='Enter'){event.preventDefault();stageElevenOpenComposer()}if(event.key==='Escape'&&!$('#stage-eleven-active-sheet')?.hidden)stageElevenCloseComposer()},true);
 $('#chat-input')?.setAttribute('readonly','readonly');$('#chat-input')?.setAttribute('placeholder','메시지 입력 · 눌러서 선택');$('#chat-input')?.setAttribute('aria-label','고정 메시지 선택 열기');
 const stageElevenSheetStyle=document.createElement('style');stageElevenSheetStyle.textContent=`#app-kakao .chat-compose #chat-input{cursor:pointer;caret-color:transparent}#stage-eleven-active-sheet[hidden]{display:none!important}.stage-eleven-sheet-backdrop{position:absolute;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;background:rgba(18,22,31,.32);overscroll-behavior:contain}.stage-eleven-sheet{width:100%;max-height:min(78%,660px);display:flex;flex-direction:column;background:#f8f8fa;border-radius:20px 20px 0 0;padding:10px 12px calc(12px + env(safe-area-inset-bottom));box-shadow:0 -10px 35px #1618202b;color:#22232a}.stage-eleven-sheet>header{display:flex;align-items:center;justify-content:space-between;min-height:45px;border-bottom:1px solid #e6e7eb;flex:none}.stage-eleven-sheet>header strong{display:block;font-size:15px}.stage-eleven-sheet>header small{display:block;margin-top:2px;color:#777b86;font-size:11px}.stage-eleven-sheet>header button{width:34px;height:34px;border-radius:50%;background:#e9eaee;font-size:23px;line-height:1}.stage-eleven-sheet-body{overflow:auto;min-height:0;padding:7px 1px 4px;overscroll-behavior:contain}.stage-eleven-category{padding:7px 0}.stage-eleven-category h3{margin:0 2px 6px;font-size:12px;font-weight:700;color:#575b66}.stage-eleven-category h3 small{display:block;font-size:10px;font-weight:400;color:#858893;margin-top:2px}.stage-eleven-category-option{width:100%;display:flex;flex-direction:column;gap:4px;text-align:left;background:#fff;border:1px solid #e4e5e9;border-radius:13px;padding:10px 11px;margin:4px 0;min-height:48px;touch-action:manipulation}.stage-eleven-category-option:active{background:#fffbe3}.stage-eleven-category-option strong{font-size:12px;line-height:1.4;font-weight:600}.stage-eleven-category-option small{font-size:10px;line-height:1.35;color:#747783}.stage-eleven-sheet-actions{display:flex;gap:8px;padding-top:8px;border-top:1px solid #e6e7eb;flex:none}.stage-eleven-sheet-actions button{flex:1;min-height:43px;border-radius:12px;background:#e8e9ed;font-size:12px;font-weight:650;touch-action:manipulation}.stage-eleven-sheet-actions button.primary{background:#fee500}.stage-eleven-preview{padding:14px 12px;background:#fff;border-radius:14px;display:flex;flex-direction:column;gap:7px;line-height:1.45}.stage-eleven-preview strong{font-size:14px}.stage-eleven-preview small{font-size:12px;color:#777b86}.stage-eleven-confirm-note,.stage-eleven-empty{font-size:11px;line-height:1.6;color:#686b75;padding:7px 4px}.stage-eleven-sheet-actions:empty{display:none}@media(max-height:700px){.stage-eleven-sheet{max-height:84%}}`;
-stageElevenSheetStyle.textContent+=`.stage-eleven-category-button{width:100%;display:flex;align-items:center;justify-content:space-between;text-align:left;background:#fff;border:1px solid #e4e5e9;border-radius:13px;padding:10px 12px;margin:5px 0;min-height:52px;touch-action:manipulation}.stage-eleven-category-button strong,.stage-eleven-category-button small{display:block}.stage-eleven-category-button strong{font-size:13px}.stage-eleven-category-button small{font-size:10px;color:#858893;margin-top:3px}.stage-eleven-category-button b{font-size:11px;color:#81848e}.stage-eleven-back-category{background:transparent;color:#777b86;padding:6px 2px;min-height:36px;font-size:11px}.stage-eleven-selected-category{margin:5px 2px 9px;font-size:12px;color:#575b66}.stage-eleven-selected-category small{display:block;font-size:10px;font-weight:400;color:#858893;margin-top:2px}`;document.head.append(stageElevenSheetStyle);ensureStageElevenState();for(const record of Object.values(lostPhoneStory?.stageEleven?.manualDisclosureGroups||{}))record.open=false;saveLostPhoneStory();
+stageElevenSheetStyle.textContent+=`.stage-eleven-category-button{width:100%;display:flex;align-items:center;justify-content:space-between;text-align:left;background:#fff;border:1px solid #e4e5e9;border-radius:13px;padding:10px 12px;margin:5px 0;min-height:52px;touch-action:manipulation}.stage-eleven-category-button strong,.stage-eleven-category-button small{display:block}.stage-eleven-category-button strong{font-size:13px}.stage-eleven-category-button small{font-size:10px;color:#858893;margin-top:3px}.stage-eleven-category-button b{font-size:11px;color:#81848e}.stage-eleven-back-category{background:transparent;color:#777b86;padding:6px 2px;min-height:36px;font-size:11px}.stage-eleven-selected-category{margin:5px 2px 9px;font-size:12px;color:#575b66}.stage-eleven-selected-category small{display:block;font-size:10px;font-weight:400;color:#858893;margin-top:2px}`;document.head.append(stageElevenSheetStyle);
 // The drinking check-in is anchored to the night before the already-persisted
 // arrival checks; its real-time trigger remains a separate scheduler concern.
 const stageElevenScheduleDrunkCheckinBase=stageElevenScheduleDrunkCheckin;stageElevenScheduleDrunkCheckin=function(sourceId){const romance=ensureStageElevenState()?.romance;if(!romance)return null;const existing=getGameEvent(`${STAGE_ELEVEN_ID}:drunk-checkin:event`);if(['sent','choice-made','completed','suppressed'].includes(romance.status))return existing||null;return stageElevenScheduleDrunkCheckinBase(sourceId)};
 const stageElevenCheckinMessageOne=stageSevenQueueMessage;stageSevenQueueMessage=function(id,chatId,from,text,translation,delay=0,options={}){if(String(id||'').startsWith(`${STAGE_ELEVEN_ID}:drunk-checkin:message:`)){const index=String(id).endsWith(':2')?1:0;options={...options,storyTimestamp:stageElevenDrunkStoryTimestamp(index)}}return stageElevenCheckinMessageOne(id,chatId,from,text,translation,delay,options)};
 function migratePersistedDrunkCheckinStoryTime(){let changed=false;const chat=CONFIG.chats.find(item=>item.id==='shownu'),messageOneId=`${STAGE_ELEVEN_ID}:drunk-checkin:message:1`,messageTwoId=`${STAGE_ELEVEN_ID}:drunk-checkin:message:2`;STAGE_SEVEN_COPY['shownu-drunk-checkin'].sourceEventId=messageOneId;for(let index=0;index<2;index++){const id=index?messageTwoId:messageOneId,timestamp=stageElevenDrunkStoryTimestamp(index),message=chat?.messages?.find(item=>item.id===id);if(message){message.storyTimestamp=timestamp;message.timestamp=timestamp;message.day=stageElevenStoryLabel(timestamp);message.time=formatClockTime(timestamp);changed=true}for(const event of gameEventMemory.events){const saved=event.payload?.message;if(saved?.id===id){saved.storyTimestamp=timestamp;saved.timestamp=timestamp;saved.day=stageElevenStoryLabel(timestamp);saved.time=formatClockTime(timestamp);if(index===1&&event.status==='pending')cancelGameEvent(event.id);changed=true}}}const group=lostPhoneStory?.stageSeven?.groups?.['shownu-drunk-checkin'];if(group&&!group.selectedOptionId&&group.sourceEventId===messageTwoId){group.sourceEventId=messageOneId;changed=true}if(changed){sortShownuTimeline();saveGameEventStore();saveLostPhoneStory()}}
-ensureStageElevenState();migratePersistedDrunkCheckinStoryTime();
+// Persisted Stage 11 migration runs only after the player selects a launch action.
 const stageElevenRenderChatTimelineBase=renderChatMessages;renderChatMessages=function(){if(activeChat?.messages?.length){activeChat.messages=activeChat.messages.map((message,index)=>({message,index,at:kakaoMessageTimestamp(message)})).sort((a,b)=>(a.at??Infinity)-(b.at??Infinity)||a.index-b.index).map(item=>item.message)}return stageElevenRenderChatTimelineBase()};
 // Stage 12: persistent, single-focus conversations built on the existing
 // Stage 11 composer and event queue. No reply is generated until the player
@@ -2215,7 +2247,7 @@ if(stageElevenEventHandlerBeforeTwelve)gameEventHandlers.set('stage-seven-world-
 STAGE_ELEVEN_RESPONSES['shownu-serious-followup:serious-special']=['특별하다고? 어떤 의미로? ㅋㅋ','特別？是哪方面的意思？ㅋㅋ','serious-special-open'];
 const stageElevenKakaoHandlerBeforeTwelve=gameEventHandlers.get('kkt-message');
 if(stageElevenKakaoHandlerBeforeTwelve)gameEventHandlers.set('kkt-message',(event,options)=>{const result=stageElevenKakaoHandlerBeforeTwelve(event,options),message=event?.payload?.message,chatId=event?.payload?.chatId;if(message&&chatId){const state=ensureStageTwelveState(),convo=state?.conversations?.[chatId];const record=Object.values(stageElevenActionState(chatId)||{}).find(value=>value.conversationReplyMessageId===message.id);if(record?.conversation&&convo?.activeTopicId===record.conversation.topicId){convo.pendingReply=null;for(const [key,value] of Object.entries(record.conversation.setFacts||{})){const fact=convo.facts[key];if(fact&&fact.playerValue===value){fact.recipientValue=value;fact.status='received';fact.recipientAt=Number(message.storyTimestamp||message.timestamp)||Date.now()}}convo.lastQuestionId=record.conversation.questionId||null;convo.turns.push({from:'recipient',messageId:message.id,at:Number(message.storyTimestamp||message.timestamp)||Date.now(),stage:record.conversation.stage});const next=record.conversation.nextStage;if(next){convo.stage=next;convo.status='active'}else{convo.status='completed';convo.completedAt=Date.now();convo.pausedTopics[convo.activeTopicId]={status:'completed',completedAt:Date.now()};convo.activeTopicId=null;convo.stage=null;convo.lastQuestionId=null}if(record.conversation.memory&&state.memories[chatId]?.[record.conversation.memory])state.memories[chatId][record.conversation.memory].receivedAt=Date.now();record.replyDelivered=true;record.replyDeliveredAt=Date.now();saveLostPhoneStory();if(activeChat?.id===chatId){renderChatMessages();renderAfterWorkPanel();renderKakaoChats()}}if(message.id&&String(message.id).startsWith(`${STAGE_ELEVEN_ID}:active:`)&&String(message.id).endsWith(':player')){const record=Object.values(stageElevenActionState(chatId)||{}).find(value=>value.eventId===String(message.id));if(record?.factGroup){const fact=state.conversations[chatId]?.facts?.[record.factGroup];if(fact&&fact.playerValue===record.factValue){fact.recipientValue=record.factValue;fact.status='received';fact.recipientAt=Number(message.storyTimestamp||message.timestamp)||Date.now();fact.recipientMessageId=message.id}}if(record?.conversation){const convo=state.conversations[chatId];if(convo?.activeTopicId===record.conversation.topicId){if(record.conversation.questionId)convo.answeredQuestionIds=[...new Set([...(convo.answeredQuestionIds||[]),record.conversation.questionId])];convo.turns.push({from:'player',messageId:message.id,at:Number(message.storyTimestamp||message.timestamp)||Date.now(),stage:record.conversation.stage})}saveLostPhoneStory()}}}return result});
-ensureStageTwelveState();
+// Stage 12 state migration is deferred until game initialization.
 // Keep personal active-message choices aligned with the current story reply
 // and the persisted topic facts. The group dinner has its own event-scoped
 // synchronization above and intentionally does not pass through this filter.
@@ -2321,7 +2353,7 @@ function validateCrossAppEventsV1(){
   for(const event of CROSS_APP_EVENTS_V1){let found=0,missing=[];for(const reference of event.references||[]){try{if(resolveCrossAppReference(reference))found++;else missing.push(`${reference.app}:${reference.id}`)}catch{missing.push(`${reference.app}:${reference.id}`)}}results.push({eventId:event.eventId,found,missing})}
   return results;
 }
-ensureStage14MealHistory();
+// Historical Stage 14 additions are ensured after launch selection.
 const STAGE13_FAVORITES_KEY='phone-sim.photos-favorites.v1';
 let stage13PhotoFavorites=new Set();
 let stage13PhotoPage='library';
@@ -2416,7 +2448,7 @@ function stage13RenderViewer(){const photo=STAGE13_PHOTOS.find(item=>item.id===s
 function stage13ClosePhoto(){stage13PhotoViewerId=null;stage13ActiveViewerImage=null;stage13Zoom=1;$('#app-gallery').classList.remove('viewer-open');$('#photos-viewer').hidden=true;$('#photos-viewer').setAttribute('aria-hidden','true');stage13PhotoDebugUpdate()}
 function stage13MovePhoto(direction){const index=stage13PhotoVisible.findIndex(item=>item.id===stage13PhotoViewerId),next=stage13PhotoVisible[index+direction];if(!next)return;stage13PhotoViewerId=next.id;stage13Zoom=1;stage13PanPoint=null;stage13RenderViewer()}
 function stage13SelectTab(tab){stage13PhotoPage=tab;stage13PhotoAlbum=null;stage13ClosePhoto();renderPhotos()}
-stage13LoadPhotoFavorites();
+// Photo favorites are loaded after the launch menu choice.
 $('#photos-content').addEventListener('click',event=>{const tile=event.target.closest('[data-photo-open]');if(tile){stage13PhotoDebugSelect(tile.dataset.photoOpen);stage13OpenPhoto(tile.dataset.photoOpen);return}const album=event.target.closest('[data-photo-album]');if(album){stage13PhotoPage='albums';stage13PhotoAlbum=album.dataset.photoAlbum;renderPhotos();return}if(event.target.closest('#photos-album-back')){stage13PhotoAlbum=null;renderPhotos()}});
 $('#photos-content').addEventListener('error',event=>{if(event.target.matches('img')){const fallback=event.target.parentElement?.querySelector('.photo-tile-fallback');if(fallback)fallback.hidden=false;event.target.hidden=true;stage13PhotoDebugRecord(event.target,'error')}},true);
 $('#photos-content').addEventListener('load',event=>{if(event.target.matches('img')){const fallback=event.target.parentElement?.querySelector('.photo-tile-fallback');if(fallback)fallback.hidden=true;event.target.hidden=false;stage13PhotoDebugRecord(event.target,'load')}},true);
@@ -2436,6 +2468,125 @@ const stage13ShowScreenBeforePhotos=showScreen;
 showScreen=function(id){const result=stage13ShowScreenBeforePhotos(id);if(id==='app-gallery')renderPhotos();return result};
 stage13PhotoInitStatus='ready';
 stage13PhotoDebugUpdate();
+
+// One-save launch flow. Reading the allowlisted keys is side-effect free;
+// restore/migration/scheduling is started only after an explicit menu choice.
+const GAME_LOCAL_SAVE_KEYS=Object.freeze([
+  'phone-sim-lost-phone-story-v1',
+  'phone-sim-event-store-v2',
+  'phone-sim-x-interactions-v1',
+  'phone-sim.photos-favorites.v1',
+  'phone-sim-events-v1'
+]);
+const GAME_SESSION_SAVE_KEYS=Object.freeze(['phone-sim-ig-v1']);
+const LAUNCH_STORY_PHASES=new Set(['awaiting-reply','reply-pending','replied']);
+const LAUNCH_OPENING_ROUTES=new Set(['instagram_first','kakaotalk_first','legacy_unknown']);
+function isRecoverableLaunchStory(story){
+  if(!story||typeof story!=='object'||Array.isArray(story)||story.id!=='lost-phone-shownu-checkin-v1')return false;
+  if(LAUNCH_OPENING_ROUTES.has(story.openingRoute))return true;
+  if(LAUNCH_STORY_PHASES.has(story.phase))return true;
+  if(Number.isFinite(Number(story.createdAt))&&Number(story.createdAt)>0)return true;
+  if(story.call&&typeof story.call==='object'&&!Array.isArray(story.call)&&(typeof story.call.status==='string'||Array.isArray(story.call.records)))return true;
+  if(story.openingCall&&typeof story.openingCall==='object'&&!Array.isArray(story.openingCall)&&typeof story.openingCall.status==='string')return true;
+  if(story.stageSeven&&typeof story.stageSeven==='object'&&!Array.isArray(story.stageSeven)&&story.stageSeven.groups&&typeof story.stageSeven.groups==='object')return true;
+  return !!(story.selectedBranch||story.truthToldAt||Array.isArray(story.createdMessageIds)&&story.createdMessageIds.length);
+}
+function isRecoverableLaunchEvent(event){
+  if(!event||typeof event!=='object'||Array.isArray(event)||typeof event.id!=='string'||!event.id.trim())return false;
+  if(!['pending','triggered','failed','completed'].includes(event.status))return false;
+  const payload=event.payload;
+  if(!payload||typeof payload!=='object'||Array.isArray(payload))return false;
+  if(!['kkt-message','kkt-group-message'].includes(event.type)||event.source!=='kakao')return false;
+  const chatIds=new Set((CONFIG.chats||[]).map(chat=>chat.id));
+  const message=payload.message;
+  if(!chatIds.has(payload.chatId)||!message||typeof message!=='object'||Array.isArray(message))return false;
+  return typeof message.id==='string'&&!!message.id.trim()&&typeof message.text==='string'&&!!message.text.trim();
+}
+function inspectLaunchSave(localStore=localStorage,sessionStore=sessionStorage){
+  const parsed={},presentKeys=[],corruptKeys=[];let storageError=null;
+  try{
+    for(const key of GAME_LOCAL_SAVE_KEYS){const raw=localStore.getItem(key);if(raw!==null){presentKeys.push(key);try{parsed[key]=JSON.parse(raw)}catch{corruptKeys.push(key)}}}
+    for(const key of GAME_SESSION_SAVE_KEYS)if(sessionStore.getItem(key)!==null)presentKeys.push(key);
+  }catch(error){storageError=String(error?.message||error);return {canContinue:false,hasGameData:presentKeys.length>0,corruptKeys,storageError}}
+  const valid=[];
+  // X likes/reposts, photo favorites, and the IG session are preserved app
+  // state, but do not prove that the main story can be resumed by themselves.
+  const story=parsed['phone-sim-lost-phone-story-v1'];
+  if(isRecoverableLaunchStory(story))valid.push('story');
+  const events=parsed['phone-sim-event-store-v2'];
+  if(events&&typeof events==='object'&&!Array.isArray(events)&&events.version===2&&Array.isArray(events.events)&&(events.notifications===undefined||Array.isArray(events.notifications))&&events.events.some(isRecoverableLaunchEvent))valid.push('events');
+  const legacy=parsed['phone-sim-events-v1'];
+  if(legacy&&typeof legacy==='object'&&!Array.isArray(legacy)&&legacy.id==='ig-shownu-hangup-message-v1'&&['delivered','completed'].includes(legacy.status))valid.push('legacy-event');
+  const hasGameData=presentKeys.length>0;
+  return {canContinue:valid.length>0&&corruptKeys.length===0,hasGameData,corruptKeys,validKinds:valid,storageError:null};
+}
+function resetLaunchSave(localStore=localStorage,sessionStore=sessionStorage){
+  const snapshots=[];
+  try{
+    for(const key of GAME_LOCAL_SAVE_KEYS)snapshots.push({store:localStore,key,value:localStore.getItem(key)});
+    for(const key of GAME_SESSION_SAVE_KEYS)snapshots.push({store:sessionStore,key,value:sessionStore.getItem(key)});
+  }catch(error){return {ok:false,error:String(error?.message||error),rollbackError:null}}
+  try{
+    for(const item of snapshots)item.store.removeItem(item.key);
+    for(const item of snapshots)if(item.store.getItem(item.key)!==null)throw new Error(`Could not remove ${item.key}`);
+    return {ok:true,error:null,rollbackError:null};
+  }catch(error){
+    let rollbackError=null;
+    try{for(const item of snapshots){if(item.value===null)item.store.removeItem(item.key);else item.store.setItem(item.key,item.value)}}catch(rollback){rollbackError=String(rollback?.message||rollback)}
+    return {ok:false,error:String(error?.message||error),rollbackError};
+  }
+}
+let gameInitializationStatus='idle';
+function initializeGameOnce(){
+  if(gameInitializationStatus==='started')return true;
+  if(gameInitializationStatus!=='idle')return false;
+  gameInitializationStatus='starting';
+  try{
+    // Keep the established restore order so old saves and event replay retain
+    // their existing semantics; only the time of invocation has changed.
+    initializePhoneEvents();initializeLostPhoneStory();ensureLostPhoneStoryExtensions();backfillStoredMessageTranslations();ensureStageEightNarrativeState();ensureStageFiveKnowledgeSources();ensureStageSixContinuity();ensureStageSevenState();ensureKihyunHistory();ensureStageFiveHistoricMessages();ensureStableKakaoHistoryIds();ensureStageTenTourHistory();if(lostPhoneStory.openingRoute){scheduleStageFiveWorldEvents();scheduleStageSevenEvents()}restoreStageSixWorldEvents();restoreStageSevenOptionGroups();reconcileInstagramOpeningCall();restoreIgDmPostCall();restoreLostPhoneCallTimeout();restoreLostPhonePostCallMessage();startLostPhoneCallDisplayTimer();
+    restoreStageElevenSharedSource();ensureStageElevenPrivateClues();ensureStageElevenState();for(const record of Object.values(lostPhoneStory?.stageEleven?.manualDisclosureGroups||{}))record.open=false;saveLostPhoneStory();migratePersistedDrunkCheckinStoryTime();ensureStageTwelveState();ensureStage14MealHistory();stage13LoadPhotoFavorites();
+    gameInitializationStatus='started';
+    $('#game-launch-menu').hidden=true;$('#launch-confirm').hidden=true;phone.inert=false;
+    return true;
+  }catch(error){
+    gameInitializationStatus='failed';
+    const status=$('#launch-status');if(status)status.textContent=`게임 데이터를 불러오지 못했습니다. 저장 데이터는 자동으로 삭제하지 않았습니다. (${String(error?.message||error)})`;
+    return false;
+  }
+}
+function resetGameRuntimeForFreshStart(){
+  clearTimeout(gameEventTimer);gameEventTimer=null;clearTimeout(notificationBannerTimer);clearTimeout(toastTimer);clearTimeout(lostCallNaturalEndTimer);clearInterval(lostPhoneCallDisplayTimer);lostPhoneCallDisplayTimer=null;clearInterval(playerTimer);clearIgTimers();stopCallMedia();
+  gameEventMemory={version:2,events:[],notifications:[],storyData:null};processingGameEvents=false;lostPhoneStory=null;pendingNotificationDestination=null;callActive=false;callSeconds=0;igMessageTimers=[];instagramState={callStatus:'idle',unlocked:true,seenStories:[]};xInteractionState={likedIds:[],repostedIds:[]};stage13PhotoFavorites=new Set();activeChat=null;phoneUnlocked=false;passcodeInput='';currentScreen='lock-screen';
+  screens.forEach(screen=>screen.classList.toggle('active',screen.id==='lock-screen'));$('#chat-room').classList.remove('active');$('#profile-full').classList.remove('active');$('#player-expanded').classList.remove('active');$('#notification-banner').classList.remove('show');$('#lost-phone-call-overlay').hidden=true;
+}
+function refreshLaunchMenu(){
+  const save=inspectLaunchSave(),continueButton=$('#launch-continue'),newButton=$('#launch-new'),status=$('#launch-status');
+  continueButton.disabled=!save.canContinue;
+  newButton.disabled=!!save.storageError;
+  if(save.storageError)status.textContent='저장 공간에 접근할 수 없습니다. 브라우저 설정을 확인해 주세요.';
+  else if(save.corruptKeys.length)status.textContent='저장 데이터를 읽을 수 없습니다. 이어하기는 잠겨 있으며, 새 게임은 확인 후 진행됩니다.';
+  else if(!save.canContinue)status.textContent='이어갈 저장 데이터가 없습니다.';
+  else status.textContent='';
+  return save;
+}
+phone.inert=true;
+const launchSaveAtMenu=refreshLaunchMenu(),launchMenu=$('#game-launch-menu'),launchConfirm=$('#launch-confirm');
+$('#launch-continue').addEventListener('click',()=>{if(!refreshLaunchMenu().canContinue)return;initializeGameOnce()});
+$('#launch-new').addEventListener('click',()=>{
+  const save=refreshLaunchMenu();
+  if(save.storageError)return;
+  if(!save.hasGameData){resetGameRuntimeForFreshStart();initializeGameOnce();return}
+  $('#launch-confirm-copy').textContent=save.corruptKeys.length?'기존 저장 데이터를 삭제하고 새 게임을 시작합니다. 손상된 데이터도 삭제됩니다. 계속할까요?':'기존 진행 상황이 삭제되고 처음부터 시작됩니다. 계속할까요?';
+  launchConfirm.hidden=false;$('#launch-cancel').focus();
+});
+$('#launch-cancel').addEventListener('click',()=>{launchConfirm.hidden=true;$('#launch-new').focus()});
+$('#launch-confirm-new').addEventListener('click',()=>{
+  const reset=resetLaunchSave();
+  if(!reset.ok){launchConfirm.hidden=true;refreshLaunchMenu();const status=$('#launch-status');if(status)status.textContent=`저장 데이터를 안전하게 초기화하지 못했습니다. 게임은 시작하지 않았습니다.${reset.rollbackError?' 복구도 완료되지 않았습니다.':''}`;return}
+  launchConfirm.hidden=true;resetGameRuntimeForFreshStart();gameInitializationStatus='idle';refreshLaunchMenu();initializeGameOnce();
+});
+launchConfirm.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();$('#launch-cancel').click()}});
 </script>
 </body>
 </html>
