@@ -123,6 +123,42 @@ test('Unknown venue and notes are omitted rather than invented',()=>{
   assert.ok(!h.$('#calendar-content').innerHTML.includes('20:41'),'photo time is not appointment time');
 });
 
+test('Five historical appointments render owner-written Korean and Chinese notes without changing source chat',()=>{
+  const h=harness();
+  const before=JSON.stringify(h.config.chats);
+  const expected=[
+    ['calendar:rehearsal:20261020','동선 체크 / 무대 위치 확인','確認走位／舞台位置'],
+    ['calendar:interview:20261021','3층 라운지 / 인터뷰 전 대기','三樓休息區／訪問前待命'],
+    ['calendar:meal:20261021','멤버들이랑 저녁 / 사진 정리','跟成員吃晚餐／整理照片'],
+    ['calendar:venue:20261022','출입 동선 확인 / 리허설 준비','確認進出動線／準備彩排'],
+    ['calendar:after-work-drinks-shownu-v1','퇴근하고 현우 형이랑 한잔','下班後跟賢佑哥喝一杯']
+  ];
+  for(const [id,ko,zh] of expected){
+    const event=h.api.calendarEvents().find(e=>e.id===id);
+    assert.equal(event.note,ko);
+    assert.equal(event.noteTranslation,zh);
+    assert.equal(h.api.calendarOpenEvent(id),true);
+    assert.ok(h.$('#calendar-content').innerHTML.includes(ko));
+    assert.ok(h.$('#calendar-content').innerHTML.includes(zh));
+  }
+  assert.equal(JSON.stringify(h.config.chats),before);
+  // Editing a source's notification wording must not replace the owner's note.
+  h.config.chats.find(c=>c.id==='manager').messages.find(m=>m.id==='phone-sim-stage10-history:manager:20-a').text='수정된 업무 안내';
+  assert.equal(h.api.calendarEvents().find(e=>e.id==='calendar:rehearsal:20261020').note,expected[0][1]);
+});
+
+test('Unlocked current meal has an owner reminder, preserving source link and attendance conditions',()=>{
+  const {state}=fixtureDecision(),h=harness(state);addCurrentSource(h);
+  const event=h.api.calendarEvents().find(e=>e.id==='calendar:group-meal:current-meal-source');
+  assert.equal(event.note,'멤버들이랑 저녁');
+  assert.equal(event.noteTranslation,'跟成員吃晚餐');
+  assert.equal(event.sourceId,'current-meal-source:1');
+  const source=h.config.chats.find(c=>c.id==='group').messages.find(m=>m.id===event.sourceId);
+  assert.equal(source.text,'오늘 저녁 먹을 사람?');
+  state.stageSeven.groupMealDecisions['current-meal-source'].status='asking';
+  assert.ok(!h.api.calendarEvents().some(e=>e.id===event.id));
+});
+
 for(const status of ['undecided','asking','declining']) test(`Current meal ${status} does not create a committed calendar entry`,()=>{
   const {state}=fixtureDecision(status),h=harness(state);addCurrentSource(h);
   assert.ok(!h.api.calendarEvents().some(e=>e.id==='calendar:group-meal:current-meal-source'));

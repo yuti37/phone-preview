@@ -1401,10 +1401,10 @@ renderHomePages();
 // Unknown appointment times stay unknown; message send times are not appointment times.
 const CALENDAR_CATEGORIES=Object.freeze({work:{label:'업무',translation:'工作'},members:{label:'멤버',translation:'成員相關'},personal:{label:'개인',translation:'私人行程'}});
 const CALENDAR_HISTORY_V1=Object.freeze([
- {id:'calendar:rehearsal:20261020',date:'2026-10-20',category:'work',title:'리허설',translation:'彩排',sources:[['manager','phone-sim-stage10-history:manager:20-a'],['manager','phone-sim-stage10-history:manager:20-b']]},
- {id:'calendar:interview:20261021',date:'2026-10-21',category:'work',title:'인터뷰',translation:'訪問',location:'3층 라운지',locationTranslation:'三樓休息區',sources:[['manager','phone-sim-stage10-history:manager:21-a'],['manager','phone-sim-stage10-history:manager:21-b']]},
- {id:'calendar:venue:20261022',date:'2026-10-22',category:'work',title:'공연장 일정',translation:'演出場館工作',sources:[['manager','phone-sim-stage10-history:manager:22-a'],['manager','phone-sim-stage10-history:manager:22-b']]},
- {id:'calendar:meal:20261021',date:'2026-10-21',category:'members',title:'멤버들과 저녁',translation:'和成員吃晚餐',sources:[['group','phone-sim-stage14:meal-20261021:8']]}
+ {id:'calendar:rehearsal:20261020',date:'2026-10-20',category:'work',title:'리허설',translation:'彩排',note:'동선 체크 / 무대 위치 확인',noteTranslation:'確認走位／舞台位置',sources:[['manager','phone-sim-stage10-history:manager:20-a'],['manager','phone-sim-stage10-history:manager:20-b']]},
+ {id:'calendar:interview:20261021',date:'2026-10-21',category:'work',title:'인터뷰',translation:'訪問',location:'3층 라운지',locationTranslation:'三樓休息區',note:'3층 라운지 / 인터뷰 전 대기',noteTranslation:'三樓休息區／訪問前待命',sources:[['manager','phone-sim-stage10-history:manager:21-a'],['manager','phone-sim-stage10-history:manager:21-b']]},
+ {id:'calendar:venue:20261022',date:'2026-10-22',category:'work',title:'공연장 일정',translation:'演出場館工作',note:'출입 동선 확인 / 리허설 준비',noteTranslation:'確認進出動線／準備彩排',sources:[['manager','phone-sim-stage10-history:manager:22-a'],['manager','phone-sim-stage10-history:manager:22-b']]},
+ {id:'calendar:meal:20261021',date:'2026-10-21',category:'members',title:'멤버들과 저녁',translation:'和成員吃晚餐',note:'멤버들이랑 저녁 / 사진 정리',noteTranslation:'跟成員吃晚餐／整理照片',sources:[['group','phone-sim-stage14:meal-20261021:8']]}
 ]);
 const calendarViewState={month:null,selectedDate:null,eventId:null,scrollTop:0};
 function calendarDateParts(key){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(key||''));if(!m)return null;const year=+m[1],month=+m[2],day=+m[3];if(year<100||year>9999||month<1||month>12||day<1||day>calendarDaysInMonth(year,month))return null;return {year,month,day}}
@@ -1416,17 +1416,17 @@ function calendarMessageDate(message){try{const key=message?kakaoMessageDateKey(
 function calendarStoryToday(){const dates=(CONFIG.chats||[]).flatMap(chat=>Array.isArray(chat.messages)?chat.messages:[]).map(calendarMessageDate).filter(Boolean).sort();return dates.at(-1)||'2026-10-24'}
 function calendarEvents(){
  const results=[];
- for(const definition of CALENDAR_HISTORY_V1){try{const sources=definition.sources.map(([chat,id])=>calendarSource(chat,id));if(sources.every(message=>message&&calendarMessageDate(message)===definition.date))results.push({...definition,note:sources[0].text,noteTranslation:sources[0].translation})}catch{/* A broken reference must not stop the app. */}}
+ for(const definition of CALENDAR_HISTORY_V1){try{const sources=definition.sources.map(([chat,id])=>calendarSource(chat,id));if(sources.every(message=>message&&calendarMessageDate(message)===definition.date))results.push({...definition})}catch{/* A broken reference must not stop the app. */}}
  // This original invitation is already accepted in historical chat, not a new player decision.
  const shownu=(CONFIG.chats||[]).find(chat=>chat.id==='shownu')?.messages||[],invite=shownu.find(message=>message?.id==='after-work-drinks-shownu-v1:invite');
  const accepted=invite&&shownu.find(message=>message?.from==='형원'&&message?.time==='18:14'&&calendarMessageDate(message)===calendarMessageDate(invite)&&message?.text==='좋아. 어디서 볼까?');
- if(accepted&&calendarMessageDate(invite))results.push({id:'calendar:after-work-drinks-shownu-v1',date:calendarMessageDate(invite),category:'personal',title:'퇴근 후 한잔',translation:'下班後喝一杯',note:invite.text,noteTranslation:invite.translation,sourceId:invite.id});
+ if(accepted&&calendarMessageDate(invite))results.push({id:'calendar:after-work-drinks-shownu-v1',date:calendarMessageDate(invite),category:'personal',title:'퇴근 후 한잔',translation:'下班後喝一杯',note:'퇴근하고 현우 형이랑 한잔',noteTranslation:'下班後跟賢佑哥喝一杯',sourceId:invite.id});
  // Read saved event-scoped decisions directly: no ensure/migration functions or storage writes.
  const group=(CONFIG.chats||[]).find(chat=>chat.id==='group')?.messages||[],seven=lostPhoneStory?.stageSeven;
  const decisions=Object.values(seven?.groupMealDecisions||{}).filter(record=>record&&typeof record==='object');
  const legacy=seven?.groups?.['group-meal'];
  if(legacy?.selectedOptionId&&legacy.playerMessageId&&group.some(message=>message.id===legacy.playerMessageId)&&!decisions.some(record=>record.sourceEventId===legacy.sourceEventId))decisions.push({eventId:String(legacy.sourceEventId||'').replace(/:\d+$/,''),sourceEventId:legacy.sourceEventId,status:({join:'attending',pass:'declining','ask-menu':'asking'})[legacy.selectedOptionId]});
- for(const decision of decisions){try{if(decision.status!=='attending'||!decision.eventId)continue;const source=group.find(message=>message?.id===decision.sourceEventId);const date=calendarMessageDate(source);if(!date)continue;results.push({id:`calendar:group-meal:${decision.eventId}`,date,category:'members',title:'함께 저녁 먹기',translation:'一起吃晚餐',note:source.text,noteTranslation:source.translation,sourceId:source.id})}catch{/* Ignore only the malformed decision. */}}
+ for(const decision of decisions){try{if(decision.status!=='attending'||!decision.eventId)continue;const source=group.find(message=>message?.id===decision.sourceEventId);const date=calendarMessageDate(source);if(!date)continue;results.push({id:`calendar:group-meal:${decision.eventId}`,date,category:'members',title:'함께 저녁 먹기',translation:'一起吃晚餐',note:'멤버들이랑 저녁',noteTranslation:'跟成員吃晚餐',sourceId:source.id})}catch{/* Ignore only the malformed decision. */}}
  return [...new Map(results.map(event=>[event.id,event])).values()].sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
 }
 function calendarSelectDate(date){if(!calendarDateParts(date))return false;calendarViewState.selectedDate=date;calendarViewState.month=date.slice(0,7);calendarViewState.eventId=null;calendarViewState.scrollTop=0;renderCalendar();$('#calendar-content').scrollTop=0;return true}
