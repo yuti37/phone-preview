@@ -33,7 +33,7 @@ function harness(saved = null) {
     showScreen:id=>{home=id;}, lostPhoneStory:saved, KAKAO_LEGACY_STORY_YEAR:2026,
     KAKAO_WEEKDAY_NAMES:['일요일','월요일','화요일','수요일','목요일','금요일','토요일']});
   vm.runInContext('const CONFIG=' + configSource + ';globalThis.config=CONFIG;', c);
-  for (const fn of ['kakaoMessageDate','kakaoMessageDateKey','kakaoMessageTimestamp','formatKakaoMessageDate','ensureStableKakaoHistoryIds','ensureStageTenTourHistory']) vm.runInContext(productionFunction(fn),c);
+  for (const fn of ['kakaoDeliverySequence','kakaoSortDeliveredMessages','kakaoMessageDate','kakaoMessageDateKey','kakaoMessageTimestamp','formatKakaoMessageDate','ensureStableKakaoHistoryIds','ensureStageTenTourHistory']) vm.runInContext(productionFunction(fn),c);
   vm.runInContext('ensureStableKakaoHistoryIds();ensureStageTenTourHistory();',c);
   const stage14Start=html.indexOf('const STAGE14_MEAL_EVENT_ID=');
   assert.ok(stage14Start>=0);

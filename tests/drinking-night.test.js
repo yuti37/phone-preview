@@ -12,7 +12,7 @@ function harness(snapshot=null,{sync=false}={}){
  const c=vm.createContext({CONFIG:config,Date,console,$,
   localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,value)},
   GAME_EVENT_STORE_KEY:'phone-sim-event-store-v2',LOST_PHONE_STORY_KEY:'phone-sim-lost-phone-story-v1',LOST_PHONE_STORY_ID:'lost-phone-shownu-checkin-v1',STAGE_ELEVEN_ID:'phone-sim-stage11',
-  lostPhoneStory:null,phoneUnlocked:true,activeChat:config.chats.find(chat=>chat.id==='shownu'),currentScreen:'app-kakao',activeKakaoTab:'chats',gameEventHandlers:handlers,
+  lostPhoneStory:null,phoneUnlocked:true,gameInitializationStatus:'started',activeChat:config.chats.find(chat=>chat.id==='shownu'),currentScreen:'app-kakao',activeKakaoTab:'chats',gameEventHandlers:handlers,
   gameEventMemory: snapshot?.events?structuredClone(snapshot.events):{version:2,events:[],notifications:[]},
   KAKAO_LEGACY_STORY_YEAR:2026,stageElevenNextStoryTimestamp(){throw new Error('Drinking messages must provide story time')},
   escapeHtml:value=>String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;'),
@@ -25,7 +25,7 @@ function harness(snapshot=null,{sync=false}={}){
   cancelGameEvent(id){const e=c.gameEventMemory.events.find(e=>e.id===id);if(e)e.status='cancelled'},
   scheduleGameEvents(){if(sync)flush()}
  });
- for(const name of ['retiredPlayerIdentityOption','retiredIdentityGroup','retiredIdentityEvent','igDmIdentityOnly','getGameEvent','registerGameEventHandler','registerKakaoEventHandler','saveGameEventStore','saveLostPhoneStory','readLostPhoneStory','eventOrder','createGameEvent','executeGameEvent','ensureGameNotification','sortNotifications','formatClockTime','kakaoMessageDate','kakaoMessageDateKey','kakaoMessageTimestamp','sortShownuTimeline','stageElevenStoryLabel','stageFiveChatMessageEvent','stageSevenQueueMessage','stageSevenSourceExists'])vm.runInContext(fn(name),c);
+ for(const name of ['retiredPlayerIdentityOption','retiredIdentityGroup','retiredIdentityEvent','igDmIdentityOnly','getGameEvent','registerGameEventHandler','registerKakaoEventHandler','saveGameEventStore','saveLostPhoneStory','readLostPhoneStory','eventOrder','createGameEvent','executeGameEvent','ensureGameNotification','sortNotifications','formatClockTime','kakaoMessageDate','kakaoMessageDateKey','kakaoMessageTimestamp','kakaoDeliverySequence','stampKakaoDelivery','kakaoSortDeliveredMessages','sortShownuTimeline','stageElevenStoryLabel','stageFiveChatMessageEvent','stageSevenQueueMessage','stageSevenSourceExists'])vm.runInContext(fn(name),c);
  handlers.set('stage-seven-world-event',()=>{calls.world++;return {notify:false}});
  vm.runInContext("registerKakaoEventHandler('kkt-message');",c);
  const prior=handlers.get('kkt-message');handlers.set('kkt-message',(event,options)=>{const r=prior(event,options);c.stageSevenObserveKakaoEvent(event,options);return r});

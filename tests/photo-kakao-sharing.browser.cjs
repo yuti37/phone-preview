@@ -74,7 +74,7 @@ async function main(){
   await page.evaluate(()=>document.querySelector('#chat-input').focus());
   await page.locator('#chat-plus').click();
   assert.equal(await page.evaluate(()=>document.activeElement?.id==='chat-input'),false);
-  await page.locator('[data-kakao-photo-album]').click();
+
   assert.equal(await page.locator('[data-kakao-photo]').count(),0);assert.match(await page.locator('#photo-share-content').innerText(),/보낼 수 있는 사진이 없어요/);assert.match(await page.locator('#photo-share-content').innerText(),/目前沒有可以傳送的照片/);
   await page.locator('#photo-share-sheet').click({position:{x:2,y:50}});assert.ok(await page.locator('#photo-share-sheet').isHidden());
   assert.deepEqual(errors,[]);
@@ -97,7 +97,7 @@ async function main(){
   const beforeScroll=await plus.locator('#chat-messages').evaluate(el=>el.scrollTop);
   await plus.locator('#chat-plus').click();await plus.locator('#photo-share-cancel').click();
   assert.equal(await plus.locator('#chat-messages').evaluate(el=>el.scrollTop),beforeScroll);
-  await plus.locator('#chat-plus').click();await plus.locator('[data-kakao-photo-album]').click();
+  await plus.locator('#chat-plus').click();
   assert.equal(await plus.locator('.kakao-picker-tile').count(),1);assert.equal(await plus.locator('.kakao-picker-tile:disabled').count(),0);assert.equal(await plus.locator('[data-kakao-photo="photo-9334"]').count(),0);
   await plus.waitForFunction(()=>[...document.querySelectorAll('.kakao-photo-picker img')].every(img=>img.complete&&img.naturalWidth>0));
   const thumbnail=plus.locator('.kakao-photo-picker img');
@@ -116,13 +116,68 @@ async function main(){
   const duplicate=plus.locator('[data-photo-share-recipient="photo-share-v1:work-manager"]');assert.equal(await duplicate.isDisabled(),true);assert.match(await duplicate.innerText(),/전송 완료/);await plus.locator('#photo-share-cancel').click();
   await plus.evaluate(()=>{showScreen('app-kakao');openChat('shownu')});
   const mainBefore=await plus.evaluate(()=>JSON.stringify(lostPhoneStory));
-  await plus.locator('#chat-plus').click();await plus.locator('[data-kakao-photo-album]').click();await plus.locator('[data-kakao-photo="photo-9334"]').click();await plus.waitForFunction(()=>!document.querySelector('#photo-share-confirm').disabled);await plus.locator('#photo-share-confirm').click();
+  await plus.locator('#chat-plus').click();await plus.locator('[data-kakao-photo="photo-9334"]').click();await plus.waitForFunction(()=>!document.querySelector('#photo-share-confirm').disabled);await plus.locator('#photo-share-confirm').click();
   assert.equal(await plus.evaluate(()=>photoShareState().records['photo-share-v1:restaurant-shownu-9334'].photoResponseMode),'none');
   assert.equal(await plus.evaluate(()=>getGameEvent('photo-share-v1:restaurant-shownu-9334:reply')),null);
   assert.equal(await plus.evaluate(()=>JSON.stringify(lostPhoneStory)),mainBefore);
   assert.equal(await plus.locator('[data-chat-photo="photo-share-v1:restaurant-shownu-9334:player"]').count(),1);assert.deepEqual(plusErrors,[]);
-  results.push({width,height:width===320?568:844,result:'pass',checks:['Photos share','full viewer / album round trip','scroll restored','reply and preview','reload dedup','plus menu / eligible-only thumbnails / preview / confirm','sent photos hidden from picker','outside cancel','blur input','shownu active story can send without response','no page errors']});
+  results.push({width,height:width===320?568:844,result:'pass',checks:['Photos share','full viewer / album round trip','scroll restored','reply and preview','reload dedup','direct plus picker / eligible-only thumbnails / preview / confirm','sent photos hidden from picker','outside cancel','blur input','shownu active story can send without response','no page errors']});
   await plusContext.close();
+  // Composer entry checks use a separate disposable save and real DOM events.
+  const textContext=await browser.newContext({viewport:{width,height:width===320?568:844},isMobile:true,hasTouch:true});
+  const text=await textContext.newPage(),textErrors=[];text.on('pageerror',e=>textErrors.push(e.message));
+  await text.goto(url);await text.locator('#launch-new').click();
+  await text.evaluate(()=>{showPasscodeScreen();for(const digit of IPHONE_PASSCODE)enterPasscodeDigit(digit)});
+  await text.locator('#home-screen.active').waitFor();
+  await text.evaluate(()=>{showScreen('app-kakao');openChat('minhyuk');document.querySelector('#chat-messages').scrollTop=120});
+  const entry=text.locator('#chat-input'),sheet=text.locator('#stage-eleven-active-sheet');
+  assert.equal(await entry.evaluate(el=>el.tagName),'BUTTON');
+  const entryBounds=await entry.boundingBox();assert.ok(entryBounds.width>=80&&entryBounds.height>=40);
+  assert.ok(entryBounds.x>=0&&entryBounds.x+entryBounds.width<=width);
+  const preserved=await text.evaluate(()=>({storage:JSON.stringify({...localStorage}),story:JSON.stringify(lostPhoneStory),scroll:document.querySelector('#chat-messages').scrollTop}));
+  await entry.click();assert.ok(await sheet.isVisible());assert.ok(await text.locator('#photo-share-sheet').isHidden());
+  assert.equal(await entry.getAttribute('aria-expanded'),'true');
+  assert.equal(await text.evaluate(()=>document.activeElement?.matches('input,textarea,[contenteditable=true]')),false);
+  await text.keyboard.press('Escape');assert.ok(await sheet.isHidden());
+  assert.deepEqual(await text.evaluate(()=>({storage:JSON.stringify({...localStorage}),story:JSON.stringify(lostPhoneStory),scroll:document.querySelector('#chat-messages').scrollTop})),preserved);
+  for(const key of ['Enter','Space']){await entry.focus();await text.keyboard.press(key);assert.ok(await sheet.isVisible());await text.keyboard.press('Escape')}
+  // The existing yellow arrow remains an alternative to the same sheet.
+  await text.locator('#chat-form .send-btn').click();assert.ok(await sheet.isVisible());await text.keyboard.press('Escape');
+  await text.locator('#chat-plus').click();assert.ok(await text.locator('.kakao-photo-picker').isVisible());assert.ok(await sheet.isHidden());
+  assert.equal(await text.locator('[data-kakao-photo-album],[data-kakao-photo-message]').count(),0);
+  await text.locator('#photo-share-cancel').click();
+  await entry.click();await text.locator('[data-active-category]').first().click();await text.locator('[data-active-option]').first().click();
+  const chosen=await text.evaluate(()=>({id:stageElevenComposerSelection.id,text:stageElevenComposerSelection.text}));
+  await text.locator('[data-active-confirm]').click();assert.ok(await sheet.isHidden());
+  assert.equal(await text.evaluate(value=>CONFIG.chats.find(c=>c.id==='minhyuk').messages.filter(m=>m.from==='형원'&&m.text===value).length,chosen.text),1);
+  await entry.click();assert.equal(await text.evaluate(id=>stageElevenActiveOptions('minhyuk').some(option=>option.id===id),chosen.id),false);await text.keyboard.press('Escape');
+  // Empty-state fixture affects this temporary page only, never production storage.
+  await text.evaluate(()=>{stageElevenActiveOptions=()=>[]});await entry.click();
+  assert.match(await sheet.innerText(),/지금 선택할 수 있는 메시지가 없습니다/);
+  if(process.env.PHOTO_SHARE_SCREENSHOTS)await text.screenshot({path:path.join(process.env.PHOTO_SHARE_SCREENSHOTS,`composer-${width}.png`)});
+  await text.keyboard.press('Escape');assert.deepEqual(textErrors,[]);
+  await text.evaluate(()=>{
+   const at=new Date(2026,9,28,12).getTime();
+   stageSevenQueueMessage('browser-order-first','minhyuk','민혁','first','第一則',0,{notify:false,storyTimestamp:at+60000});
+   stageSevenQueueMessage('browser-order-later','minhyuk','민혁','later','第二則',0,{notify:false,storyTimestamp:at});
+   renderChatMessages();
+  });
+  const delivered=await text.locator('.msg-line[data-message-id^="browser-order-"]').evaluateAll(nodes=>nodes.map(el=>el.dataset.messageId));
+  assert.deepEqual(delivered,['browser-order-first','browser-order-later']);
+  await text.evaluate(()=>openChat('group'));
+  assert.equal(await text.evaluate(()=>kakaoMessageDisplayName(activeChat,'minhyuk')),'미녀기');
+  assert.equal(await text.evaluate(()=>kakaoMessageDisplayName(activeChat,'shownu')),'셔누형');
+  assert.ok((await text.locator('#room-members').innerText()).includes('ㅈㅏ기야'));
+  await text.evaluate(()=>openChat('minhyuk'));
+  assert.deepEqual(await text.locator('.msg-line[data-message-id^="browser-order-"]').evaluateAll(nodes=>nodes.map(el=>el.dataset.messageId)),delivered);
+  await text.reload();await text.locator('#launch-continue').click();
+  await text.evaluate(()=>{showPasscodeScreen();for(const digit of IPHONE_PASSCODE)enterPasscodeDigit(digit)});
+  await text.locator('#home-screen.active').waitFor();await text.evaluate(()=>{showScreen('app-kakao');openChat('minhyuk')});
+  assert.deepEqual(await text.locator('.msg-line[data-message-id^="browser-order-"]').evaluateAll(nodes=>nodes.map(el=>el.dataset.messageId)),delivered);
+  assert.deepEqual(textErrors,[]);
+  results[results.length-1].checks.push('delivery order survives room switches and reload','group uses private contact names');
+  results[results.length-1].checks.push('native non-editable text entry / Enter / Space','text cancel preserves save and scroll','yellow arrow uses same composer','text confirmation sends once','text empty state','entry bounds');
+  await textContext.close();
  }
  console.log(JSON.stringify(results,null,2));
  }finally{await browser.close()}
