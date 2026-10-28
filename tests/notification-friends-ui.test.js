@@ -52,3 +52,18 @@ test('Same-App adjacency adds visual grouping without hiding or reordering notic
 test('App icon colors and avatar placeholder hiding are explicitly scoped against older generic styles',()=>{
  assert.match(html,/#app-notifications \.notification-app-icon\.ico-instagram\{[^}]*background:radial-gradient/);assert.match(html,/#app-notifications \.notification-app-icon svg\{[^}]*padding:0/);assert.match(html,/#app-kakao #friends-list > \.friend-row > \.avatar\{[^}]*font-size:0;color:transparent/);
 });
+
+test('Friends statuses preserve the exact approved Korean, symbols and Emoji',()=>{
+ const h=game();h.start();h.run("showScreen('app-kakao');setKakaoTab('friends')");assert.equal(h.run('CONFIG.kakaoSelfStatus'),'찐베베');
+ assert.deepEqual(JSON.parse(h.run('JSON.stringify(CONFIG.contacts.map(c=>[c.id,c.note]))')),[['shownu','행복하세요😄'],['minhyuk',''],['kihyun','기현입니다'],['jooheon',''],['changkyun',':):'],['manager','']]);
+ const markup=h.node('#friends-list').innerHTML;assert.match(markup,/찐베베/);assert.match(markup,/행복하세요😄/);assert.match(markup,/기현입니다/);assert.match(markup,/:\):/);assert.equal((markup.match(/class="preview"/g)||[]).length,4);assert.equal(h.node('#my-profile-status').textContent,'찐베베');
+});
+test('Empty friend statuses omit their entire row instead of reserving a blank preview line',()=>{
+ const h=game();h.start();h.run("showScreen('app-kakao');setKakaoTab('friends')");assert.equal(h.run("kakaoFriendStatusHtml('')"),'');assert.equal(h.run("kakaoFriendStatusHtml('   ')"),'');
+ for(const id of ['minhyuk','jooheon','manager']){const row=h.node('#friends-list').innerHTML.match(new RegExp('<button class="friend-row" data-chat="'+id+'">([\\s\\S]*?)</button>'))[1];assert.doesNotMatch(row,/class="preview"|상태 메시지|&nbsp;/);}
+});
+test('Changing a last chat message cannot replace a profile status and friend rendering never changes messages',()=>{
+ const h=game();h.start();h.run("CONFIG.chats.find(c=>c.id==='shownu').messages.push({id:'isolated-ui-status-check',from:'셔누',text:'별도의 채팅 미리보기',time:'23:59',timestamp:new Date(2026,9,23,23,59).getTime(),storyTimestamp:new Date(2026,9,23,23,59).getTime()});showScreen('app-kakao');setKakaoTab('friends')");const messages=h.run('JSON.stringify(CONFIG.chats)');const markup=h.node('#friends-list').innerHTML;
+ assert.match(markup,/행복하세요😄/);assert.doesNotMatch(markup,/별도의 채팅 미리보기/);h.run("renderKakaoChats()");assert.match(h.node('#friends-list').innerHTML,/별도의 채팅 미리보기/);h.run('renderFriends()');assert.equal(h.run('JSON.stringify(CONFIG.chats)'),messages);assert.match(h.node('#friends-list').innerHTML,/행복하세요😄/);
+ const r=game(h.snapshot());r.start();r.run("showScreen('app-kakao');setKakaoTab('friends')");assert.match(r.node('#friends-list').innerHTML,/찐베베/);assert.equal((r.node('#friends-list').innerHTML.match(/class="preview"/g)||[]).length,4);
+});
