@@ -70,9 +70,54 @@ async function main(){
   assert.equal(await page.locator('.kakao-photo-bubble').count(),1);
   assert.equal(await page.evaluate(()=>CONFIG.chats.find(c=>c.id==='minhyuk').messages.filter(m=>m.id==='photo-share-v1:meal-minhyuk:reply').length),1);
   assert.equal(await page.evaluate(()=>photoShareEligibility('photo-share-v1:meal-minhyuk').allowed),false);
+  // V1.1: the new entry sees the original share, not a second send opportunity.
+  await page.evaluate(()=>document.querySelector('#chat-input').focus());
+  await page.locator('#chat-plus').click();
+  assert.equal(await page.evaluate(()=>document.activeElement?.id==='chat-input'),false);
+  await page.locator('[data-kakao-photo-album]').click();
+  const sentTile=page.locator('[data-kakao-photo="photo-9376"]');assert.equal(await sentTile.isDisabled(),true);assert.match(await sentTile.innerText(),/전송 완료/);
+  await page.locator('#photo-share-sheet').click({position:{x:2,y:50}});assert.ok(await page.locator('#photo-share-sheet').isHidden());
   assert.deepEqual(errors,[]);
-  results.push({width,height:width===320?568:844,result:'pass',checks:['decoded asset','cancel no writes','confirmed share','photo bubble','full viewer','album round trip','scroll restored','photo preview','approved reply delivered','reply preview','reload dedup','no page errors']});
   await context.close();
+  // Fresh temporary context: send the manager photo through the actual plus UI.
+  const plusContext=await browser.newContext({viewport:{width,height:width===320?568:844},isMobile:true,hasTouch:true});
+  const plus=await plusContext.newPage(),plusErrors=[];plus.on('pageerror',e=>plusErrors.push(e.message));
+  await plus.goto(url);await plus.locator('#launch-new').click();await plus.evaluate(()=>{showPasscodeScreen();for(const digit of IPHONE_PASSCODE)enterPasscodeDigit(digit)});await plus.locator('#home-screen.active').waitFor();
+  await plus.evaluate(()=>{
+   showScreen('app-kakao');openChat('manager');
+   // Idle-manager UI fixture in this disposable context only. V1 intentionally
+   // blocks manager shares during pending work/calls; those guards are unit tested.
+   for(const event of gameEventMemory.events)if(event.payload?.chatId==='manager'&&!event.payload?.photoShareId)cancelGameEvent(event.id);
+   if(lostPhoneStory.call?.eventId){cancelGameEvent(lostPhoneStory.call.eventId);lostPhoneStory.call.status='completed'}
+   if(lostPhoneStory.openingCall?.eventId){cancelGameEvent(lostPhoneStory.openingCall.eventId);lostPhoneStory.openingCall.status='completed'}
+   const conversation=lostPhoneStory.stageEleven?.activeMessaging?.conversations?.manager;if(conversation)conversation.pendingReply=null;
+   resumeNarrativeEvents();
+  });
+  // Preserve a real preexisting scroll position when closing the menu.
+  const beforeScroll=await plus.locator('#chat-messages').evaluate(el=>el.scrollTop);
+  await plus.locator('#chat-plus').click();await plus.locator('#photo-share-cancel').click();
+  assert.equal(await plus.locator('#chat-messages').evaluate(el=>el.scrollTop),beforeScroll);
+  await plus.locator('#chat-plus').click();await plus.locator('[data-kakao-photo-album]').click();
+  assert.equal(await plus.locator('.kakao-picker-tile').count(),25);
+  await plus.waitForFunction(()=>[...document.querySelectorAll('.kakao-photo-picker img')].slice(0,3).every(img=>img.complete&&img.naturalWidth>0));
+  assert.equal(await plus.locator('input[type=file]').count(),0);
+  if(process.env.PHOTO_SHARE_SCREENSHOTS)await plus.screenshot({path:path.join(process.env.PHOTO_SHARE_SCREENSHOTS,`picker-${width}.png`)});
+  await plus.locator('[data-kakao-photo="photo-9370"]').click();await plus.waitForFunction(()=>!document.querySelector('#photo-share-confirm').disabled);
+  const confirmBounds=await plus.locator('#photo-share-confirm').boundingBox();assert.ok(confirmBounds.x>=0&&confirmBounds.x+confirmBounds.width<=width+1);assert.ok(confirmBounds.y+confirmBounds.height<=(width===320?568:844));
+  await plus.locator('#photo-share-confirm').click();assert.ok(await plus.locator('#photo-share-sheet').isHidden());
+  assert.equal(await plus.locator('[data-chat-photo="photo-share-v1:work-manager:player"]').count(),1);
+  await plus.waitForFunction(()=>getGameEvent('photo-share-v1:work-manager:reply')?.status==='completed');
+  await plus.evaluate(()=>{showScreen('app-gallery');stage13OpenPhoto('photo-9370')});await plus.locator('#photos-share').click();
+  const duplicate=plus.locator('[data-photo-share-recipient="photo-share-v1:work-manager"]');assert.equal(await duplicate.isDisabled(),true);assert.match(await duplicate.innerText(),/전송 완료/);await plus.locator('#photo-share-cancel').click();
+  await plus.evaluate(()=>{showScreen('app-kakao');openChat('shownu')});
+  const mainBefore=await plus.evaluate(()=>JSON.stringify(lostPhoneStory));
+  await plus.locator('#chat-plus').click();await plus.locator('[data-kakao-photo-album]').click();await plus.locator('[data-kakao-photo="photo-9333"]').click();await plus.waitForFunction(()=>!document.querySelector('#photo-share-confirm').disabled);await plus.locator('#photo-share-confirm').click();
+  assert.equal(await plus.evaluate(()=>photoShareState().records['photo-share-v1:restaurant-shownu'].photoResponseMode),'none');
+  assert.equal(await plus.evaluate(()=>getGameEvent('photo-share-v1:restaurant-shownu:reply')),null);
+  assert.equal(await plus.evaluate(()=>JSON.stringify(lostPhoneStory)),mainBefore);
+  assert.equal(await plus.locator('[data-chat-photo="photo-share-v1:restaurant-shownu:player"]').count(),1);assert.deepEqual(plusErrors,[]);
+  results.push({width,height:width===320?568:844,result:'pass',checks:['Photos share','full viewer / album round trip','scroll restored','reply and preview','reload dedup','plus menu / loaded thumbnails / preview / confirm','both-entry dedup labels','outside cancel','blur input','shownu active story can send without response','no page errors']});
+  await plusContext.close();
  }
  console.log(JSON.stringify(results,null,2));
  }finally{await browser.close()}

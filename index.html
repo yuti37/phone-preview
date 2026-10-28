@@ -869,6 +869,23 @@
 .chat-photo-viewer footer{flex-shrink:0;text-align:center;padding:10px 12px max(28px,env(safe-area-inset-bottom,0px))}
 .photo-share-panel button:active,.chat-photo-viewer button:active,.kakao-photo-bubble:active{filter:brightness(.88)}
 
+
+/* KKT single-photo picker reuses the same confirmation and storage flow. */
+.photo-share-overlay.kakao-attachment .photo-share-panel{background:#fff;border-radius:18px 18px 12px 12px}
+.kakao-attachment #photo-share-content>button[data-kakao-photo-album]{display:flex;align-items:center;justify-content:center;gap:10px;background:#f3f4f5;font-size:18px}
+.kakao-attachment #photo-share-content>button[data-kakao-photo-album] span{font-size:14px}
+.kakao-picker-hint,.kakao-picker-empty{font-size:12px;color:#666;line-height:1.5;margin:8px 0}
+.kakao-photo-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;max-height:min(48dvh,390px);overflow-y:auto;overscroll-behavior:contain;padding:2px 0 6px}
+.kakao-picker-tile{min-width:0;min-height:44px;padding:0;background:transparent;color:#222;text-align:left;align-self:start;overflow-wrap:anywhere}
+.kakao-picker-image{position:relative;display:block;aspect-ratio:1;background:#eee;border-radius:8px;overflow:hidden}
+.kakao-picker-image img{display:block;width:100%;height:100%;object-fit:cover}
+.kakao-picker-tile:disabled{cursor:default}.kakao-picker-tile:disabled .kakao-picker-image{opacity:.42}
+.kakao-picker-tile time{display:block;font-size:9px;line-height:1.5;margin-top:3px;color:#555}
+.kakao-picker-tile small{display:block;font-size:10px;line-height:1.35;color:#777}
+.kakao-picker-fallback{display:block;padding:10px 4px;font-size:10px}
+.kakao-picker-image img[hidden],.kakao-picker-fallback[hidden]{display:none!important}
+.kakao-picker-tile:active:not(:disabled) .kakao-picker-image{outline:3px solid #fee500;outline-offset:-3px}
+
 </style>
 <style>
 /* External game launch menu; deliberately separate from the simulated phone. */
@@ -1728,7 +1745,7 @@ function canonicalTranslationForMessage(message,id=message?.id,chatId=''){const 
 function getKakaoMessageTranslation(message,chatId=''){if(isValidTraditionalTranslation(message?.translation,message?.text))return message.translation.trim();return canonicalTranslationForMessage(message,message?.id,chatId)}
 function backfillStoredMessageTranslations(){let changed=0;for(const event of gameEventMemory?.events||[]){const message=event.payload?.message;if(!message||isValidTraditionalTranslation(message.translation,message.text)||!/[가-힣]/.test(String(message.text||'')))continue;const translation=canonicalTranslationForMessage(message,message.id||event.id,event.payload?.chatId);if(translation){message.translation=translation;changed++}}for(const message of lostPhoneStory?.igMessages||[]){if(isValidTraditionalTranslation(message.translation,message.text)||!/[가-힣]/.test(String(message.text||'')))continue;let translation=canonicalTranslationForMessage(message,message.id);if(!translation){const group=Object.values(lostPhoneStory.igDmReplyGroups||{}).find(item=>String(message.id||'').startsWith(`${item.id}:`));translation=group?igDmReplyOptions(group).find(option=>option.text===message.text)?.translation||'':''}if(translation){message.translation=translation;changed++}}for(const line of lostPhoneStory?.openingCall?.transcript||[]){if(isValidTraditionalTranslation(line.translation,line.text)||!/[가-힣]/.test(String(line.text||'')))continue;let translation=canonicalTranslationForMessage(line,line.id);if(!translation&&line.branchId)translation=Object.values(igCallChoiceData||{}).flat().find(choice=>choice.id===line.branchId&&choice.text===line.text)?.translation||'';if(translation){line.translation=translation;changed++}}if(changed){saveGameEventStore();if(typeof saveLostPhoneStory==='function')saveLostPhoneStory()}return changed}
 function renderChatMessages(){const container=$('#chat-messages');if(activeChat?.id==='shownu')sortShownuTimeline();let lastDayKey='',previousDate=null,previousMessage=null;const rendered=[];for(const m of activeChat.messages){if(isKakaoDateDivider(m))continue;const date=kakaoMessageDate(m,previousDate),dayKey=date?kakaoMessageDateKey(m,previousDate):'',dayLabel=date?formatKakaoMessageDate(date):'',isMine=m.from==='형원'||m.from===CONFIG.userName,newSender=!previousMessage||previousMessage.from!==m.from||kakaoMessageDateKey(previousMessage,previousDate)!==dayKey,name=isMine?'':kakaoMessageDisplayName(activeChat,m.from),translation=getKakaoMessageTranslation(m,activeChat.id);if(dayKey&&dayKey!==lastDayKey)rendered.push(`<div class="date-pill">${escapeHtml(dayLabel)}</div>`);const avatar=!isMine?(newSender?kakaoAvatarHtml(name,true):'<span class="avatar small msg-avatar-spacer"></span>'):'';rendered.push(`<div class="msg-line ${isMine?'mine':'theirs'}" data-message-id="${escapeHtml(m.id||'')}">${avatar}<div class="msg-stack">${!isMine&&activeChat.type==='group'&&newSender?`<div class="msg-name">${escapeHtml(name)}</div>`:''}<div class="bubble${m.type==='photo'?' photo-message':''}">${m.type==='photo'?kakaoPhotoBubble(m):`${escapeHtml(m.text)}${translation?`<span class="translation">${escapeHtml(translation)}</span>`:''}`}</div></div><div class="msg-meta">${escapeHtml(m.time||'지금')}</div></div>`);if(dayKey)lastDayKey=dayKey;if(date)previousDate=date;previousMessage=m}container.innerHTML=rendered.join('');container.scrollTop=container.scrollHeight}
-$('#room-back').addEventListener('click',()=>{$('#chat-room').classList.remove('active');activeChat=null;setKakaoTab(activeKakaoTab||'friends')});$('#room-search').addEventListener('click',()=>showToast('대화 검색'));$('#room-call').addEventListener('click',()=>showToast('음성 통화는 이 데모에서 지원하지 않습니다.'));$('#room-menu').addEventListener('click',()=>showToast('대화 메뉴'));$('#chat-emoji').addEventListener('click',()=>{$('#chat-input').value+='☺';$('#chat-input').focus()});$('#chat-hashtag').addEventListener('click',()=>{$('#chat-input').value+=' #';$('#chat-input').focus()});$('#chat-voice').addEventListener('click',()=>showToast('음성 메시지는 이 데모에서 지원하지 않습니다.'));$('#chat-plus').addEventListener('click',()=>showToast('사진과 파일 첨부는 데모에서 비활성화되어 있습니다.'));
+$('#room-back').addEventListener('click',()=>{if(photoShareUI?.source==='kakao-plus'){photoShareCancel();return}$('#chat-room').classList.remove('active');activeChat=null;setKakaoTab(activeKakaoTab||'friends')});$('#room-search').addEventListener('click',()=>showToast('대화 검색'));$('#room-call').addEventListener('click',()=>showToast('음성 통화는 이 데모에서 지원하지 않습니다.'));$('#room-menu').addEventListener('click',()=>showToast('대화 메뉴'));$('#chat-emoji').addEventListener('click',()=>{$('#chat-input').value+='☺';$('#chat-input').focus()});$('#chat-hashtag').addEventListener('click',()=>{$('#chat-input').value+=' #';$('#chat-input').focus()});$('#chat-voice').addEventListener('click',()=>showToast('음성 메시지는 이 데모에서 지원하지 않습니다.'));$('#chat-plus').addEventListener('click',event=>{event.preventDefault();event.stopPropagation();kakaoPhotoToolsOpen()});
 $('#chat-form').addEventListener('submit',e=>{e.preventDefault();const input=$('#chat-input');const text=input.value.trim();if(!text||!activeChat)return;const now=new Date(),chatId=activeChat.id,message={day:`${now.getMonth()+1}월 ${now.getDate()}일`,from:'형원',time:formatClockTime(now.getTime()),timestamp:now.getTime(),text};if(chatId==='shownu'){const initialReplyPending=hasValidInitialCheckinReply();recordLostPhoneTruthFromText(text);const story=lostPhoneStory;if(initialReplyPending){story.selectedBranch='reply-freeform';story.phase='replied';story.repliedAt=story.repliedAt||now.getTime();story.call.callSuppressedAt=Date.now();cancelScheduledLostPhoneCall();saveLostPhoneStory()}story.freeformSequence=(Number(story.freeformSequence)||0)+1;const id=`${LOST_PHONE_STORY_ID}:typed:${now.getTime()}:${story.freeformSequence}`;createGameEvent({id,type:'kkt-message',source:'kakao',createdAt:now.getTime(),scheduledAt:now.getTime(),shouldNotify:false,payload:{app:'kakao',notificationSource:'카카오톡',sender:'형원',preview:text,chatId:'shownu',destination:{screen:'app-kakao',chatId:'shownu'},message:{...message,id}}});if(!story.truthToldAt&&/밖|이동 중|아직 밖/.test(text)){story.call.callSuppressedAt=null;cancelScheduledLostPhoneCall();scheduleLostPhoneCall('outside-reply',15000)}else if(/집이야|들어왔어|도착했어/.test(text)){story.call.callSuppressedAt=Date.now();if(story.call.scheduledCallId)cancelGameEvent(story.call.scheduledCallId);saveLostPhoneStory()}}else{activeChat.messages.push(message);renderChatMessages();if(chatId==='kihyun')stageFiveKihyunReply(text);if(['kihyun','manager','group'].includes(chatId))stageSixRecordChatReply(chatId,text,now.getTime())}input.value='';renderAfterWorkPanel();if(currentScreen==='app-kakao'&&activeKakaoTab==='chats')renderKakaoChats();else if(currentScreen==='app-kakao'&&activeKakaoTab==='friends')renderFriends()});
 let callFilter='all';
 function renderCalls(){const el=$('#call-list'),groups=CONFIG.calls.map(group=>({group:group.group,items:[...group.items]}));const today=groups.find(group=>group.group==='오늘')||groups.unshift({group:'오늘',items:[]})&&groups[0];for(const record of [...(lostPhoneStory?.call?.records||[])].reverse())today.items.unshift({id:record.id,contact:'셔누형',type:['completed','interrupted','answered'].includes(record.outcome)?'수신':'부재중',time:record.time,status:record.outcome,voicemail:record.voicemail});el.innerHTML=groups.map(g=>{const items=callFilter==='missed'?g.items.filter(c=>c.type==='부재중'):g.items;if(!items.length)return '';return `<div class="call-group-title">${escapeHtml(g.group)}</div>`+items.map(c=>`<div class="call-row"><div class="call-symbol ${c.type==='부재중'?'missed':''}">${iconSvg('phone')}</div><div class="call-detail"><strong style="color:${c.type==='부재중'?'#eb4051':'#252630'}">${escapeHtml(c.contact)}${c.count?`<span class="call-count">(${escapeHtml(c.count)})</span>`:''}</strong><div class="call-sub">${c.type==='부재중'?'↙ 부재중 전화':c.type==='발신'?'↗ 발신 전화':'↙ 수신 전화'}${c.status==='declined'?' · 거절':c.status==='interrupted'?' · 통화 중 종료':''}</div></div><div class="call-time">${escapeHtml(c.time)}</div><button class="back-button call-back" data-call-detail="${escapeHtml(c.id||'') }" data-recall="${escapeHtml(c.contact)}" aria-label="통화 정보">ⓘ</button></div>`).join('')}).join('');$$('[data-call-detail]',el).forEach(b=>b.addEventListener('click',()=>{if(b.dataset.callDetail)showPhoneCallRecord(b.dataset.callDetail);else showToast(`${b.dataset.recall} · 전화 기록`)}))}
@@ -2502,7 +2519,7 @@ const stageElevenKakaoHandlerBase=gameEventHandlers.get('kkt-message');if(stageE
 // Retire the old always-visible disclosure shortcut and duplicate disclosure cards.
 stageElevenManualDefinition=()=>null;for(const definition of Object.values(STAGE_SEVEN_COPY||{}))definition.options=(definition.options||[]).filter(option=>!['disclose','group-disclose'].includes(option[3]));
 const stageElevenComposerPanelBase=renderAfterWorkPanel;renderAfterWorkPanel=function(){stageElevenComposerPanelBase();const panel=$('#after-work-panel');if(!panel)return;if(panel.classList.contains('active')&&!panel.querySelector('.story-choice')){panel.classList.remove('active');panel.innerHTML=''}};
-const stageElevenComposerOpen=()=>stageElevenOpenComposer();document.addEventListener('click',event=>{const target=event.target instanceof Element?event.target:event.composedPath?.().find(node=>node instanceof Element);if(!target)return;if(target.closest('#chat-plus')||target.closest('#chat-input')){event.preventDefault();event.stopImmediatePropagation();stageElevenOpenComposer();return}if(target.closest('[data-active-close]')||target.classList.contains('stage-eleven-sheet-backdrop')){event.preventDefault();stageElevenCloseComposer();return}if(target.closest('[data-active-cancel]')){event.preventDefault();stageElevenComposerSelection=null;stageElevenRenderComposer();return}if(target.closest('[data-active-back]')){event.preventDefault();stageElevenComposerCategory=null;stageElevenRenderComposer();return}const category=target.closest('[data-active-category]');if(category){event.preventDefault();stageElevenComposerCategory=category.dataset.activeCategory;stageElevenRenderComposer();return}const option=target.closest('[data-active-option]');if(option){event.preventDefault();const selected=stageElevenActiveOptions(activeChat?.id).find(item=>item.id===option.dataset.activeOption);if(!selected)return;stageElevenComposerSelection=selected;stageElevenRenderComposer();return}if(target.closest('[data-active-confirm]')){event.preventDefault();if(stageElevenComposerSelection)stageElevenCommitActiveMessage(stageElevenComposerSelection)}} ,true);
+const stageElevenComposerOpen=()=>stageElevenOpenComposer();document.addEventListener('click',event=>{const target=event.target instanceof Element?event.target:event.composedPath?.().find(node=>node instanceof Element);if(!target)return;if(target.closest('#chat-input')){event.preventDefault();event.stopImmediatePropagation();stageElevenOpenComposer();return}if(target.closest('[data-active-close]')||target.classList.contains('stage-eleven-sheet-backdrop')){event.preventDefault();stageElevenCloseComposer();return}if(target.closest('[data-active-cancel]')){event.preventDefault();stageElevenComposerSelection=null;stageElevenRenderComposer();return}if(target.closest('[data-active-back]')){event.preventDefault();stageElevenComposerCategory=null;stageElevenRenderComposer();return}const category=target.closest('[data-active-category]');if(category){event.preventDefault();stageElevenComposerCategory=category.dataset.activeCategory;stageElevenRenderComposer();return}const option=target.closest('[data-active-option]');if(option){event.preventDefault();const selected=stageElevenActiveOptions(activeChat?.id).find(item=>item.id===option.dataset.activeOption);if(!selected)return;stageElevenComposerSelection=selected;stageElevenRenderComposer();return}if(target.closest('[data-active-confirm]')){event.preventDefault();if(stageElevenComposerSelection)stageElevenCommitActiveMessage(stageElevenComposerSelection)}} ,true);
 document.addEventListener('submit',event=>{if(event.target?.id==='chat-form'){event.preventDefault();event.stopImmediatePropagation();stageElevenOpenComposer()}},true);
 document.addEventListener('keydown',event=>{if(event.target?.id==='chat-input'&&event.key==='Enter'){event.preventDefault();stageElevenOpenComposer()}if(event.key==='Escape'&&!$('#stage-eleven-active-sheet')?.hidden)stageElevenCloseComposer()},true);
 $('#chat-input')?.setAttribute('readonly','readonly');$('#chat-input')?.setAttribute('placeholder','메시지 입력 · 눌러서 선택');$('#chat-input')?.setAttribute('aria-label','고정 메시지 선택 열기');
@@ -2984,15 +3001,40 @@ function photoShareChatBusy(chatId){
  if(lostPhoneStory?.stageEleven?.activeMessaging?.conversations?.[chatId]?.pendingReply)return true;
  return (gameEventMemory.events||[]).some(event=>!event.payload?.photoShareId&&event.payload?.chatId===chatId&&['pending','triggered','deferred','failed'].includes(event.status));
 }
+// Read-only decision, frozen into the record only on successful confirmation.
+function photoShareResponseDecision(chatId){
+ if(chatId!=='shownu')return {mode:'direct',reason:'ordinary-photo-reply'};
+ if(narrativeCallInProgress())return {mode:'none',reason:'shownu-call-in-progress'};
+ const d=lostPhoneStory?.stageSeven?.drinkingNight,conversation=lostPhoneStory?.stageEleven?.activeMessaging?.conversations?.shownu;
+ const pending=(gameEventMemory.events||[]).some(event=>!event.payload?.photoShareId&&event.payload?.chatId==='shownu'&&event.payload?.message&&['pending','triggered','failed'].includes(event.status));
+ if(d?.pendingReply||conversation?.pendingReply||lostPhoneStory?.phase==='reply-pending'||pending)return {mode:'absorbed',reason:'shownu-main-reply-pending'};
+ if(drinkingNightActive()||d?.stage==='morning-pending'||narrativeDrinkingFocus()||conversation?.status==='active'&&conversation?.activeTopicId)return {mode:'none',reason:'shownu-story-choice-in-progress'};
+ if(lostPhoneStory?.openingCall?.status==='scheduled'||lostPhoneStory?.call?.status==='scheduled'||photoShareChatBusy('shownu'))return {mode:'none',reason:'shownu-other-immediate-story-context'};
+ return {mode:'direct',reason:'shownu-idle'};
+}
+function photoShareResponseMode(record){
+ if(['direct','absorbed','none'].includes(record?.photoResponseMode))return record.photoResponseMode;
+ if(record&&Object.prototype.hasOwnProperty.call(record,'photoResponseMode'))return 'none';
+ // V1 compatibility uses saved event evidence, never today's main-story state.
+ return record?.replyApproved&&record?.replyEventId?'direct':'none';
+}
+function photoSharePhotoAvailable(photo){
+ if(!photo||photo.locked===true||photo.unlocked===false||!/^assets\/[A-Za-z0-9_.-]+\.(png|jpe?g)$/i.test(photo.src))return false;
+ const captured=Date.parse(`${photo.date}T${photo.time}:00+09:00`);
+ return Number.isFinite(captured)&&captured<=narrativeStoryTimestamp();
+}
+function photoShareAlreadySent(scenario){
+ const chat=CONFIG.chats.find(item=>item.id===scenario.chatId);
+ return !!(photoShareState().records[scenario.id]||Object.values(photoShareState().records).some(record=>record?.photoId===scenario.photoId&&record?.chatId===scenario.chatId)||getGameEvent(`${scenario.id}:player`)||(chat?.messages||[]).some(message=>message.id===`${scenario.id}:player`||message.type==='photo'&&message.photoId===scenario.photoId&&(message.from==='형원'||message.from===CONFIG.userName)));
+}
 function photoShareEligibility(scenarioId){
  const scenario=photoShareScenario(scenarioId),photo=STAGE13_PHOTOS.find(item=>item.id===scenario?.photoId);
  if(gameInitializationStatus!=='started'||!phoneUnlocked)return {allowed:false,reason:'먼저 휴대폰을 잠금 해제해 주세요.'};
  if(!scenario||!photo||!/^assets\/[A-Za-z0-9_.-]+\.(png|jpe?g)$/i.test(photo.src)||!CONFIG.chats.some(chat=>chat.id===scenario.chatId))return {allowed:false,reason:'공유할 수 없는 사진입니다.'};
  if(!photoShareStateValid())return {allowed:false,reason:'공유 기록을 확인할 수 없습니다. 기존 기록은 유지됩니다.'};
- const captured=Date.parse(`${photo.date}T${photo.time}:00+09:00`);
- if(!Number.isFinite(captured)||captured>narrativeStoryTimestamp())return {allowed:false,reason:'아직 공유할 수 없는 사진입니다.'};
- if(photoShareState().records[scenarioId]||getGameEvent(`${scenarioId}:player`)||(CONFIG.chats.find(chat=>chat.id===scenario.chatId)?.messages||[]).some(message=>message.id===`${scenarioId}:player`))return {allowed:false,reason:'이미 보낸 사진입니다.'};
- if(photoShareChatBusy(scenario.chatId))return {allowed:false,reason:'진행 중인 대화가 끝난 뒤 보내 주세요.'};
+ if(!photoSharePhotoAvailable(photo))return {allowed:false,reason:'아직 공유할 수 없는 사진입니다.'};
+ if(photoShareAlreadySent(scenario))return {allowed:false,reason:'전송 완료'};
+ if(scenario.chatId!=='shownu'&&photoShareChatBusy(scenario.chatId))return {allowed:false,reason:'진행 중인 대화가 끝난 뒤 보내 주세요.'};
  return {allowed:true,scenario,photo};
 }
 function photoShareEventEligibility(event){
@@ -3000,6 +3042,18 @@ function photoShareEventEligibility(event){
  if(!scenario||!record||p.chatId!==scenario.chatId)return result('not-applicable','photo-share-reference-missing');
  if(event.id!==record.replyEventId||!record.replyApproved||!record.replyMessage||event.payload.message?.id!==record.replyMessage.id)return result('not-applicable','photo-share-reply-not-approved');
  if(getGameEvent(record.playerMessageId)?.status!=='completed')return result('awaiting-context','photo-not-sent');
+ if(scenario.chatId==='shownu'){
+  if(photoShareResponseMode(record)!=='direct')return result('not-applicable','photo-response-has-no-independent-reply');
+  // Keep legacy snapshots/schedules. Retire an already-deferred V1 reply rather
+  // than reviving it long after its original context has ended.
+  if(!record.photoResponseMode&&event.status==='deferred')return result('not-applicable','legacy-photo-reply-was-deferred');
+  if(record.responseExpiresAt&&Date.now()>record.responseExpiresAt)return result('not-applicable','photo-reply-delivery-window-expired');
+  const now=photoShareResponseDecision('shownu');
+  if(now.mode!=='direct')return result('not-applicable',`photo-reply-context-changed:${now.reason}`);
+  const newer=(CONFIG.chats.find(chat=>chat.id==='shownu')?.messages||[]).some(message=>message.id!==record.playerMessageId&&message.id!==record.replyEventId&&(kakaoChatMessageTimestamp(message)||0)>Number(record.replyMessage.storyTimestamp));
+  if(newer)return result('not-applicable','photo-reply-story-window-passed');
+  return result('eligible','shownu-direct-photo-reply');
+ }
  if(photoShareChatBusy(scenario.chatId))return result('deferred','photo-share-main-dialogue-has-focus');
  return result('eligible','approved-photo-reply');
 }
@@ -3010,41 +3064,58 @@ function kakaoPhotoBubble(message){
  return `<button type="button" class="kakao-photo-bubble" data-chat-photo="${escapeHtml(message.id||'')}" aria-label="사진 보기"><img src="${escapeHtml(stage13PhotoAssetUrl(photo.src))}" alt="${escapeHtml(photo.alt)}" loading="lazy" decoding="async"><span class="kakao-photo-fallback" hidden>사진을 불러올 수 없습니다.</span></button>`;
 }
 function photoShareOpen(photoId){
- if(!phoneUnlocked||gameInitializationStatus!=='started'||narrativeCallInProgress())return false;
+ if(!phoneUnlocked||gameInitializationStatus!=='started')return false;
  if(!STAGE13_PHOTOS.some(photo=>photo.id===photoId))return false;
- photoShareUI={photoId,scenarioId:null,revision:++photoShareRevision,assetReady:false,sending:false,sent:false};
+ photoShareUI={source:'photos',photoId,scenarioId:null,revision:++photoShareRevision,assetReady:false,sending:false,sent:false};
  $('#photo-share-sheet').hidden=false;photoShareRender();$('#photo-share-cancel').focus();return true;
 }
-function photoShareCancel(){photoShareRevision++;photoShareUI=null;$('#photo-share-sheet').hidden=true;$('#photos-share').focus()}
-function photoShareSelect(scenarioId){const scenario=photoShareScenario(scenarioId);if(!photoShareUI||photoShareUI.sent||scenario?.photoId!==photoShareUI.photoId||!photoShareEligibility(scenarioId).allowed)return false;photoShareUI.scenarioId=scenarioId;photoShareUI.assetReady=false;photoShareUI.revision=++photoShareRevision;photoShareRender();return true}
+function photoShareCancel({restoreScroll=true}={}){const previous=photoShareUI;photoShareRevision++;photoShareUI=null;$('#photo-share-sheet').hidden=true;$('#photo-share-sheet').classList.remove('kakao-attachment');if(previous?.source==='kakao-plus'){if(restoreScroll&&activeChat?.id===previous.chatId)$('#chat-messages').scrollTop=previous.scrollTop;$('#chat-plus').focus()}else $('#photos-share').focus()}
+function kakaoPhotoToolsOpen(){
+ if(!phoneUnlocked||gameInitializationStatus!=='started'||!activeChat||!$('#chat-room').classList.contains('active'))return false;
+ $('#chat-input').blur?.();stageElevenCloseComposer();
+ photoShareUI={source:'kakao-plus',step:'tools',chatId:activeChat.id,scrollTop:$('#chat-messages').scrollTop,photoId:null,scenarioId:null,revision:++photoShareRevision,assetReady:false,sending:false,sent:false};
+ $('#photo-share-sheet').hidden=false;photoShareRender();$('#photo-share-cancel').focus();return true;
+}
+function kakaoPhotoPickerOpen(){if(photoShareUI?.source!=='kakao-plus'||activeChat?.id!==photoShareUI.chatId)return false;photoShareUI.step='picker';photoShareUI.revision=++photoShareRevision;photoShareRender();return true}
+function kakaoPhotoChoose(photoId){const ui=photoShareUI;if(ui?.source!=='kakao-plus'||ui.step!=='picker'||activeChat?.id!==ui.chatId)return false;const scenario=PHOTO_SHARE_SCENARIOS_V1.find(item=>item.chatId===ui.chatId&&item.photoId===photoId);if(!scenario||!photoShareEligibility(scenario.id).allowed)return false;ui.photoId=photoId;ui.step='confirm';return photoShareSelect(scenario.id)}
+function photoShareSelect(scenarioId){const scenario=photoShareScenario(scenarioId);if(!photoShareUI||photoShareUI.sent||scenario?.photoId!==photoShareUI.photoId||photoShareUI.source==='kakao-plus'&&scenario.chatId!==photoShareUI.chatId||!photoShareEligibility(scenarioId).allowed)return false;photoShareUI.scenarioId=scenarioId;photoShareUI.assetReady=false;photoShareUI.revision=++photoShareRevision;photoShareRender();return true}
 function photoShareImageReady(image,revision){if(!photoShareUI||photoShareUI.revision!==revision||!image.naturalWidth||image.getAttribute('src')!==stage13PhotoAssetUrl(STAGE13_PHOTOS.find(p=>p.id===photoShareUI.photoId)?.src))return false;photoShareUI.assetReady=true;const button=$('#photo-share-confirm');if(button)button.disabled=!photoShareEligibility(photoShareUI.scenarioId).allowed;return true}
 function photoShareRender(){
  const ui=photoShareUI;if(!ui)return;const content=$('#photo-share-content'),status=$('#photo-share-status'),scenario=photoShareScenario(ui.scenarioId),photo=STAGE13_PHOTOS.find(item=>item.id===ui.photoId);
+ $('#photo-share-sheet').classList.toggle('kakao-attachment',ui.source==='kakao-plus');$('#photo-share-title').textContent=ui.source==='kakao-plus'?(ui.step==='tools'?'첨부':'앨범'):'사진 공유';$('#photo-share-cancel').textContent=ui.source==='kakao-plus'?'닫기':'취소';
  status.textContent='';
+ if(ui.source==='kakao-plus'&&ui.step==='tools'){content.innerHTML='<button type="button" data-kakao-photo-album>▧<span>앨범</span></button><button type="button" data-kakao-photo-message>메시지 보내기</button>';return}
+ if(ui.source==='kakao-plus'&&ui.step==='picker'){
+  const photos=stage13SortPhotos(STAGE13_PHOTOS.filter(photoSharePhotoAvailable));let available=0;
+  const tiles=photos.map(item=>{const choice=PHOTO_SHARE_SCENARIOS_V1.find(candidate=>candidate.photoId===item.id&&candidate.chatId===ui.chatId),eligibility=choice?photoShareEligibility(choice.id):{allowed:false,reason:'이 대화방에는 보낼 수 없습니다.'};if(eligibility.allowed)available++;return `<button type="button" class="kakao-picker-tile" data-kakao-photo="${escapeHtml(item.id)}" aria-label="${escapeHtml(item.alt)} · ${item.date}${eligibility.allowed?'':` · ${escapeHtml(eligibility.reason)}`}" ${eligibility.allowed?'':'disabled'}><span class="kakao-picker-image"><img src="${escapeHtml(stage13PhotoAssetUrl(item.src))}" alt="" loading="lazy" decoding="async"><span class="kakao-picker-fallback" hidden>사진 로딩 실패</span></span><time>${item.date}</time>${eligibility.allowed?'':`<small>${escapeHtml(eligibility.reason)}</small>`}</button>`}).join('');
+  content.innerHTML=`<p class="kakao-picker-hint">한 장을 선택해 주세요.</p>${available?'':'<p class="kakao-picker-empty">이 대화방에 보낼 수 있는 사진이 없습니다.</p>'}<div class="kakao-photo-picker">${tiles||'<p>표시할 사진이 없습니다.</p>'}</div>`;return;
+ }
  if(ui.sent){content.innerHTML='<p class="photo-share-success">사진을 보냈습니다.<small>照片已傳送。</small></p><button type="button" data-photo-share-open-chat>채팅방으로 이동</button>';return}
  if(!scenario){const scenarios=PHOTO_SHARE_SCENARIOS_V1.filter(item=>item.photoId===ui.photoId);content.innerHTML='<p class="photo-share-app">'+iconSvg('kakao')+'<strong>KakaoTalk</strong></p>'+scenarios.map(item=>{const eligibility=photoShareEligibility(item.id),chat=CONFIG.chats.find(chat=>chat.id===item.chatId);return `<button type="button" data-photo-share-recipient="${item.id}" ${eligibility.allowed?'':'disabled'}>${escapeHtml(chat?.title||item.chatId)}${eligibility.allowed?'':`<small>${escapeHtml(eligibility.reason)}</small>`}</button>`}).join('')+(scenarios.length?'':'<p>이 사진은 공유할 수 없습니다.</p>');return}
  const chat=CONFIG.chats.find(item=>item.id===scenario.chatId),revision=ui.revision;
  content.innerHTML=`<p class="photo-share-recipient">${escapeHtml(chat.title)}에게 보내기</p><img id="photo-share-preview" src="${escapeHtml(stage13PhotoAssetUrl(photo.src))}" alt="${escapeHtml(photo.alt)}"><button type="button" id="photo-share-confirm" disabled>보내기<small>確認傳送</small></button>`;
  const image=$('#photo-share-preview');image.addEventListener('load',()=>photoShareImageReady(image,revision),{once:true});image.addEventListener('error',()=>{if(photoShareUI?.revision!==revision)return;photoShareUI.assetReady=false;$('#photo-share-confirm').disabled=true;status.textContent='사진을 불러올 수 없습니다. / 無法載入照片。'},{once:true});if(image.complete&&image.naturalWidth>0)photoShareImageReady(image,revision);
 }
-function photoShareBuildEvents(scenario,at){
+function photoShareBuildEvents(scenario,at,{source='photos'}={}){
  const playerId=`${scenario.id}:player`,message={id:playerId,type:'photo',from:'형원',photoId:scenario.photoId,text:'사진',translation:'照片',storyTimestamp:at,timestamp:at,day:stageElevenStoryLabel(at),time:formatClockTime(at),sourceEventId:scenario.id};
  const player={id:playerId,type:'kkt-message',source:'kakao',createdAt:Date.now(),scheduledAt:null,status:'completed',completedAt:Date.now(),shouldNotify:false,effects:{},payload:{chatId:scenario.chatId,photoShareId:scenario.id,message}};
- const record={scenarioId:scenario.id,photoId:scenario.photoId,chatId:scenario.chatId,playerMessageId:playerId,storyTimestamp:at,replyApproved:false,replyEventId:null};
+ const approved=scenario.replyApproved===true&&scenario.reply?.text&&scenario.reply?.translation&&scenario.reply?.from,decision=approved?photoShareResponseDecision(scenario.chatId):{mode:'none',reason:'reply-not-approved'};
+ const record={scenarioId:scenario.id,photoId:scenario.photoId,chatId:scenario.chatId,source,photoResponseMode:decision.mode,responseReason:decision.reason,responseDecisionAt:at,responseEventId:null,playerMessageId:playerId,storyTimestamp:at,replyApproved:false,replyEventId:null};
  let reply=null;
- if(scenario.replyApproved===true&&scenario.reply?.text&&scenario.reply?.translation&&scenario.reply?.from){const replyId=`${scenario.id}:reply`;record.replyApproved=true;record.replyEventId=replyId;record.replyMessage={id:replyId,from:scenario.reply.from,text:scenario.reply.text,translation:scenario.reply.translation,storyTimestamp:at+60000,timestamp:at+60000,day:stageElevenStoryLabel(at+60000),time:formatClockTime(at+60000),sourceEventId:scenario.id};reply={id:replyId,type:'kkt-message',source:'kakao',createdAt:Date.now(),scheduledAt:Date.now()+Math.max(1000,Number(scenario.reply.delayMs)||3000),status:'pending',shouldNotify:true,effects:{},payload:{photoShareId:scenario.id,chatId:scenario.chatId,sender:CONFIG.chats.find(chat=>chat.id===scenario.chatId)?.title,app:'kakao',destination:{screen:'app-kakao',chatId:scenario.chatId},message:{...record.replyMessage}}}}
+ if(decision.mode==='direct'&&approved){const replyId=`${scenario.id}:reply`;record.replyApproved=true;record.replyEventId=replyId;record.responseEventId=replyId;record.replyMessage={id:replyId,from:scenario.reply.from,text:scenario.reply.text,translation:scenario.reply.translation,storyTimestamp:at+60000,timestamp:at+60000,day:stageElevenStoryLabel(at+60000),time:formatClockTime(at+60000),sourceEventId:scenario.id};reply={id:replyId,type:'kkt-message',source:'kakao',createdAt:Date.now(),scheduledAt:Date.now()+Math.max(1000,Number(scenario.reply.delayMs)||3000),status:'pending',shouldNotify:true,effects:{},payload:{photoShareId:scenario.id,chatId:scenario.chatId,sender:CONFIG.chats.find(chat=>chat.id===scenario.chatId)?.title,app:'kakao',destination:{screen:'app-kakao',chatId:scenario.chatId},message:{...record.replyMessage}}};if(scenario.chatId==='shownu')record.responseExpiresAt=reply.scheduledAt+30000}
  return {player,reply,record};
 }
 function photoShareConfirm(){
  const ui=photoShareUI;if(!ui||ui.sending||ui.sent||!ui.assetReady)return false;const eligibility=photoShareEligibility(ui.scenarioId);
+ if(ui.source==='kakao-plus'&&(activeChat?.id!==ui.chatId||currentScreen!=='app-kakao'||!$('#chat-room').classList.contains('active')))return false;
  if(!eligibility.allowed){$('#photo-share-status').textContent=eligibility.reason;return false}
  ui.sending=true;const priorState=gameEventMemory.photoSharesV1,priorEvents=gameEventMemory.events,chat=CONFIG.chats.find(item=>item.id===eligibility.scenario.chatId),latest=kakaoChatMessageTimestamp(latestKakaoMessage(chat))||0,at=Math.max(narrativeStoryTimestamp(),latest)+1000;
- const built=photoShareBuildEvents(eligibility.scenario,at);
+ const built=photoShareBuildEvents(eligibility.scenario,at,{source:ui.source||'photos'});
  gameEventMemory.photoSharesV1={version:1,records:{...photoShareState().records,[eligibility.scenario.id]:built.record}};
  gameEventMemory.events=[...priorEvents,built.player,...(built.reply?[built.reply]:[])];
  // Persist the record and transport snapshots together before showing success.
  if(!saveGameEventStore()){gameEventMemory.photoSharesV1=priorState;gameEventMemory.events=priorEvents;ui.sending=false;$('#photo-share-status').textContent='저장하지 못했습니다. 사진은 보내지 않았습니다. / 儲存失敗，照片尚未傳送。';return false}
- executeGameEvent(built.player,{replay:true,suppressNotifications:true});ui.sent=true;ui.sending=false;photoShareRender();scheduleGameEvents();return true;
+ executeGameEvent(built.player,{replay:true,suppressNotifications:true});ui.sent=true;ui.sending=false;if(ui.source==='kakao-plus')photoShareCancel({restoreScroll:false});else photoShareRender();scheduleGameEvents();return true;
 }
 function chatPhotoOpen(messageId){
  const message=activeChat?.messages?.find(item=>item.id===messageId&&item.type==='photo'),photo=STAGE13_PHOTOS.find(item=>item.id===message?.photoId);if(!photo||narrativeCallInProgress())return false;
@@ -3057,7 +3128,8 @@ function chatPhotoReturnFromAlbum(){const previous=chatPhotoAlbumReturn;chatPhot
 $('#photos-share').addEventListener('click',()=>photoShareOpen(stage13PhotoViewerId));
 $('#photo-share-cancel').addEventListener('click',photoShareCancel);
 $('#photo-share-sheet').addEventListener('click',event=>{if(event.target===$('#photo-share-sheet'))photoShareCancel()});
-$('#photo-share-content').addEventListener('click',event=>{const recipient=event.target.closest('[data-photo-share-recipient]');if(recipient){photoShareSelect(recipient.dataset.photoShareRecipient);return}if(event.target.closest('#photo-share-confirm')){photoShareConfirm();return}if(event.target.closest('[data-photo-share-open-chat]')&&photoShareUI?.sent){const chatId=photoShareScenario(photoShareUI.scenarioId)?.chatId;photoShareCancel();if(chatId){showScreen('app-kakao');openChat(chatId)}}});
+$('#photo-share-content').addEventListener('click',event=>{if(event.target.closest('[data-kakao-photo-album]')){kakaoPhotoPickerOpen();return}if(event.target.closest('[data-kakao-photo-message]')){photoShareCancel();stageElevenOpenComposer();return}const tile=event.target.closest('[data-kakao-photo]');if(tile){kakaoPhotoChoose(tile.dataset.kakaoPhoto);return}const recipient=event.target.closest('[data-photo-share-recipient]');if(recipient){photoShareSelect(recipient.dataset.photoShareRecipient);return}if(event.target.closest('#photo-share-confirm')){photoShareConfirm();return}if(event.target.closest('[data-photo-share-open-chat]')&&photoShareUI?.sent){const chatId=photoShareScenario(photoShareUI.scenarioId)?.chatId;photoShareCancel();if(chatId){showScreen('app-kakao');openChat(chatId)}}});
+for(const type of ['load','error'])$('#photo-share-content').addEventListener(type,event=>{const img=event.target;if(!img.matches('.kakao-photo-picker img'))return;const ok=type==='load'&&img.naturalWidth>0;img.hidden=!ok;const fallback=img.parentElement?.querySelector('.kakao-picker-fallback');if(fallback)fallback.hidden=ok},true);
 $('#chat-messages').addEventListener('click',event=>{const target=event.target.closest('[data-chat-photo]');if(!target)return;event.preventDefault();event.stopPropagation();chatPhotoOpen(target.dataset.chatPhoto)});
 for(const type of ['load','error'])$('#chat-messages').addEventListener(type,event=>{const img=event.target;if(!img.matches('.kakao-photo-bubble img'))return;const ok=type==='load'&&img.naturalWidth>0;img.hidden=!ok;const fallback=img.parentElement?.querySelector('.kakao-photo-fallback');if(fallback)fallback.hidden=ok},true);
 $('#chat-photo-close').addEventListener('click',chatPhotoClose);
@@ -3145,7 +3217,7 @@ function validateNarrativeEvent(event){
   event.qualification={phase:eligibility.phase,reason:eligibility.reason};return true;
  }
  if(event.status!=='deferred')event.deferredDelay=Math.max(0,(Number(event.retryAt)||Number(event.scheduledAt)||Date.now())-Date.now());
- event.status=eligibility.phase==='not-applicable'?'inapplicable':'deferred';event.qualification={phase:eligibility.phase,reason:eligibility.reason};delete event.retryAt;return false;
+ event.status=eligibility.phase==='not-applicable'?'inapplicable':'deferred';event.qualification={phase:eligibility.phase,reason:eligibility.reason};delete event.retryAt;if(event.payload?.photoShareId&&event.payload?.chatId==='shownu'&&event.status==='inapplicable')saveGameEventStore();return false;
 }
 function revalidateNarrativeEvents(){for(const event of gameEventMemory.events||[])if(event&&!['completed','cancelled','inapplicable'].includes(event.status))validateNarrativeEvent(event)}
 function resumeNarrativeEvents(){revalidateNarrativeEvents();saveGameEventStore();scheduleGameEvents();if(typeof syncMorningAdvanceNotice==='function')syncMorningAdvanceNotice()}
