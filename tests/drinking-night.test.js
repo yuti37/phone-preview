@@ -8,7 +8,7 @@ function fn(name){const start=html.indexOf(`function ${name}(`);assert.ok(start>
 function harness(snapshot=null,{sync=false}={}){
  const storage=new Map(snapshot?.storage||[]),nodes=new Map(),handlers=new Map(),calls={normal:0,world:0,legacyCheckin:0,baseInit:0};
  const config=vm.runInNewContext('('+html.match(/const CONFIG = (\{[\s\S]*?\n\});\s*<\/script>/)[1]+')');
- const $=selector=>{if(!nodes.has(selector))nodes.set(selector,{innerHTML:'',hidden:false,addEventListener(){},classList:{contains:()=>true,add(){},remove(){}},querySelectorAll:()=>[]});return nodes.get(selector)};
+ const $=selector=>{if(!nodes.has(selector))nodes.set(selector,{innerHTML:'',hidden:false,dataset:{},addEventListener(){},classList:{contains:()=>true,add(){},remove(){}},querySelectorAll:()=>[]});return nodes.get(selector)};
  const c=vm.createContext({CONFIG:config,Date,console,$,
   localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,value)},
   GAME_EVENT_STORE_KEY:'phone-sim-event-store-v2',LOST_PHONE_STORY_KEY:'phone-sim-lost-phone-story-v1',LOST_PHONE_STORY_ID:'lost-phone-shownu-checkin-v1',STAGE_ELEVEN_ID:'phone-sim-stage11',
@@ -17,7 +17,7 @@ function harness(snapshot=null,{sync=false}={}){
   KAKAO_LEGACY_STORY_YEAR:2026,stageElevenNextStoryTimestamp(){throw new Error('Drinking messages must provide story time')},
   escapeHtml:value=>String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;'),
   isValidTraditionalTranslation:(zh,ko)=>!!zh&&zh!==ko,canonicalTranslationForMessage:()=>null,
-  markEventNotificationRead(){},renderChatMessages(){},renderKakaoChats(){},updateKakaoUnreadBadge(){},notifyGameEvent(){},
+  clearTimeout(){},notificationBannerTimer:null,renderLockNotifications(){},renderNotificationCenter(){},showNotificationBanner(){},markEventNotificationRead(){},renderChatMessages(){},renderKakaoChats(){},updateKakaoUnreadBadge(){},notifyGameEvent(){},
   initializeLostPhoneStory(){calls.baseInit++;c.lostPhoneStory=c.readLostPhoneStory()||{id:c.LOST_PHONE_STORY_ID,stageSeven:{},characterKnowledge:{shownu:{knowsPhoneLost:false}},openingRoute:'instagram_first'};},
   stageSevenObserveKakaoEvent(){},stageSevenGroupForChat:()=>({group:{id:'ordinary'},options:[['normal']]}),stageSevenSelect(){calls.normal++;return true},
   renderAfterWorkPanel(){calls.normal++},stageElevenActiveOptions:()=>[{id:'normal'}],stageElevenCommitActiveMessage(){calls.normal++;return true},
