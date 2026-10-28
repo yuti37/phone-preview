@@ -1,0 +1,3 @@
+# Private Bubble source material must stay outside the published repository.
+# This rule prevents new additions; it does not untrack existing files or history.
+/docs/bubble-sources/

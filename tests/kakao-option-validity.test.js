@@ -81,6 +81,8 @@ const stageTwelveQueueWrapper = between(
 );
 const productionCommitLine = html.split(/\r?\n/).find(line => line.startsWith('stageElevenCommitActiveMessage=function(item){'));
 const productionActiveWorldLine = html.split(/\r?\n/).find(line => line.startsWith('stageElevenActiveWorldEvent=function(event){if(event?.payload?.kind!==\'active-message-reply\''));
+// Include the production recovery helper used by the narrowly extracted handler.
+const stageTwelveReplyRecovery = between('function stageTwelveExpectedReplyMessageId(', "const stageElevenKakaoHandlerBeforeTwelve=");
 const productionKakaoHandlerLine = html.split(/\r?\n/).find(line => line.startsWith("if(stageElevenKakaoHandlerBeforeTwelve)gameEventHandlers.set('kkt-message'"));
 
 function createHarness(save = {}) {
@@ -218,7 +220,7 @@ function createHarness(save = {}) {
     `const stageElevenCommitBeforeTwelve=stageElevenCommitActiveMessage;`,
     productionCommitLine,
     `const stageElevenActiveWorldBeforeTwelve=stageElevenActiveWorldEvent;`, productionActiveWorldLine,
-    `const stageElevenKakaoHandlerBeforeTwelve=gameEventHandlers.get('kkt-message');`, productionKakaoHandlerLine,
+    stageTwelveReplyRecovery, `const stageElevenKakaoHandlerBeforeTwelve=gameEventHandlers.get('kkt-message');`, productionKakaoHandlerLine,
     `ensureStageTwelveState();`
   ].join('\n');
   vm.runInContext(`${source}\nglobalThis.__optionTest = { STAGE_SEVEN_COPY, stageElevenActiveCatalog, STAGE_TWELVE_FLOWS, stageTwelveConversationOptions, stageTwelveChoiceIsValid, stageFifteenConfessionIsUnlocked, stageSevenOrdinaryReply, stageSevenRefreshPendingPrompt, scheduleStageSevenEvents };`, sandbox, { filename: 'index.html:KakaoTalk-option-validity' });
