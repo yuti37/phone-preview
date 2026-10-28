@@ -771,6 +771,59 @@
 .instagram-app .ig-bottom-nav .ig-account-avatar.ig-nav-avatar{width:25px;height:25px;flex:0 0 25px;border:1.5px solid transparent;font-size:11px}
 .instagram-app .ig-bottom-nav button.active .ig-account-avatar.ig-nav-avatar{border-color:#17171a}
 @media(max-width:360px){.instagram-app .ig-profile-top{column-gap:12px}.instagram-app .ig-profile-buttons{gap:6px}.instagram-app .ig-profile-buttons button{padding-left:6px;padding-right:6px}}
+/* Local presentation fixes: friends only; notification center only. */
+#app-kakao #friends-list > .friend-row{--friend-avatar-size:42px;--friend-avatar-radius:14px;display:grid;grid-template-columns:var(--friend-avatar-size) minmax(0,1fr) auto;align-items:center;column-gap:12px;min-width:0;min-height:62px;padding:9px 0}
+#app-kakao #friends-list > .my-friend-row{--friend-avatar-size:52px;--friend-avatar-radius:17px;min-height:80px;padding:10px 0 15px}
+#app-kakao #friends-list > .friend-row > .avatar{position:relative;box-sizing:border-box;width:var(--friend-avatar-size);min-width:var(--friend-avatar-size);max-width:var(--friend-avatar-size);height:var(--friend-avatar-size);margin:0;border-radius:var(--friend-avatar-radius);font-size:0;color:transparent;overflow:hidden;isolation:isolate}
+#app-kakao #friends-list > .friend-row > .profile-info{min-width:0;width:100%;align-self:center}
+#app-kakao #friends-list > .friend-row .name{display:block;min-width:0;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#app-kakao #friends-list > .friend-row .preview{max-width:100%;min-width:0;line-height:1.45;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#app-kakao #friends-list > .friend-row > .chevron{position:static;align-self:center;line-height:1;flex:none}
+.phone:has(#app-notifications.active) .statusbar{color:#fff;text-shadow:0 1px 4px #0005}
+#app-notifications{background:linear-gradient(180deg,#1721313d,#17213170);backdrop-filter:blur(24px) saturate(115%);-webkit-backdrop-filter:blur(24px) saturate(115%);color:#fff}
+#app-notifications.active{display:flex;flex-direction:column}
+#app-notifications .notification-top{height:auto;flex:none;padding:max(54px,calc(env(safe-area-inset-top,0px) + 12px)) 16px 8px;min-height:98px;gap:10px;border:0;align-items:center}
+#app-notifications .notification-top h1{font-size:26px;line-height:1.2;font-weight:700;letter-spacing:-.6px}
+#app-notifications .notification-top button{color:#fff;min-height:44px;min-width:36px;padding:6px;font-size:12px;touch-action:manipulation}
+#app-notifications .notification-top .back-button{font-size:28px;background:transparent}
+#app-notifications .notification-center-actions{gap:3px;flex:none}
+#app-notifications .notification-body{position:relative;inset:auto;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:6px 12px calc(38px + env(safe-area-inset-bottom,0px));overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#app-notifications .notification-section-title{display:flex;justify-content:space-between;margin:4px 7px 10px;font-size:13px;font-weight:600;color:#ffffffe0}
+#app-notifications .notification-card{position:relative;display:block;isolation:isolate;overflow:hidden;margin:0 0 8px;padding:0;border-radius:22px;background:#eef0f4d9;color:#202127;box-shadow:0 2px 9px #00000012;border:1px solid #ffffff35;touch-action:pan-y}
+#app-notifications .notification-card.same-app{margin-top:0;box-shadow:0 2px 5px #0000000d}
+#app-notifications .notification-card:has(+ .notification-card.same-app){margin-bottom:4px}
+#app-notifications .notification-card-open{position:relative;z-index:1;display:grid;grid-template-columns:32px minmax(0,1fr);align-items:start;gap:10px;width:100%;min-width:0;min-height:78px;padding:12px 13px;background:#eef0f4;color:inherit;text-align:left;border-radius:inherit;transition:transform .18s ease,background .15s;touch-action:pan-y;}
+#app-notifications .notification-card-open:active{background:#e3e6ec}
+#app-notifications .notification-app-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;overflow:hidden;margin-top:1px;box-shadow:0 0 0 .5px #0000000c}
+#app-notifications .notification-app-icon svg{width:25px;height:25px;padding:0}
+#app-notifications .notification-app-icon.ico-kakao{background:#fee500;color:#3a1d1d;box-shadow:none}
+#app-notifications .notification-app-icon.ico-instagram{background:radial-gradient(circle at 30% 107%,#ffd879 0 12%,#ff5b54 38%,#ca38a0 65%,#5d5bea 100%);color:white}
+#app-notifications .notification-app-icon.ico-phone{background:linear-gradient(145deg,#68dc8c,#08a849);color:white}
+#app-notifications .notification-app-icon.ico-x{background:#050505;color:white}
+#app-notifications .notification-app-icon img{display:block;width:100%;height:100%;object-fit:cover}
+#app-notifications .notification-app-icon.ico-instagram svg{color:white;fill:none;stroke:currentColor;stroke-width:1.8}
+#app-notifications .notification-app-icon.ico-phone svg{color:white}
+#app-notifications .notification-app-icon.notification-icon-fallback{background:#e1e5eb;color:#566174}
+#app-notifications .notification-copy{display:block;min-width:0;overflow-wrap:anywhere}
+#app-notifications .notification-card-heading{display:flex;align-items:baseline;gap:8px;min-width:0;line-height:1.4}
+#app-notifications .notification-card-heading strong{display:block;flex:1;min-width:0;font-size:11px;font-weight:600;color:#50545d;overflow-wrap:anywhere}
+#app-notifications .notification-card-heading time{flex:none;margin:0;font-size:10px;font-weight:400;color:#747882;white-space:nowrap}
+#app-notifications .notification-sender{display:block;margin-top:1px;font-size:13px;line-height:1.4;font-weight:650;overflow-wrap:anywhere}
+#app-notifications .notification-preview{display:block;margin:2px 0 0;font-size:12px;line-height:1.45;color:#30333a;white-space:pre-wrap;overflow-wrap:anywhere}
+#app-notifications .notification-translation{display:block;margin-top:3px;font-size:11px;line-height:1.4;color:#656b76;white-space:pre-wrap;overflow-wrap:anywhere}
+#app-notifications .notification-card.unread .notification-copy strong:before{content:none}
+#app-notifications .notification-card.unread .notification-card-heading strong:before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:#297ac4;margin:0 5px 1px 0}
+#app-notifications .notification-dismiss{position:absolute;z-index:0;inset:0 0 0 auto;display:flex;align-items:center;justify-content:center;width:72px;height:auto;margin:0;border-radius:0;background:#d34b47;color:white;font-size:12px;visibility:hidden;pointer-events:none;touch-action:manipulation}
+#app-notifications .notification-card.actions-open .notification-card-open{transform:translateX(-72px)}
+#app-notifications .notification-card.actions-open .notification-dismiss{visibility:visible;pointer-events:auto}
+#app-notifications .notification-empty{color:#ffffffe0;padding:60px 12px;text-shadow:0 1px 5px #0003}
+#app-notifications > .app-bottom-bar{background:transparent;pointer-events:none;height:calc(24px + env(safe-area-inset-bottom,0px))}
+#app-notifications > .app-bottom-bar .home-indicator{background:#fff;pointer-events:auto;bottom:max(8px,env(safe-area-inset-bottom,0px))}
+#app-notifications .system-notice-copy strong{margin-top:2px}
+#app-notifications .system-notice-copy .system-notice-action{min-height:44px;margin-top:2px}
+@media(prefers-reduced-motion:reduce){#app-notifications .notification-card-open{transition:none}}
+@media(max-width:350px){#app-notifications .notification-top{padding-left:12px;padding-right:12px;gap:5px}#app-notifications .notification-top h1{font-size:23px}#app-notifications .notification-top button{font-size:11px}}
+
 /* A system action uses the existing banner, lock list and notification center. */
 .system-notice-copy{display:block;min-width:0;overflow-wrap:anywhere}
 .system-notice-copy .system-notice-source{display:block;font-size:11px;line-height:1.5;opacity:.8}
@@ -1206,7 +1259,7 @@ const CONFIG = {
     <div class="app-bottom-bar"><div class="home-indicator" data-home></div></div>
   </section>
   <section class="screen notification-screen" id="app-notifications" aria-label="알림 센터">
-    <div class="notification-top"><button class="back-button" id="notifications-back" type="button" aria-label="홈 화면으로 돌아가기">‹</button><h1>알림</h1><button id="notifications-read-all" type="button">모두 읽기</button></div>
+    <div class="notification-top"><button class="back-button" id="notifications-back" type="button" aria-label="홈 화면으로 돌아가기">‹</button><h1>알림 센터</h1><div class="notification-center-actions"><button id="notifications-read-all" type="button">모두 읽기</button><button id="notifications-manage" type="button" aria-pressed="false">관리</button></div></div>
     <div class="notification-body" id="notification-list"></div>
     <div class="app-bottom-bar"><div class="home-indicator" data-home></div></div>
   </section>
@@ -1349,7 +1402,51 @@ function createGameNotificationForEvent(event,options={}){return ensureGameNotif
 function formatClockTime(timestamp){const date=new Date(Number(timestamp)||Date.now());return `${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}`}
 function formatNotificationAge(timestamp){const age=Math.max(0,Date.now()-(Number(timestamp)||Date.now()));if(age<60000)return '지금';if(age<3600000)return `${Math.floor(age/60000)}분 전`;if(age<86400000)return `${Math.floor(age/3600000)}시간 전`;return formatClockTime(timestamp)}
 function renderLockNotifications(){const box=$('#lock-notice');if(!box)return;const items=gameEventMemory.notifications.filter(item=>!item.dismissedAt&&(typeof narrativeNotificationVisible!=='function'||narrativeNotificationVisible(item))).sort((a,b)=>Number(isMorningAdvanceNotice(b))-Number(isMorningAdvanceNotice(a))).slice(0,4);box.innerHTML=items.map(item=>`<button class="lock-notice-card${isMorningAdvanceNotice(item)?' system-action':''}" type="button" data-notification-id="${escapeHtml(item.id)}"><time>${escapeHtml(formatNotificationAge(item.createdAt))}</time>${isMorningAdvanceNotice(item)?morningAdvanceNoticeMarkup(item):`<strong>${escapeHtml(item.source)}${item.sender?` · ${escapeHtml(item.sender)}`:''}</strong><p>${escapeHtml(item.summary)}</p>`}</button>`).join('');box.style.display=items.length?'grid':'none'}
-function renderNotificationCenter(){const list=$('#notification-list');if(!list)return;const items=gameEventMemory.notifications.filter(item=>!item.dismissedAt&&(typeof narrativeNotificationVisible!=='function'||narrativeNotificationVisible(item)));list.innerHTML=items.length?`<p class="notification-section-title">최근 알림</p>`+items.map(item=>`<div class="notification-card ${item.readAt?'':'unread'}${isMorningAdvanceNotice(item)?' system-action':''}"><button class="notification-card-open" data-notification-id="${escapeHtml(item.id)}" type="button" style="display:flex;gap:11px;align-items:flex-start;flex:1;min-width:0;background:transparent;text-align:left;color:inherit;padding:0"><span class="notification-app-icon">${item.app==='system'?'⚙':item.app==='kakao'?'T':item.app==='instagram'?'◎':'•'}</span><span class="notification-copy">${isMorningAdvanceNotice(item)?morningAdvanceNoticeMarkup(item):`<strong>${escapeHtml(item.source)}${item.sender?` · ${escapeHtml(item.sender)}`:''}</strong><p>${escapeHtml(item.summary)}</p>`}<time>${escapeHtml(formatNotificationAge(item.createdAt))}</time></span></button>${isMorningAdvanceNotice(item)?'':`<button class="notification-dismiss" data-notification-dismiss="${escapeHtml(item.id)}" type="button" aria-label="알림 지우기">×</button>`}</div>`).join(''):`<div class="notification-empty">새로운 알림이 없습니다.</div>`}
+// View state only: no storage keys or story flags are added.
+const notificationCenterUI={managing:false,revealedId:null,gesture:null,suppressClickUntil:0};
+function notificationAppIcon(notification){
+ const app=typeof appById!=='undefined'?appById[notification.app==='system'?'settings':notification.app]:null;
+ const kind=app?.kind||(['kakao','instagram','phone','x'].includes(notification.app)?notification.app:'message');
+ const cls=app?.cls||(['kakao','instagram','phone','x'].includes(kind)?'ico-'+kind:'notification-icon-fallback');
+ return '<span class="notification-app-icon '+escapeHtml(cls)+'" aria-hidden="true">'+(app?.iconSrc?'<img src="'+escapeHtml(app.iconSrc)+'" alt="">':iconSvg(kind))+'</span>';
+}
+function notificationTranslation(notification){
+ if(notification.summaryTranslation)return notification.summaryTranslation;
+ const message=getGameEvent(notification.eventId)?.payload?.message;
+ return message&&message.text===notification.summary&&isValidTraditionalTranslation(message.translation,message.text)?message.translation:'';
+}
+function renderNotificationCenter(){
+ const list=$('#notification-list');if(!list)return;const scrollTop=list.scrollTop;
+ const items=gameEventMemory.notifications.filter(item=>!item.dismissedAt&&(typeof narrativeNotificationVisible!=='function'||narrativeNotificationVisible(item)));
+ if(!items.some(item=>item.id===notificationCenterUI.revealedId))notificationCenterUI.revealedId=null;
+ const manage=$('#notifications-manage');if(manage){manage.textContent=notificationCenterUI.managing?'완료':'관리';manage.setAttribute('aria-pressed',String(notificationCenterUI.managing));}
+ list.innerHTML=items.length?'<p class="notification-section-title"><span>최근 알림</span><span>'+items.length+'</span></p>'+items.map((item,index)=>{
+  const system=isMorningAdvanceNotice(item),translation=system?'':notificationTranslation(item),revealed=!system&&(notificationCenterUI.managing||notificationCenterUI.revealedId===item.id);
+  const heading='<span class="notification-card-heading"><strong>'+escapeHtml(item.source)+(system?' <small lang="zh-Hant">'+escapeHtml(item.sourceTranslation)+'</small>':'')+'</strong><time>'+escapeHtml(formatNotificationAge(item.createdAt))+'</time></span>';
+  const body=system?morningAdvanceNoticeMarkup(item,{source:false}):(item.sender?'<span class="notification-sender">'+escapeHtml(item.sender)+'</span>':'')+'<span class="notification-preview">'+escapeHtml(item.summary)+'</span>'+(translation?'<small class="notification-translation" lang="zh-Hant">'+escapeHtml(translation)+'</small>':'');
+  return '<div class="notification-card '+(item.readAt?'':'unread')+(system?' system-action':'')+(index>0&&items[index-1].app===item.app?' same-app':'')+(revealed?' actions-open':'')+'" data-notification-card="'+escapeHtml(item.id)+'"><button class="notification-card-open" data-notification-id="'+escapeHtml(item.id)+'" type="button">'+notificationAppIcon(item)+'<span class="notification-copy">'+heading+body+'</span></button>'+(system?'':'<button class="notification-dismiss" data-notification-dismiss="'+escapeHtml(item.id)+'" type="button" aria-label="알림 지우기" '+(revealed?'':'tabindex="-1"')+'>지우기</button>')+'</div>';
+ }).join(''):'<div class="notification-empty">새로운 알림이 없습니다.</div>';
+ list.scrollTop=scrollTop;
+}
+function notificationCenterClickIsSuppressed(event){if(Date.now()<notificationCenterUI.suppressClickUntil){event.preventDefault();event.stopPropagation();return true}return false}
+function notificationCenterPointerDown(event){
+ if(event.isPrimary===false||event.button>0||notificationCenterUI.managing||event.target.closest('[data-notification-dismiss]'))return;
+ const card=event.target.closest('[data-notification-card]');if(!card||card.classList.contains('system-action'))return;
+ notificationCenterUI.gesture={id:card.dataset.notificationCard,x:event.clientX,y:event.clientY,pointerId:event.pointerId,horizontal:false,vertical:false};
+}
+function notificationCenterPointerMove(event){
+ const g=notificationCenterUI.gesture;if(!g||g.pointerId!==event.pointerId)return;
+ const dx=event.clientX-g.x,dy=event.clientY-g.y;
+ if(!g.horizontal&&!g.vertical){if(Math.abs(dy)>10&&Math.abs(dy)>=Math.abs(dx))g.vertical=true;else if(Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)*1.25)g.horizontal=true;}
+ if(g.horizontal&&event.cancelable)event.preventDefault();
+}
+function notificationCenterPointerEnd(event){
+ const g=notificationCenterUI.gesture;if(!g||g.pointerId!==event.pointerId)return;notificationCenterUI.gesture=null;
+ if(event.type==='pointercancel'||!g.horizontal)return;
+ const dx=event.clientX-g.x;notificationCenterUI.suppressClickUntil=Date.now()+350;
+ if(dx < -34)notificationCenterUI.revealedId=g.id;else if(dx > 34)notificationCenterUI.revealedId=null;
+ renderNotificationCenter();
+}
 function showNotificationBanner(notification){const banner=$('#notification-banner');if(!banner||currentScreen==='app-notifications')return;if(isMorningAdvanceNotice(notification)&&narrativeCallInProgress())return;banner.classList.toggle('system-action',isMorningAdvanceNotice(notification));$('#banner-source').textContent=`${notification.source}${notification.sender?` · ${notification.sender}`:''}`;if(isMorningAdvanceNotice(notification)){$('#banner-source').innerHTML=`${escapeHtml(notification.source)} <small lang="zh-Hant">${escapeHtml(notification.sourceTranslation)}</small>`;$('#banner-summary').innerHTML=morningAdvanceNoticeMarkup(notification,{source:false})}else $('#banner-summary').textContent=notification.summary;$('#banner-time').textContent='지금';banner.dataset.notificationId=notification.id;banner.classList.add('show');clearTimeout(notificationBannerTimer);notificationBannerTimer=setTimeout(()=>banner.classList.remove('show'),4200)}
 function routeToNotificationDestination(destination={}){if(destination.action==='advance-drinking-morning'){if(phoneUnlocked&&['lock-screen','passcode-screen'].includes(currentScreen))showScreen('home-screen');return advanceFromMorningNotice(destination.notificationId)}const screen=destination.screen||'home-screen';if(screen==='app-kakao'){activeKakaoTab='chats';showScreen('app-kakao');if(destination.chatId)openChat(destination.chatId);return}if(screen==='app-instagram'){showScreen(screen);if(destination.contentId){if(destination.view==='story')openIgStory(destination.contentId);else{igActivePost=destination.contentId;igNavigate('post',true)}}return}showScreen(screen)}
 function openNotification(notificationId){const item=gameEventMemory.notifications.find(notification=>notification.id===notificationId);if(!item)return;if(isMorningAdvanceNotice(item)){if(!phoneUnlocked){pendingNotificationDestination={action:'advance-drinking-morning',notificationId:item.id};showPasscodeScreen();return false}return advanceFromMorningNotice(item.id)}item.readAt=item.readAt||Date.now();saveGameEventStore();renderNotificationCenter();pendingNotificationDestination=item.destination||{screen:'home-screen'};if(!phoneUnlocked){showPasscodeScreen();return}const destination=pendingNotificationDestination;pendingNotificationDestination=null;routeToNotificationDestination(destination)}
@@ -1525,7 +1622,12 @@ let unlockStartY=0;const lock=$('#lock-screen');lock.addEventListener('touchstar
 function openNotificationCenter(){renderNotificationCenter();showScreen('app-notifications')}
 $('#statusbar').addEventListener('click',()=>{if(phoneUnlocked)openNotificationCenter();else showPasscodeScreen()});$('#statusbar').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();if(phoneUnlocked)openNotificationCenter();else showPasscodeScreen()}});
 $('#lock-notice').addEventListener('click',e=>{const button=e.target.closest('[data-notification-id]');if(!button)return;e.stopImmediatePropagation();openNotification(button.dataset.notificationId)},true);
-$('#notification-list').addEventListener('click',e=>{const dismiss=e.target.closest('[data-notification-dismiss]');if(dismiss){dismissGameNotification(dismiss.dataset.notificationDismiss);return}const button=e.target.closest('[data-notification-id]');if(button)openNotification(button.dataset.notificationId)});
+$('#notification-list').addEventListener('click',e=>{if(notificationCenterClickIsSuppressed(e))return;const dismiss=e.target.closest('[data-notification-dismiss]');if(dismiss){dismissGameNotification(dismiss.dataset.notificationDismiss);return}const button=e.target.closest('[data-notification-id]');if(button)openNotification(button.dataset.notificationId)});
+$('#notifications-manage').addEventListener('click',()=>{notificationCenterUI.managing=!notificationCenterUI.managing;notificationCenterUI.revealedId=null;renderNotificationCenter()});
+$('#notification-list').addEventListener('pointerdown',notificationCenterPointerDown);
+$('#notification-list').addEventListener('pointermove',notificationCenterPointerMove,{passive:false});
+$('#notification-list').addEventListener('pointerup',notificationCenterPointerEnd);
+$('#notification-list').addEventListener('pointercancel',notificationCenterPointerEnd);
 $('#notifications-back').addEventListener('click',()=>showScreen('home-screen'));$('#notifications-read-all').addEventListener('click',markAllGameNotificationsRead);
 $('#banner-close').addEventListener('click',()=>{$('#notification-banner').classList.remove('show');clearTimeout(notificationBannerTimer)});$('#notification-banner [data-banner-open]').addEventListener('click',()=>{const id=$('#notification-banner').dataset.notificationId;$('#notification-banner').classList.remove('show');clearTimeout(notificationBannerTimer);if(id)openNotification(id)});
 function getContactByName(name){return CONFIG.contacts.find(c=>c.nickname===name||c.name===name)||{id:name,name, nickname:name,initial:(name||'?').slice(0,1),color:'linear-gradient(135deg,#b1b7c5,#5c6273)'}}
