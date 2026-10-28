@@ -25,7 +25,7 @@ function harness(snapshot=null,{sync=false}={}){
   cancelGameEvent(id){const e=c.gameEventMemory.events.find(e=>e.id===id);if(e)e.status='cancelled'},
   scheduleGameEvents(){if(sync)flush()}
  });
- for(const name of ['getGameEvent','registerGameEventHandler','registerKakaoEventHandler','saveGameEventStore','saveLostPhoneStory','readLostPhoneStory','eventOrder','createGameEvent','executeGameEvent','ensureGameNotification','sortNotifications','formatClockTime','kakaoMessageDate','kakaoMessageDateKey','kakaoMessageTimestamp','sortShownuTimeline','stageElevenStoryLabel','stageFiveChatMessageEvent','stageSevenQueueMessage','stageSevenSourceExists'])vm.runInContext(fn(name),c);
+ for(const name of ['retiredPlayerIdentityOption','retiredIdentityGroup','retiredIdentityEvent','igDmIdentityOnly','getGameEvent','registerGameEventHandler','registerKakaoEventHandler','saveGameEventStore','saveLostPhoneStory','readLostPhoneStory','eventOrder','createGameEvent','executeGameEvent','ensureGameNotification','sortNotifications','formatClockTime','kakaoMessageDate','kakaoMessageDateKey','kakaoMessageTimestamp','sortShownuTimeline','stageElevenStoryLabel','stageFiveChatMessageEvent','stageSevenQueueMessage','stageSevenSourceExists'])vm.runInContext(fn(name),c);
  handlers.set('stage-seven-world-event',()=>{calls.world++;return {notify:false}});
  vm.runInContext("registerKakaoEventHandler('kkt-message');",c);
  const prior=handlers.get('kkt-message');handlers.set('kkt-message',(event,options)=>{const r=prior(event,options);c.stageSevenObserveKakaoEvent(event,options);return r});

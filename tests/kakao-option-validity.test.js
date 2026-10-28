@@ -34,6 +34,7 @@ const stageElevenFilters = between(
   'const STAGE_TWELVE_REPLACED_LEGACY_OPTIONS=',
   'function stageElevenCurrentCategories('
 );
+const playerIdentityPolicy = between('function retiredPlayerIdentityOption(', 'function retirePendingIdentityChoices(');
 const stageSevenData = between(
   'const STAGE_SEVEN_PEOPLE=',
   'function stageSevenOptionGroup('
@@ -78,7 +79,7 @@ const stageTwelveQueueWrapper = between(
   'let stageTwelveCommittingMeta=null;',
   'const stageElevenCommitBeforeTwelve='
 );
-const productionCommitLine = html.split(/\r?\n/).find(line => line.startsWith('stageElevenCommitActiveMessage=function(item){if(!item?.topicId)'));
+const productionCommitLine = html.split(/\r?\n/).find(line => line.startsWith('stageElevenCommitActiveMessage=function(item){'));
 const productionActiveWorldLine = html.split(/\r?\n/).find(line => line.startsWith('stageElevenActiveWorldEvent=function(event){if(event?.payload?.kind!==\'active-message-reply\''));
 const productionKakaoHandlerLine = html.split(/\r?\n/).find(line => line.startsWith("if(stageElevenKakaoHandlerBeforeTwelve)gameEventHandlers.set('kkt-message'"));
 
@@ -150,9 +151,7 @@ function createHarness(save = {}) {
     stageSevenSourceExists(chatId, eventId) {
       return !!chats.find(chat => chat.id === chatId)?.messages.some(message => String(message.id) === String(eventId));
     },
-    stageSevenDisclosureKnown(chatId) {
-      return !!story.characterKnowledge?.[chatId]?.disclosure?.knowsCurrentUserNotHyungwon;
-    },
+    stageSevenDisclosureKnown() { return false; },
     stageSevenDebug() {},
     $() { return { classList: { contains: () => true } }; },
     stageSixCancel() {},
@@ -215,7 +214,7 @@ function createHarness(save = {}) {
     const lostPhoneStory = globalThis.lostPhoneStory;
     const LOST_PHONE_STORY_ID = globalThis.LOST_PHONE_STORY_ID;
   `, sandbox);
-  const source = [stageSevenData, stageSevenOptionGroup, stageSevenVisibleGroups, stageSevenOrdinaryReplies, stageSevenScheduledPrompts, stageElevenCatalog, stageElevenFilters, stageTwelveFlowData, stageTwelveStateAndBasePredicates, stageTwelveBuilder, stageTwelveOptionWrapper, stageFifteenFilter, stageTwelveQueueWrapper,
+  const source = [playerIdentityPolicy, stageSevenData, stageSevenOptionGroup, stageSevenVisibleGroups, stageSevenOrdinaryReplies, stageSevenScheduledPrompts, stageElevenCatalog, stageElevenFilters, stageTwelveFlowData, stageTwelveStateAndBasePredicates, stageTwelveBuilder, stageTwelveOptionWrapper, stageFifteenFilter, stageTwelveQueueWrapper,
     `const stageElevenCommitBeforeTwelve=stageElevenCommitActiveMessage;`,
     productionCommitLine,
     `const stageElevenActiveWorldBeforeTwelve=stageElevenActiveWorldEvent;`, productionActiveWorldLine,

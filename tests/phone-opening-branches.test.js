@@ -71,7 +71,7 @@ test('KKT-first phone retains its normal fixed flow but has no phone-disclosure 
   assert.deepEqual(Array.from(context.choices({ stage: 'why-check' }), item => item.id), ['why-just-check']);
   assert.deepEqual(Array.from(context.choices({ stage: 'found-check' }), item => item.id), []);
   assert.deepEqual(Array.from(context.choices({ stage: 'found-place' }), item => item.id), []);
-  assert.deepEqual(Array.from(context.choices({ stage: 'opening', truthTold: true }), item => item.id), ['known-finder']);
+  assert.deepEqual(Array.from(context.choices({ stage: 'opening', truthTold: true }), item => item.id), ['as-hyung', 'hello']);
 });
 test('KKT outside-reply callback starts in the follow-up stage instead of replaying the opening', () => {
   assert.match(html, /call\.stage=call\.reason==='outside-reply'\?'outside-check':'opening'/);
@@ -97,8 +97,8 @@ test('KKT rejects stale phone disclosure choices at send time', () => {
   context.apply('tell-found'); assert.deepEqual(call.choiceIds,[]);
 });
 test('KKT call with previously disclosed identity does not reopen the removed disclosure conversation', () => {
-  assert.match(html, /call\.stage=call\.truthTold\?'closed'/);
-  assert.match(html, /call\.truthTold\?'아, 전화 받아 주셔서 감사합니다\. 편하실 때 연락 주세요\.'/);
+  assert.doesNotMatch(html, /call\.stage=call\.truthTold\?'closed'/);
+  assert.doesNotMatch(html, /call\.truthTold\?'아, 전화 받아 주셔서 감사합니다\. 편하실 때 연락 주세요\.'/);
 });
 test('call completion handlers preserve the selected route and do not re-open completed calls', () => {
   assert.match(html, /opening\.status=outcome;opening\.endReason=outcome;opening\.endedAt=Date\.now\(\)/);
