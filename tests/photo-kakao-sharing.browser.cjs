@@ -75,7 +75,7 @@ async function main(){
   await page.locator('#chat-plus').click();
   assert.equal(await page.evaluate(()=>document.activeElement?.id==='chat-input'),false);
   await page.locator('[data-kakao-photo-album]').click();
-  const sentTile=page.locator('[data-kakao-photo="photo-9376"]');assert.equal(await sentTile.isDisabled(),true);assert.match(await sentTile.innerText(),/전송 완료/);
+  assert.equal(await page.locator('[data-kakao-photo]').count(),0);assert.match(await page.locator('#photo-share-content').innerText(),/보낼 수 있는 사진이 없어요/);assert.match(await page.locator('#photo-share-content').innerText(),/目前沒有可以傳送的照片/);
   await page.locator('#photo-share-sheet').click({position:{x:2,y:50}});assert.ok(await page.locator('#photo-share-sheet').isHidden());
   assert.deepEqual(errors,[]);
   await context.close();
@@ -98,8 +98,13 @@ async function main(){
   await plus.locator('#chat-plus').click();await plus.locator('#photo-share-cancel').click();
   assert.equal(await plus.locator('#chat-messages').evaluate(el=>el.scrollTop),beforeScroll);
   await plus.locator('#chat-plus').click();await plus.locator('[data-kakao-photo-album]').click();
-  assert.equal(await plus.locator('.kakao-picker-tile').count(),25);
-  await plus.waitForFunction(()=>[...document.querySelectorAll('.kakao-photo-picker img')].slice(0,3).every(img=>img.complete&&img.naturalWidth>0));
+  assert.equal(await plus.locator('.kakao-picker-tile').count(),1);assert.equal(await plus.locator('.kakao-picker-tile:disabled').count(),0);assert.equal(await plus.locator('[data-kakao-photo="photo-9334"]').count(),0);
+  await plus.waitForFunction(()=>[...document.querySelectorAll('.kakao-photo-picker img')].every(img=>img.complete&&img.naturalWidth>0));
+  const thumbnail=plus.locator('.kakao-photo-picker img');
+  await thumbnail.evaluate(img=>img.decode());
+  assert.equal(await thumbnail.isVisible(),true);
+  const thumbBounds=await thumbnail.boundingBox();assert.ok(thumbBounds.width>0&&thumbBounds.height>0);
+  await plus.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
   assert.equal(await plus.locator('input[type=file]').count(),0);
   if(process.env.PHOTO_SHARE_SCREENSHOTS)await plus.screenshot({path:path.join(process.env.PHOTO_SHARE_SCREENSHOTS,`picker-${width}.png`)});
   await plus.locator('[data-kakao-photo="photo-9370"]').click();await plus.waitForFunction(()=>!document.querySelector('#photo-share-confirm').disabled);
@@ -111,12 +116,12 @@ async function main(){
   const duplicate=plus.locator('[data-photo-share-recipient="photo-share-v1:work-manager"]');assert.equal(await duplicate.isDisabled(),true);assert.match(await duplicate.innerText(),/전송 완료/);await plus.locator('#photo-share-cancel').click();
   await plus.evaluate(()=>{showScreen('app-kakao');openChat('shownu')});
   const mainBefore=await plus.evaluate(()=>JSON.stringify(lostPhoneStory));
-  await plus.locator('#chat-plus').click();await plus.locator('[data-kakao-photo-album]').click();await plus.locator('[data-kakao-photo="photo-9333"]').click();await plus.waitForFunction(()=>!document.querySelector('#photo-share-confirm').disabled);await plus.locator('#photo-share-confirm').click();
-  assert.equal(await plus.evaluate(()=>photoShareState().records['photo-share-v1:restaurant-shownu'].photoResponseMode),'none');
-  assert.equal(await plus.evaluate(()=>getGameEvent('photo-share-v1:restaurant-shownu:reply')),null);
+  await plus.locator('#chat-plus').click();await plus.locator('[data-kakao-photo-album]').click();await plus.locator('[data-kakao-photo="photo-9334"]').click();await plus.waitForFunction(()=>!document.querySelector('#photo-share-confirm').disabled);await plus.locator('#photo-share-confirm').click();
+  assert.equal(await plus.evaluate(()=>photoShareState().records['photo-share-v1:restaurant-shownu-9334'].photoResponseMode),'none');
+  assert.equal(await plus.evaluate(()=>getGameEvent('photo-share-v1:restaurant-shownu-9334:reply')),null);
   assert.equal(await plus.evaluate(()=>JSON.stringify(lostPhoneStory)),mainBefore);
-  assert.equal(await plus.locator('[data-chat-photo="photo-share-v1:restaurant-shownu:player"]').count(),1);assert.deepEqual(plusErrors,[]);
-  results.push({width,height:width===320?568:844,result:'pass',checks:['Photos share','full viewer / album round trip','scroll restored','reply and preview','reload dedup','plus menu / loaded thumbnails / preview / confirm','both-entry dedup labels','outside cancel','blur input','shownu active story can send without response','no page errors']});
+  assert.equal(await plus.locator('[data-chat-photo="photo-share-v1:restaurant-shownu-9334:player"]').count(),1);assert.deepEqual(plusErrors,[]);
+  results.push({width,height:width===320?568:844,result:'pass',checks:['Photos share','full viewer / album round trip','scroll restored','reply and preview','reload dedup','plus menu / eligible-only thumbnails / preview / confirm','sent photos hidden from picker','outside cancel','blur input','shownu active story can send without response','no page errors']});
   await plusContext.close();
  }
  console.log(JSON.stringify(results,null,2));

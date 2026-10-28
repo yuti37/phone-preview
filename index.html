@@ -874,6 +874,7 @@
 .photo-share-overlay.kakao-attachment .photo-share-panel{background:#fff;border-radius:18px 18px 12px 12px}
 .kakao-attachment #photo-share-content>button[data-kakao-photo-album]{display:flex;align-items:center;justify-content:center;gap:10px;background:#f3f4f5;font-size:18px}
 .kakao-attachment #photo-share-content>button[data-kakao-photo-album] span{font-size:14px}
+.kakao-picker-empty small{display:block;font-size:11px;color:#888;margin-top:5px}
 .kakao-picker-hint,.kakao-picker-empty{font-size:12px;color:#666;line-height:1.5;margin:8px 0}
 .kakao-photo-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;max-height:min(48dvh,390px);overflow-y:auto;overscroll-behavior:contain;padding:2px 0 6px}
 .kakao-picker-tile{min-width:0;min-height:44px;padding:0;background:transparent;color:#222;text-align:left;align-self:start;overflow-wrap:anywhere}
@@ -1451,7 +1452,7 @@ function migratePhoneEvent(){let legacy=null;try{legacy=JSON.parse(localStorage.
 function initializeGameEventStore(){gameEventMemory=readGameEventStore();migratePhoneEvent()}
 function ensureGameNotification(event){if(!event.shouldNotify||event.notificationCreated)return null;if(typeof narrativeEventEligibility==='function'&&!narrativeEventEligibility(event).allowed)return null;const existing=gameEventMemory.notifications.find(item=>item.eventId===event.id);if(existing){event.notificationId=existing.id;event.notificationCreated=true;saveGameEventStore();return existing}const payload=event.payload||{},notification={id:`notification:${event.id}`,eventId:event.id,source:payload.notificationSource||({kakao:'카카오톡',instagram:'Instagram',phone:'전화'}[event.source]||event.source||'알림'),app:payload.app||event.source||'',sender:payload.sender||payload.title||payload.from||'',summary:payload.preview||payload.message?.text||payload.summary||'새 알림이 있습니다.',createdAt:Date.now(),storyTimestamp:Number(payload.message?.storyTimestamp)||null,...(payload.action==='advance-drinking-morning'?{action:payload.action,title:payload.title,titleTranslation:payload.titleTranslation,sourceTranslation:payload.sourceTranslation,summaryTranslation:payload.summaryTranslation,actionLabel:payload.actionLabel,actionTranslation:payload.actionTranslation}:{}),destination:payload.destination||{screen:payload.screen||'home-screen',chatId:payload.chatId||null,contentId:payload.contentId||null},readAt:null,dismissedAt:null};gameEventMemory.notifications.push(notification);event.notificationId=notification.id;event.notificationCreated=true;sortNotifications();saveGameEventStore();return notification}
 function notifyGameEvent(notification){if(!notification)return;if(typeof isMorningAdvanceNotice==='function'&&isMorningAdvanceNotice(notification)){renderLockNotifications();renderNotificationCenter();presentMorningAdvanceBanner(notification);return;}renderLockNotifications();if(phoneUnlocked){showNotificationBanner(notification)}else renderLockNotifications()}
-function createGameEvent({id,type,source,payload={},createdAt=Date.now(),scheduledAt=null,shouldNotify=true}={}){if(!id||!type)return null;const existing=getGameEvent(id);if(existing)return existing;const event={id,type,source:source||'system',createdAt:Number(createdAt)||Date.now(),scheduledAt:Number(scheduledAt)||null,status:'pending',payload,shouldNotify:!!shouldNotify,notificationId:null,notificationCreated:false,effects:{},attempts:0};gameEventMemory.events.push(event);gameEventMemory.events.sort(eventOrder);if(typeof stampNarrativeMessage==='function')stampNarrativeMessage(event);if(typeof validateNarrativeEvent==='function')validateNarrativeEvent(event);saveGameEventStore();scheduleGameEvents();return event}
+function createGameEvent({id,type,source,payload={},createdAt=Date.now(),scheduledAt=null,shouldNotify=true}={}){if(!id||!type)return null;const existing=getGameEvent(id);if(existing)return existing;const event={id,type,source:source||'system',createdAt:Number(createdAt)||Date.now(),scheduledAt:Number(scheduledAt)||null,status:'pending',payload,shouldNotify:!!shouldNotify,notificationId:null,notificationCreated:false,effects:{},attempts:0};gameEventMemory.events.push(event);gameEventMemory.events.sort(eventOrder);if(typeof stampNarrativeMessage==='function')stampNarrativeMessage(event);if(typeof validateNarrativeEvent==='function')validateNarrativeEvent(event);if(typeof photoShareObserveMainEvent==='function')photoShareObserveMainEvent(event,'scheduled');saveGameEventStore();scheduleGameEvents();return event}
 function createGameNotificationForEvent(event,options={}){return ensureGameNotification(event,options)}
 function formatClockTime(timestamp){const date=new Date(Number(timestamp)||Date.now());return `${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}`}
 function formatNotificationAge(timestamp){const age=Math.max(0,Date.now()-(Number(timestamp)||Date.now()));if(age<60000)return '지금';if(age<3600000)return `${Math.floor(age/60000)}분 전`;if(age<86400000)return `${Math.floor(age/3600000)}시간 전`;return formatClockTime(timestamp)}
@@ -2989,10 +2990,14 @@ stage13PhotoDebugUpdate();
 const PHOTO_SHARE_SCENARIOS_V1=Object.freeze([
  Object.freeze({id:'photo-share-v1:meal-minhyuk',photoId:'photo-9376',chatId:'minhyuk',replyApproved:true,reply:Object.freeze({from:'민혁',text:'이거 보니까 또 배고프네 ㅋㅋ 맛있었어?',translation:'看到這個又餓了ㅋㅋ 好吃嗎？',delayMs:3000})}),
  Object.freeze({id:'photo-share-v1:work-manager',photoId:'photo-9370',chatId:'manager',replyApproved:true,reply:Object.freeze({from:'매니저',text:'사진 확인했어요. 기록용으로 보관해 둘게요.',translation:'照片確認了，我會留作紀錄。',delayMs:3000})}),
- Object.freeze({id:'photo-share-v1:restaurant-shownu',photoId:'photo-9333',chatId:'shownu',replyApproved:true,reply:Object.freeze({from:'셔누',text:'그날 잘 먹었지 ㅋㅋ 사진 보니까 생각나네.',translation:'那天吃得挺好的ㅋㅋ 看到照片就想起來了。',delayMs:3000})})
+ Object.freeze({id:'photo-share-v1:restaurant-shownu-9334',photoId:'photo-9334',chatId:'shownu',replyApproved:true,reply:Object.freeze({from:'셔누',text:'이 사진 괜찮다. 저장해 둘게.',translation:'這張照片不錯，我存起來。',delayMs:3000})})
+]);
+// Lookup only for old saves. Never offered for a new share or new delivery.
+const PHOTO_SHARE_RETIRED_SCENARIOS_V1=Object.freeze([
+ Object.freeze({id:'photo-share-v1:restaurant-shownu',photoId:'photo-9333',chatId:'shownu',retired:true})
 ]);
 let photoShareUI=null,photoShareRevision=0,chatPhotoUI=null,chatPhotoAlbumReturn=null;
-function photoShareScenario(id){return PHOTO_SHARE_SCENARIOS_V1.find(item=>item.id===id)||null}
+function photoShareScenario(id){return PHOTO_SHARE_SCENARIOS_V1.find(item=>item.id===id)||PHOTO_SHARE_RETIRED_SCENARIOS_V1.find(item=>item.id===id)||null}
 function photoShareState(){const state=gameEventMemory.photoSharesV1;return state?.version===1&&state.records&&typeof state.records==='object'&&!Array.isArray(state.records)?state:{version:1,records:{}}}
 function photoShareStateValid(){return gameEventMemory.photoSharesV1===undefined||(gameEventMemory.photoSharesV1?.version===1&&gameEventMemory.photoSharesV1.records&&typeof gameEventMemory.photoSharesV1.records==='object'&&!Array.isArray(gameEventMemory.photoSharesV1.records))}
 function photoShareChatBusy(chatId){
@@ -3001,13 +3006,38 @@ function photoShareChatBusy(chatId){
  if(lostPhoneStory?.stageEleven?.activeMessaging?.conversations?.[chatId]?.pendingReply)return true;
  return (gameEventMemory.events||[]).some(event=>!event.payload?.photoShareId&&event.payload?.chatId===chatId&&['pending','triggered','deferred','failed'].includes(event.status));
 }
+function photoShareIsShownuMainEvent(event){
+ if(!event||event.payload?.photoShareId)return false;
+ const p=event.payload||{},kind=String(p.kind||'');
+ if(narrativeOriginalEvent(event)||String(event.id||'').startsWith('after-work-drinks-shownu-v1:'))return true;
+ if(p.chatId)return p.chatId==='shownu';
+ if(['instagram-opening-call','lost-phone-incoming-call','lost-phone-call-timeout','after-work-transition'].includes(event.type))return true;
+ if(['셔누','shownu','셔누형'].includes(p.message?.from)||/^(shownu|romance)/.test(kind))return true;
+ // Unknown story transitions cannot safely establish that Shownu is idle.
+ return ['story','phone'].includes(event.source)&&!/^(manager|kihyun|group|minhyuk|jooheon|changkyun)/.test(kind);
+}
+function photoShareMainContext(){
+ const story=lostPhoneStory,d=story?.stageSeven?.drinkingNight,c=story?.stageEleven?.activeMessaging?.conversations?.shownu;
+ const call=value=>({status:value?.status||null,id:value?.eventId||null,scheduledId:value?.scheduledCallId||null,stage:value?.stage||null,choices:value?.choiceIds||[]});
+ return JSON.stringify({phase:story?.phase||null,route:story?.openingRoute||null,branch:story?.selectedBranch||null,call:call(story?.call),opening:call(story?.openingCall),drinks:{stage:d?.stage||null,invitation:d?.invitationStatus||null,pending:d?.pendingReply?.reply?.id||null,choices:d?.usedChoiceIds||[],morning:d?.morningStatus||null},groups:Object.values(story?.stageSeven?.groups||{}).filter(group=>group?.chatId==='shownu').map(group=>[group.id,group.status,group.selectedOptionId||null]).sort((a,b)=>String(a[0]).localeCompare(String(b[0]))),conversation:{status:c?.status||null,topic:c?.activeTopicId||null,stage:c?.stage||null,pending:c?.pendingReply||null,turns:(c?.turns||[]).map(turn=>turn.messageId)},events:(gameEventMemory.events||[]).filter(photoShareIsShownuMainEvent).map(event=>[event.id,event.type,event.status,Number(event.scheduledAt)||0]).sort((a,b)=>String(a[0]).localeCompare(String(b[0])))});
+}
+function photoShareObserveMainEvent(event,phase){
+ if(!photoShareIsShownuMainEvent(event)||['cancelled','inapplicable'].includes(event.status))return;
+ for(const pending of gameEventMemory.events||[]){if(pending.payload?.chatId!=='shownu'||!pending.payload?.photoShareId||!['pending','triggered','deferred','failed'].includes(pending.status))continue;pending.status='inapplicable';pending.qualification={phase:'not-applicable',reason:`photo-reply-main-${phase}:${event.id}`};delete pending.retryAt;}
+ // Called immediately before the existing create/execute store write. No main
+ // progress is changed, and cancellation remains durable even inside a due batch.
+}
 // Read-only decision, frozen into the record only on successful confirmation.
 function photoShareResponseDecision(chatId){
  if(chatId!=='shownu')return {mode:'direct',reason:'ordinary-photo-reply'};
+ if(!lostPhoneStory||!Array.isArray(gameEventMemory.events))return {mode:'none',reason:'shownu-idle-not-established'};
  if(narrativeCallInProgress())return {mode:'none',reason:'shownu-call-in-progress'};
  const d=lostPhoneStory?.stageSeven?.drinkingNight,conversation=lostPhoneStory?.stageEleven?.activeMessaging?.conversations?.shownu;
- const pending=(gameEventMemory.events||[]).some(event=>!event.payload?.photoShareId&&event.payload?.chatId==='shownu'&&event.payload?.message&&['pending','triggered','failed'].includes(event.status));
+ const pending=(gameEventMemory.events||[]).some(event=>photoShareIsShownuMainEvent(event)&&event.payload?.chatId==='shownu'&&event.payload?.message&&['pending','triggered','failed'].includes(event.status));
  if(d?.pendingReply||conversation?.pendingReply||lostPhoneStory?.phase==='reply-pending'||pending)return {mode:'absorbed',reason:'shownu-main-reply-pending'};
+ const queued=(gameEventMemory.events||[]).some(event=>photoShareIsShownuMainEvent(event)&&!['completed','cancelled','inapplicable'].includes(event.status));
+ if(queued)return {mode:'none',reason:'shownu-main-event-queued'};
+ if(hasValidInitialCheckinReply()||Object.values(lostPhoneStory?.stageSeven?.groups||{}).some(group=>group?.chatId==='shownu'&&!group.selectedOptionId&&!['completed','cancelled','invalidated','retired'].includes(group.status)))return {mode:'none',reason:'shownu-main-choice-awaiting-player'};
  if(drinkingNightActive()||d?.stage==='morning-pending'||narrativeDrinkingFocus()||conversation?.status==='active'&&conversation?.activeTopicId)return {mode:'none',reason:'shownu-story-choice-in-progress'};
  if(lostPhoneStory?.openingCall?.status==='scheduled'||lostPhoneStory?.call?.status==='scheduled'||photoShareChatBusy('shownu'))return {mode:'none',reason:'shownu-other-immediate-story-context'};
  return {mode:'direct',reason:'shownu-idle'};
@@ -3030,7 +3060,7 @@ function photoShareAlreadySent(scenario){
 function photoShareEligibility(scenarioId){
  const scenario=photoShareScenario(scenarioId),photo=STAGE13_PHOTOS.find(item=>item.id===scenario?.photoId);
  if(gameInitializationStatus!=='started'||!phoneUnlocked)return {allowed:false,reason:'먼저 휴대폰을 잠금 해제해 주세요.'};
- if(!scenario||!photo||!/^assets\/[A-Za-z0-9_.-]+\.(png|jpe?g)$/i.test(photo.src)||!CONFIG.chats.some(chat=>chat.id===scenario.chatId))return {allowed:false,reason:'공유할 수 없는 사진입니다.'};
+ if(!scenario||scenario.retired||!photo||!/^assets\/[A-Za-z0-9_.-]+\.(png|jpe?g)$/i.test(photo.src)||!CONFIG.chats.some(chat=>chat.id===scenario.chatId))return {allowed:false,reason:'공유할 수 없는 사진입니다.'};
  if(!photoShareStateValid())return {allowed:false,reason:'공유 기록을 확인할 수 없습니다. 기존 기록은 유지됩니다.'};
  if(!photoSharePhotoAvailable(photo))return {allowed:false,reason:'아직 공유할 수 없는 사진입니다.'};
  if(photoShareAlreadySent(scenario))return {allowed:false,reason:'전송 완료'};
@@ -3040,6 +3070,7 @@ function photoShareEligibility(scenarioId){
 function photoShareEventEligibility(event){
  const result=(phase,reason)=>({allowed:phase==='eligible',phase,reason}),p=event.payload||{},scenario=photoShareScenario(p.photoShareId),record=photoShareState().records[p.photoShareId];
  if(!scenario||!record||p.chatId!==scenario.chatId)return result('not-applicable','photo-share-reference-missing');
+ if(scenario.retired)return result('not-applicable','retired-photo-share-scenario');
  if(event.id!==record.replyEventId||!record.replyApproved||!record.replyMessage||event.payload.message?.id!==record.replyMessage.id)return result('not-applicable','photo-share-reply-not-approved');
  if(getGameEvent(record.playerMessageId)?.status!=='completed')return result('awaiting-context','photo-not-sent');
  if(scenario.chatId==='shownu'){
@@ -3048,9 +3079,10 @@ function photoShareEventEligibility(event){
   // than reviving it long after its original context has ended.
   if(!record.photoResponseMode&&event.status==='deferred')return result('not-applicable','legacy-photo-reply-was-deferred');
   if(record.responseExpiresAt&&Date.now()>record.responseExpiresAt)return result('not-applicable','photo-reply-delivery-window-expired');
+  if(!record.responseContext||record.responseContext!==photoShareMainContext())return result('not-applicable','photo-reply-main-context-changed');
   const now=photoShareResponseDecision('shownu');
   if(now.mode!=='direct')return result('not-applicable',`photo-reply-context-changed:${now.reason}`);
-  const newer=(CONFIG.chats.find(chat=>chat.id==='shownu')?.messages||[]).some(message=>message.id!==record.playerMessageId&&message.id!==record.replyEventId&&(kakaoChatMessageTimestamp(message)||0)>Number(record.replyMessage.storyTimestamp));
+  const newer=(CONFIG.chats.find(chat=>chat.id==='shownu')?.messages||[]).some(message=>message.id!==record.playerMessageId&&message.id!==record.replyEventId&&Math.floor((kakaoChatMessageTimestamp(message)||0)/60000)>=Math.floor(Number(record.replyMessage.storyTimestamp)/60000));
   if(newer)return result('not-applicable','photo-reply-story-window-passed');
   return result('eligible','shownu-direct-photo-reply');
  }
@@ -3078,6 +3110,7 @@ function kakaoPhotoToolsOpen(){
 }
 function kakaoPhotoPickerOpen(){if(photoShareUI?.source!=='kakao-plus'||activeChat?.id!==photoShareUI.chatId)return false;photoShareUI.step='picker';photoShareUI.revision=++photoShareRevision;photoShareRender();return true}
 function kakaoPhotoChoose(photoId){const ui=photoShareUI;if(ui?.source!=='kakao-plus'||ui.step!=='picker'||activeChat?.id!==ui.chatId)return false;const scenario=PHOTO_SHARE_SCENARIOS_V1.find(item=>item.chatId===ui.chatId&&item.photoId===photoId);if(!scenario||!photoShareEligibility(scenario.id).allowed)return false;ui.photoId=photoId;ui.step='confirm';return photoShareSelect(scenario.id)}
+function kakaoPhotoEligiblePhotos(chatId){return stage13SortPhotos(STAGE13_PHOTOS.filter(photo=>{const scenario=PHOTO_SHARE_SCENARIOS_V1.find(item=>item.chatId===chatId&&item.photoId===photo.id);return scenario&&photoShareEligibility(scenario.id).allowed}))}
 function photoShareSelect(scenarioId){const scenario=photoShareScenario(scenarioId);if(!photoShareUI||photoShareUI.sent||scenario?.photoId!==photoShareUI.photoId||photoShareUI.source==='kakao-plus'&&scenario.chatId!==photoShareUI.chatId||!photoShareEligibility(scenarioId).allowed)return false;photoShareUI.scenarioId=scenarioId;photoShareUI.assetReady=false;photoShareUI.revision=++photoShareRevision;photoShareRender();return true}
 function photoShareImageReady(image,revision){if(!photoShareUI||photoShareUI.revision!==revision||!image.naturalWidth||image.getAttribute('src')!==stage13PhotoAssetUrl(STAGE13_PHOTOS.find(p=>p.id===photoShareUI.photoId)?.src))return false;photoShareUI.assetReady=true;const button=$('#photo-share-confirm');if(button)button.disabled=!photoShareEligibility(photoShareUI.scenarioId).allowed;return true}
 function photoShareRender(){
@@ -3086,9 +3119,9 @@ function photoShareRender(){
  status.textContent='';
  if(ui.source==='kakao-plus'&&ui.step==='tools'){content.innerHTML='<button type="button" data-kakao-photo-album>▧<span>앨범</span></button><button type="button" data-kakao-photo-message>메시지 보내기</button>';return}
  if(ui.source==='kakao-plus'&&ui.step==='picker'){
-  const photos=stage13SortPhotos(STAGE13_PHOTOS.filter(photoSharePhotoAvailable));let available=0;
-  const tiles=photos.map(item=>{const choice=PHOTO_SHARE_SCENARIOS_V1.find(candidate=>candidate.photoId===item.id&&candidate.chatId===ui.chatId),eligibility=choice?photoShareEligibility(choice.id):{allowed:false,reason:'이 대화방에는 보낼 수 없습니다.'};if(eligibility.allowed)available++;return `<button type="button" class="kakao-picker-tile" data-kakao-photo="${escapeHtml(item.id)}" aria-label="${escapeHtml(item.alt)} · ${item.date}${eligibility.allowed?'':` · ${escapeHtml(eligibility.reason)}`}" ${eligibility.allowed?'':'disabled'}><span class="kakao-picker-image"><img src="${escapeHtml(stage13PhotoAssetUrl(item.src))}" alt="" loading="lazy" decoding="async"><span class="kakao-picker-fallback" hidden>사진 로딩 실패</span></span><time>${item.date}</time>${eligibility.allowed?'':`<small>${escapeHtml(eligibility.reason)}</small>`}</button>`}).join('');
-  content.innerHTML=`<p class="kakao-picker-hint">한 장을 선택해 주세요.</p>${available?'':'<p class="kakao-picker-empty">이 대화방에 보낼 수 있는 사진이 없습니다.</p>'}<div class="kakao-photo-picker">${tiles||'<p>표시할 사진이 없습니다.</p>'}</div>`;return;
+  const photos=kakaoPhotoEligiblePhotos(ui.chatId);
+  const tiles=photos.map(item=>`<button type="button" class="kakao-picker-tile" data-kakao-photo="${escapeHtml(item.id)}" aria-label="${escapeHtml(item.alt)} · ${item.date}"><span class="kakao-picker-image"><img src="${escapeHtml(stage13PhotoAssetUrl(item.src))}" alt="" loading="lazy" decoding="async"><span class="kakao-picker-fallback" hidden>사진 로딩 실패</span></span><time>${item.date}</time></button>`).join('');
+  content.innerHTML=photos.length?`<p class="kakao-picker-hint">한 장을 선택해 주세요.</p><div class="kakao-photo-picker">${tiles}</div>`:'<p class="kakao-picker-empty">보낼 수 있는 사진이 없어요.<small>目前沒有可以傳送的照片。</small></p>';return;
  }
  if(ui.sent){content.innerHTML='<p class="photo-share-success">사진을 보냈습니다.<small>照片已傳送。</small></p><button type="button" data-photo-share-open-chat>채팅방으로 이동</button>';return}
  if(!scenario){const scenarios=PHOTO_SHARE_SCENARIOS_V1.filter(item=>item.photoId===ui.photoId);content.innerHTML='<p class="photo-share-app">'+iconSvg('kakao')+'<strong>KakaoTalk</strong></p>'+scenarios.map(item=>{const eligibility=photoShareEligibility(item.id),chat=CONFIG.chats.find(chat=>chat.id===item.chatId);return `<button type="button" data-photo-share-recipient="${item.id}" ${eligibility.allowed?'':'disabled'}>${escapeHtml(chat?.title||item.chatId)}${eligibility.allowed?'':`<small>${escapeHtml(eligibility.reason)}</small>`}</button>`}).join('')+(scenarios.length?'':'<p>이 사진은 공유할 수 없습니다.</p>');return}
@@ -3102,13 +3135,13 @@ function photoShareBuildEvents(scenario,at,{source='photos'}={}){
  const approved=scenario.replyApproved===true&&scenario.reply?.text&&scenario.reply?.translation&&scenario.reply?.from,decision=approved?photoShareResponseDecision(scenario.chatId):{mode:'none',reason:'reply-not-approved'};
  const record={scenarioId:scenario.id,photoId:scenario.photoId,chatId:scenario.chatId,source,photoResponseMode:decision.mode,responseReason:decision.reason,responseDecisionAt:at,responseEventId:null,playerMessageId:playerId,storyTimestamp:at,replyApproved:false,replyEventId:null};
  let reply=null;
- if(decision.mode==='direct'&&approved){const replyId=`${scenario.id}:reply`;record.replyApproved=true;record.replyEventId=replyId;record.responseEventId=replyId;record.replyMessage={id:replyId,from:scenario.reply.from,text:scenario.reply.text,translation:scenario.reply.translation,storyTimestamp:at+60000,timestamp:at+60000,day:stageElevenStoryLabel(at+60000),time:formatClockTime(at+60000),sourceEventId:scenario.id};reply={id:replyId,type:'kkt-message',source:'kakao',createdAt:Date.now(),scheduledAt:Date.now()+Math.max(1000,Number(scenario.reply.delayMs)||3000),status:'pending',shouldNotify:true,effects:{},payload:{photoShareId:scenario.id,chatId:scenario.chatId,sender:CONFIG.chats.find(chat=>chat.id===scenario.chatId)?.title,app:'kakao',destination:{screen:'app-kakao',chatId:scenario.chatId},message:{...record.replyMessage}}};if(scenario.chatId==='shownu')record.responseExpiresAt=reply.scheduledAt+30000}
+ if(decision.mode==='direct'&&approved){const replyId=`${scenario.id}:reply`;record.replyApproved=true;record.replyEventId=replyId;record.responseEventId=replyId;record.replyMessage={id:replyId,from:scenario.reply.from,text:scenario.reply.text,translation:scenario.reply.translation,storyTimestamp:at+60000,timestamp:at+60000,day:stageElevenStoryLabel(at+60000),time:formatClockTime(at+60000),sourceEventId:scenario.id};reply={id:replyId,type:'kkt-message',source:'kakao',createdAt:Date.now(),scheduledAt:Date.now()+Math.max(1000,Number(scenario.reply.delayMs)||3000),status:'pending',shouldNotify:true,effects:{},payload:{photoShareId:scenario.id,chatId:scenario.chatId,sender:CONFIG.chats.find(chat=>chat.id===scenario.chatId)?.title,app:'kakao',destination:{screen:'app-kakao',chatId:scenario.chatId},message:{...record.replyMessage}}};if(scenario.chatId==='shownu'){record.responseExpiresAt=reply.scheduledAt+30000;record.responseContext=photoShareMainContext()}}
  return {player,reply,record};
 }
 function photoShareConfirm(){
  const ui=photoShareUI;if(!ui||ui.sending||ui.sent||!ui.assetReady)return false;const eligibility=photoShareEligibility(ui.scenarioId);
  if(ui.source==='kakao-plus'&&(activeChat?.id!==ui.chatId||currentScreen!=='app-kakao'||!$('#chat-room').classList.contains('active')))return false;
- if(!eligibility.allowed){$('#photo-share-status').textContent=eligibility.reason;return false}
+ if(!eligibility.allowed){if(ui.source==='kakao-plus'){ui.step='picker';ui.photoId=null;ui.scenarioId=null;ui.assetReady=false;ui.revision=++photoShareRevision;photoShareRender()}$('#photo-share-status').textContent='지금은 이 사진을 보낼 수 없어요. '+eligibility.reason;return false}
  ui.sending=true;const priorState=gameEventMemory.photoSharesV1,priorEvents=gameEventMemory.events,chat=CONFIG.chats.find(item=>item.id===eligibility.scenario.chatId),latest=kakaoChatMessageTimestamp(latestKakaoMessage(chat))||0,at=Math.max(narrativeStoryTimestamp(),latest)+1000;
  const built=photoShareBuildEvents(eligibility.scenario,at,{source:ui.source||'photos'});
  gameEventMemory.photoSharesV1={version:1,records:{...photoShareState().records,[eligibility.scenario.id]:built.record}};
@@ -3209,7 +3242,7 @@ function stampNarrativeMessage(event){
  const m=event.payload.message;
  const at=narrativeStoryTimestamp()+60000;m.storyTimestamp=at;m.timestamp=at;m.day=stageElevenStoryLabel(at);m.time=formatClockTime(at);if(event.type==='instagram-story-dm')m.createdAt=at;
 }
-function narrativeBeforeEventExecution(event,{replay=false}={}){if(replay)return;if(['instagram-opening-call','lost-phone-incoming-call'].includes(event.type)&&typeof hideMorningAdvanceBanner==='function')hideMorningAdvanceBanner();stampNarrativeMessage(event);if(!narrativeOriginalEvent(event))return;const at=Math.max(narrativeStoryTimestamp(),Number(event.payload?.message?.storyTimestamp)||0);if(lostPhoneStory?.eventIntegration)lostPhoneStory.eventIntegration.contactStoryTimestamp=at;if(event.type==='instagram-opening-call'&&lostPhoneStory?.openingCall)lostPhoneStory.openingCall.storyTimestamp=at;if(event.type==='lost-phone-incoming-call'&&lostPhoneStory?.call)lostPhoneStory.call.storyTimestamp=at;}
+function narrativeBeforeEventExecution(event,{replay=false}={}){if(replay)return;if(typeof photoShareObserveMainEvent==='function')photoShareObserveMainEvent(event,'executing');if(['instagram-opening-call','lost-phone-incoming-call'].includes(event.type)&&typeof hideMorningAdvanceBanner==='function')hideMorningAdvanceBanner();stampNarrativeMessage(event);if(!narrativeOriginalEvent(event))return;const at=Math.max(narrativeStoryTimestamp(),Number(event.payload?.message?.storyTimestamp)||0);if(lostPhoneStory?.eventIntegration)lostPhoneStory.eventIntegration.contactStoryTimestamp=at;if(event.type==='instagram-opening-call'&&lostPhoneStory?.openingCall)lostPhoneStory.openingCall.storyTimestamp=at;if(event.type==='lost-phone-incoming-call'&&lostPhoneStory?.call)lostPhoneStory.call.storyTimestamp=at;}
 function validateNarrativeEvent(event){
  const eligibility=narrativeEventEligibility(event);if(['completed','cancelled','inapplicable'].includes(event?.status))return eligibility.allowed;
  if(eligibility.allowed){
