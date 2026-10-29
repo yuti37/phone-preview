@@ -265,7 +265,7 @@
 @media(max-height:760px){.phone-contacts-view{padding-top:42px}.phone-contact-list{margin-top:14px}.phone-contact-row{min-height:58px}.phone-my-card{min-height:65px}}
 @media(max-width:370px){.app-icon{width:54px;height:54px}.apps-grid{column-gap:6px;row-gap:16px}.home-screen{padding-left:14px;padding-right:14px}.widget{padding:10px}.spotify-screen .playlist-cover{width:min(61vw,205px)}#app-phone .tabbar button{font-size:8px}}
 @media(max-height:760px){.home-screen{padding-top:48px}.widgets .widget{height:116px}.apps-grid{row-gap:14px}.dock{bottom:10px;height:68px}.home-page-dots{bottom:90px}#app-kakao .kakao-app-top{height:88px;padding-top:42px}#app-kakao #friends-list{top:88px;bottom:85px}#app-kakao .kakao-tabbar{height:60px}.x-screen .app-top{height:78px}.x-screen .app-body{top:78px}.spotify-screen #spotify-body{bottom:87px}.spotify-screen .playlist-cover{width:min(55vw,195px)}#app-phone .app-body{bottom:79px}}
-.home-screen{padding:59px 20px 112px;background:radial-gradient(ellipse at 84% 2%,#eadb91 0,transparent 34%),radial-gradient(ellipse at 90% 91%,#12466a 0,#0b2945 43%,transparent 44%),linear-gradient(128deg,#f1b9bd 0 38%,#e8b8bd 51%,#526f85 51.2%,#102f4a 100%)}
+.home-screen{padding:59px 20px 112px;background:transparent}
 .widgets{gap:12px;margin-bottom:24px}.widget{height:178px;border:0;border-radius:25px;padding:16px;box-shadow:0 4px 18px #17253a18}
 .weather-widget{background:linear-gradient(155deg,#202b39,#101b28);color:#f8fafc;display:flex;flex-direction:column;align-items:flex-start}.weather-widget .widget-label{font-size:11px;color:#d7dbe2}.weather-widget .weather-place{margin-top:7px;font-size:12px;color:#d6dce5}.weather-widget .weather-temp{font-size:46px;line-height:1.05;letter-spacing:-2px;font-weight:300;margin-top:1px}.weather-condition{display:flex;align-items:center;gap:7px;margin-top:auto;font-size:12px;color:#f2f4f8}.weather-symbol{font-size:22px;line-height:1}.weather-widget .weather-range{font-size:11px;margin-top:3px;color:#e0e4ea}
 .calendar-widget{background:#fff;color:#17181d;display:flex;flex-direction:column;align-items:flex-start}.calendar-weekday{font-size:12px;font-weight:700;color:#e65158}.calendar-date{font-size:49px;line-height:1.04;letter-spacing:-2px;font-weight:350;margin-top:4px}.calendar-events{margin-top:auto;width:100%;max-height:52px;overflow:hidden}.calendar-events .event-row{margin-top:3px;gap:5px}.calendar-events .event-time{min-width:34px;font-size:9px;color:#8c8d93}.calendar-events .event-title{font-size:9px;color:#70727a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.calendar-events .event-dot{background:#e65f62}
@@ -274,8 +274,8 @@
 .dock{bottom:16px;left:18px;right:18px;height:84px;border-radius:30px;background:rgba(205,226,238,.25);border:1px solid #ffffff52;backdrop-filter:blur(32px) saturate(1.35);padding:9px 11px;gap:0}.dock .app-icon{width:61px;height:61px;border-radius:17px}
 .statusbar{color:#fff}
 .ico-wallet{background:linear-gradient(145deg,#38393c,#09090b);color:#fff}
-.home-screen{padding-top:96px;background:radial-gradient(ellipse at 91% 2%,#efd98e 0,transparent 35%),linear-gradient(145deg,#f1c3c8 0%,#f2b9b3 45%,#efd492 100%)}
-.home-screen::before{content:"";position:absolute;z-index:0;left:-36%;top:44%;width:164%;height:116%;border-radius:52% 48% 0 0;transform:rotate(-39deg);background:linear-gradient(145deg,#7f91a3 0 13%,#56a5b3 13.4% 24%,#23617e 24.4% 37%,#0c304d 37.4% 100%);pointer-events:none}
+.home-screen{padding-top:96px}
+/* Home stays transparent so the shared lock/home photo remains visible. */
 .home-screen .widgets,.home-screen .apps-grid{position:relative;z-index:1}.home-screen .home-search,.home-screen .dock{z-index:2}
 .widgets{margin-bottom:11px;gap:12px}.widget-column{min-width:0;display:flex;flex-direction:column;align-items:center}.widget-column .widget{width:100%}.widget-caption{height:19px;margin-top:6px;color:#fff;font-size:12px;line-height:19px;text-shadow:0 1px 4px #29324885}
 .widget{height:178px}.widget.weather-widget{padding:17px 15px}.weather-widget .weather-place{margin-top:5px;font-size:12px}.weather-widget .weather-temp{font-size:47px}.weather-condition{font-size:13px}.weather-symbol{font-size:24px;color:#f6f8fb}.weather-widget .weather-range{font-size:11px;white-space:nowrap}
@@ -902,7 +902,7 @@
 <!-- All narrative content is fictional simulation material. Edit the CONFIG object below to customize it. -->
 <script>
 const CONFIG = {
-  wallpaper: "",
+  wallpaper: "assets/turtle-wallpaper.png",
   userName: "채형원",
   kakaoSelfStatus: "찐베베",
   contactName: "셔누형",
@@ -954,22 +954,22 @@ const CONFIG = {
       { day: "10월 17일 토요일", from: "셔누", time: "22:41", text: "형원아 오늘 고생했어", translation: "亨源啊，今天辛苦了。" },
       { day: "10월 17일 토요일", from: "형원", time: "22:43", text: "형도 고생했어 ㅎㅎ", translation: "哥也辛苦了ㅎㅎ" },
       { day: "10월 17일 토요일", from: "셔누", time: "22:44", text: "내일 시간 되면 밥 먹자", translation: "明天有空的話一起吃飯吧。" },
-      { day: "10월 17일 토요일", from: "형원", time: "22:45", text: "좋지 뭐 먹고 싶은데?", translation: "好啊，想吃什麼？" },
+      { day: "10월 17일 토요일", from: "형원", time: "22:45", text: "좋지 ㅋㅋㅋ 뭐 먹고 싶은데? ", translation: "好啊，想吃什麼？" },
       { day: "10월 17일 토요일", from: "셔누", time: "22:46", text: "음.. 따뜻한 거", translation: "嗯……想吃熱熱的東西。" },
       { day: "10월 17일 토요일", from: "형원", time: "22:47", text: "ㅋㅋㅋㅋ 그게 메뉴야?", translation: "ㅋㅋㅋㅋ那算一道菜嗎？" },
       { day: "10월 17일 토요일", from: "셔누", time: "22:48", text: "아니 그냥 국물 있는 거 ㅋㅋㅋ", translation: "不是啦，就吃點有湯的ㅋㅋㅋ" },
-      { day: "10월 18일 일요일", from: "형원", time: "19:08", text: "오늘 밥 잘 먹었어?", translation: "今天有好好吃飯嗎？" },
+      { day: "10월 18일 일요일", from: "형원", time: "19:08", text: "오늘 밥 잘 챙겨 먹었어? ", translation: "今天有好好吃飯嗎？" },
       { day: "10월 18일 일요일", from: "셔누", time: "19:14", text: "응 배불러 ㅎㅎ 너는", translation: "嗯，吃得很飽ㅎㅎ你呢？" },
       { day: "10월 18일 일요일", from: "형원", time: "19:15", text: "나도 먹었지", translation: "我也吃了。" },
       { day: "10월 18일 일요일", from: "셔누", time: "19:16", text: "잘했네 ㅋㅋ", translation: "那就好ㅋㅋ" },
       { day: "10월 20일 화요일", from: "형원", time: "18:42", text: "오늘 저녁 먹었어?", translation: "今天吃晚餐了嗎？" },
-      { day: "10월 20일 화요일", from: "셔누", time: "18:49", text: "아직. 연습 끝나고 먹으려고", translation: "還沒，打算練習結束後再吃。" },
-      { day: "10월 20일 화요일", from: "형원", time: "18:51", text: "그럼 너무 늦기 전에 뭐라도 먹어", translation: "那就別拖太晚，多少吃點東西。" },
+      { day: "10월 20일 화요일", from: "셔누", time: "18:49", text: "아직 연습 끝나고 먹으려고 ", translation: "還沒，打算練習結束後再吃。" },
+      { day: "10월 20일 화요일", from: "형원", time: "18:51", text: "그럼 너무 늦기 전에 뭐라도 좀 먹어 ", translation: "那就別拖太晚，多少吃點東西。" },
       { day: "10월 20일 화요일", from: "셔누", time: "18:53", text: "알았어 ㅋㅋ 너도 챙겨 먹어", translation: "知道了ㅋㅋ你也要記得吃。" },
-      { day: "10월 20일 화요일", from: "셔누", time: "20:16", text: "오늘 고생했어. 저녁에 한잔할래?", translation: "今天辛苦了。晚上要不要喝一杯？" },
-      { day: "10월 20일 화요일", from: "형원", time: "20:18", text: "형도 고생했어. 좋아. 어디서 볼까?", translation: "哥也辛苦了。好啊，要在哪裡見？" },
+      { day: "10월 20일 화요일", from: "셔누", time: "20:16", text: "오늘 고생했어 저녁에 한잔할래? ", translation: "今天辛苦了。晚上要不要喝一杯？" },
+      { day: "10월 20일 화요일", from: "형원", time: "20:18", text: "형도 고생했어 ㅎㅎ 좋아 어디서 볼까? ", translation: "哥也辛苦了。好啊，要在哪裡見？" },
       { day: "10월 20일 화요일", from: "셔누", time: "20:19", text: "늘 가던 데 어때?", translation: "去老地方怎麼樣？" },
-      { day: "10월 20일 화요일", from: "형원", time: "20:21", text: "좋아. 나 20분 뒤에 갈게", translation: "好啊，我 20 分鐘後過去。" },
+      { day: "10월 20일 화요일", from: "형원", time: "20:21", text: "좋아 나 20분 뒤에 갈게 ", translation: "好啊，我 20 分鐘後過去。" },
       { day: "10월 20일 화요일", from: "셔누", time: "20:22", text: "천천히 와 ㅋㅋ", translation: "慢慢來ㅋㅋ" },
       { id: "phone-sim-history:shownu:schedule-change:1", day: "10월 22일 목요일", from: "셔누", time: "00:17", text: "아 내일 일정 좀 바뀌었대", translation: "啊，聽說明天的行程有些變動。" },
       { id: "phone-sim-history:shownu:schedule-change:2", day: "10월 22일 목요일", from: "형원", time: "00:18", text: "많이 바뀌었어?", translation: "改很多嗎？" },
@@ -977,15 +977,15 @@ const CONFIG = {
       { id: "phone-sim-history:shownu:schedule-change:4", day: "10월 22일 목요일", from: "형원", time: "00:19", text: "오케이 알려줘서 고마워", translation: "好，謝謝你告訴我。" },
       { id: "phone-sim-history:shownu:schedule-change:5", day: "10월 22일 목요일", from: "셔누", time: "00:20", text: "별말을 ㅎㅎ 얼른 자", translation: "不客氣ㅎㅎ快點睡吧。" },
       { id: "phone-sim-history:shownu:schedule-change:6", day: "10월 22일 목요일", from: "형원", time: "00:21", text: "형도 잘 자", translation: "哥也早點睡。" },
-      { day: "10월 20일 화요일", from: "형원", time: "23:14", text: "오늘 나오길 잘한 것 같아.", translation: "我覺得今天有出來真是太好了。" },
-      { day: "10월 20일 화요일", from: "셔누", time: "23:15", text: "그치? 나도 잘 나온 것 같음", translation: "對吧？我也覺得有出來真是太好了。" },
-      { day: "10월 20일 화요일", from: "형원", time: "23:42", text: "형이랑 있으면 별생각 안 해도 돼서 좋아.", translation: "跟哥在一起的時候，不用想太多，這點很好。" },
-      { day: "10월 20일 화요일", from: "셔누", time: "23:44", text: "그건 다행이네. 요즘 생각 많았어?", translation: "那就好。你最近想很多事情嗎？" },
+      { day: "10월 20일 화요일", from: "형원", time: "23:14", text: "오늘 나오길 잘한 것 같아 ", translation: "我覺得今天有出來真是太好了。" },
+      { day: "10월 20일 화요일", from: "셔누", time: "23:15", text: "그치? 나도 잘 나온 듯 ㅋㅋ ", translation: "對吧？我也覺得今天有出來真好。" },
+      { day: "10월 20일 화요일", from: "형원", time: "23:42", text: "형이랑 있으면 별생각 안 해도 돼서 좋아 ", translation: "跟哥在一起的時候，不用想太多，這點很好。" },
+      { day: "10월 20일 화요일", from: "셔누", time: "23:44", text: "다행이네 ㅋㅋ 요즘 생각 많았어? ", translation: "那就好。你最近想很多事情嗎？" },
       { day: "10월 20일 화요일", from: "형원", time: "23:58", text: "형은 내가 형 좋아하는 거 알면 어떨 것 같아?", translation: "哥覺得，如果知道我喜歡哥，會怎麼樣？" },
       { day: "10월 21일 수요일", from: "셔누", time: "00:00", text: "…갑자기?", translation: "……怎麼突然問這個？" },
-      { day: "10월 21일 수요일", from: "셔누", time: "09:12", text: "근데 어제 그 질문은 무슨 뜻이었어?", translation: "不過，你昨天那個問題是什麼意思？" },
-      { day: "10월 21일 수요일", from: "형원", time: "09:18", text: "술 마셔서 아무 말이나 했나 봐.", translation: "大概是喝了酒就在亂講吧。" },
-      { day: "10월 21일 수요일", from: "셔누", time: "09:20", text: "그런가 보네. 다음엔 물도 좀 마셔", translation: "可能吧。下次也喝點水。" },
+      { day: "10월 21일 수요일", from: "셔누", time: "09:12", text: "근데 어제 그 질문은 무슨 뜻이었냐 ㅋㅋ ", translation: "不過，你昨天那個問題是什麼意思？" },
+      { day: "10월 21일 수요일", from: "형원", time: "09:18", text: "술 마셔서 아무 말이나 했나 봐 ㅋㅋㅋ ", translation: "大概是喝了酒就在亂講吧。" },
+      { day: "10월 21일 수요일", from: "셔누", time: "09:20", text: "그런가 보네 다음엔 물도 좀 마셔 ㅋㅋㅋ ", translation: "可能吧。下次也喝點水。" },
       { id: "after-work-drinks-shownu-v1:invite", day: "10월 23일 금요일", from: "셔누", time: "18:12", text: "형원아 오늘 퇴근하고 한잔할래?", translation: "亨源啊，今天下班後要不要喝一杯。" },
       { id: "after-work-drinks-shownu-v1:preset:1814", storyEventId: "after-work-drinks-shownu-v1", templateRole: "preset-outcome", day: "10월 23일 금요일", from: "형원", time: "18:14", text: "좋아. 어디서 볼까?", translation: "好啊。要在哪裡見？" },
       { id: "after-work-drinks-shownu-v1:preset:1816", storyEventId: "after-work-drinks-shownu-v1", templateRole: "preset-outcome", day: "10월 23일 금요일", from: "셔누", time: "18:16", text: "늘 가던 데. 끝나고 연락할게", translation: "老地方吧。結束後我再聯絡你。" },
@@ -995,7 +995,7 @@ const CONFIG = {
       { id: "after-work-drinks-shownu-v1:preset:2352", storyEventId: "after-work-drinks-shownu-v1", templateRole: "preset-outcome", day: "10월 23일 금요일", from: "형원", time: "23:52", text: "아 근데 도착하면 안 해도 돼 ㅋㅋ 그냥 조심히 가", translation: "啊，不過到了也可以不用說ㅋㅋ 總之路上小心。" },
       { id: "after-work-drinks-shownu-v1:preset:2353", storyEventId: "after-work-drinks-shownu-v1", templateRole: "preset-outcome", day: "10월 23일 금요일", from: "셔누", time: "23:53", text: "ㅋㅋ 알았어. 택시 잡히면 알려줘", translation: "ㅋㅋ 知道了。叫到計程車再跟我說。" },
       { id: "missing-phone-checkin-1", day: "10월 24일 토요일", from: "셔누", time: "00:18", text: "형원아 집 잘 들어갔어?", translation: "亨源啊，你有平安到家嗎？" },
-      { id: "missing-phone-checkin-2", day: "10월 24일 토요일", from: "셔누", time: "00:47", text: "아까부터 답이 없네. 아직 이동 중이야?", translation: "從剛才就沒回訊息。還在路上嗎？" }
+      { id: "missing-phone-checkin-2", day: "10월 24일 토요일", from: "셔누", time: "00:47", text: "아까부터 답이 없네 아직 이동 중이야? ", translation: "從剛才就沒回訊息。還在路上嗎？" }
     ]},
     { id: "minhyuk", title: "미녀기", type: "direct", members: "민혁", unread: 0, messages: [
       { day: "10월 18일 일요일", from: "민혁", time: "15:23", text: "야 오늘 찍은 사진 봤냐 ㅋㅋㅋ", translation: "欸，今天拍的照片看了沒ㅋㅋㅋ" },
@@ -1852,9 +1852,9 @@ const LOST_PHONE_STORY_KEY='phone-sim-lost-phone-story-v1',LOST_PHONE_STORY_ID='
 if(!$('#after-work-panel')){const panel=document.createElement('div');panel.className='story-panel';panel.id='after-work-panel';panel.setAttribute('aria-live','polite');$('#chat-form')?.before(panel)}
 let lostPhoneStory=null,lostPhoneChoiceBusy=false;
 const LOST_PHONE_REPLIES={
- 'reply-home':{text:'응. 방금 들어왔어',translation:'嗯，剛到家。',answer:'다행이다. 늦었으니까 씻고 얼른 자 ㅋㅋ',answerTranslation:'那就好。很晚了，洗完澡就快睡吧ㅋㅋ'},
- 'reply-why':{text:'왜 ㅋㅋㅋ',translation:'怎麼了ㅋㅋㅋ',answer:'그냥 답이 없어서. 잘 들어갔으면 됐어 ㅋㅋ',answerTranslation:'只是一直沒收到回覆。你有平安到家就好ㅋㅋ'},
- 'reply-outside':{text:'아직 밖이야',translation:'我還在外面。',answer:'아직 밖이라고? 어디쯤인데? 혼자야?',answerTranslation:'還在外面嗎？你現在在哪附近？是一個人嗎？'}
+ 'reply-home':{text:'응 방금 들어왔어 ',translation:'嗯，剛到家。',answer:'다행이다 늦었으니까 씻고 얼른 자 ㅋㅋ ',answerTranslation:'那就好。很晚了，洗完澡就快睡吧ㅋㅋ'},
+ 'reply-why':{text:'왜 ㅋㅋㅋ',translation:'怎麼了ㅋㅋㅋ',answer:'그냥 답이 없어서 잘 들어갔으면 됐어 ㅋㅋ ',answerTranslation:'只是一直沒收到回覆。你有平安到家就好ㅋㅋ'},
+ 'reply-outside':{text:'아직 밖이야',translation:'我還在外面。',answer:'아직 밖이라고? 어디쯤인데 혼자야? ',answerTranslation:'還在外面嗎？你現在在哪附近？是一個人嗎？'}
 };
 function readLostPhoneStory(){try{const saved=JSON.parse(localStorage.getItem(LOST_PHONE_STORY_KEY)||'null');if(saved?.id===LOST_PHONE_STORY_ID)return {id:LOST_PHONE_STORY_ID,phase:'awaiting-reply',selectedBranch:null,deferredAt:null,createdMessageIds:[],openingRouteVersion:0,openingRoute:null,...saved,createdMessageIds:Array.isArray(saved.createdMessageIds)?saved.createdMessageIds:[]}}catch{}return null}
 function saveLostPhoneStory(){if(!lostPhoneStory)return false;try{localStorage.setItem(LOST_PHONE_STORY_KEY,JSON.stringify(lostPhoneStory));return true}catch{return false}}
@@ -1932,7 +1932,7 @@ function cancelScheduledLostPhoneCall(){const call=callStory();if(!call?.schedul
 function initializeLostPhoneStory(){const savedStory=readLostPhoneStory();lostPhoneStory=savedStory||{id:LOST_PHONE_STORY_ID,phase:'awaiting-reply',selectedBranch:null,deferredAt:null,createdMessageIds:[],createdAt:Date.now(),openingRouteVersion:1,openingRoute:null};if(savedStory&&(!Number(savedStory.openingRouteVersion)||savedStory.openingRouteVersion<1)){lostPhoneStory.openingRoute='legacy_unknown';lostPhoneStory.openingRouteVersion=1;lostPhoneStory.openingRouteLockedAt=lostPhoneStory.openingRouteLockedAt||Date.now()}callStory();if(lostPhoneStory.phase==='reply-pending')completeLostPhoneReply();const shownuChat=CONFIG.chats.find(item=>item.id==='shownu');if(shownuChat&&lostPhoneStory.latestMessagesReadAt)shownuChat.unread=0;if(lostPhoneStory.call.status==='connected'){lostPhoneStory.call.status=lostPhoneStory.call.stage==='closed'?'completed':'interrupted';lostPhoneStory.call.endReason=lostPhoneStory.call.status;lostPhoneStory.call.endedAt=lostPhoneStory.call.endedAt||Date.now();makeLostPhoneCallRecord(lostPhoneStory.call.status);saveLostPhoneCallStory()}if(lostPhoneStory.openingRoute==='kakaotalk_first'&&lostPhoneStory.phase==='awaiting-reply'&&!lostPhoneStory.truthToldAt&&!lostPhoneStory.call.eventId)scheduleLostPhoneCall('first-checkin',120000);if(lostPhoneStory.openingRoute==='kakaotalk_first'&&lostPhoneStory.phase==='replied'&&lostPhoneStory.selectedBranch==='reply-outside'&&!lostPhoneStory.truthToldAt&&!lostPhoneStory.call.records.length){cancelScheduledLostPhoneCall();scheduleLostPhoneCall('outside-reply',15000)}saveLostPhoneStory();updateKakaoUnreadBadge();renderLockNotifications();renderAfterWorkPanel();resumeLostPhoneCallPresentation()}
 let lostCallNaturalEndTimer=null;
 function scheduleLostCallNaturalEnd(){const call=callStory();if(!call||call.status!=='connected'||call.stage!=='closed')return;if(!call.autoEndAt){call.autoEndAt=Date.now()+1800;saveLostPhoneCallStory()}clearTimeout(lostCallNaturalEndTimer);lostCallNaturalEndTimer=setTimeout(()=>finishLostPhoneCall('completed'),Math.max(0,call.autoEndAt-Date.now()))}
-function finishLostPhoneCall(outcome){const call=callStory();if(!call||!['ringing','connected'].includes(call.status))return;if(call.status==='ringing'&&!['declined','missed'].includes(outcome))return;if(call.status==='connected'){if(call.stage==='closed'||outcome==='completed')outcome='completed';else outcome='interrupted';call.endedAt=Date.now()}clearTimeout(lostCallNaturalEndTimer);lostCallNaturalEndTimer=null;call.status=outcome;call.endReason=outcome;call.endedAt=call.endedAt||Date.now();if(call.timeoutEventId)cancelGameEvent(call.timeoutEventId);const event=getGameEvent(call.eventId);if(event)markEventNotificationRead(event);$('#lost-phone-call-overlay').hidden=true;let voicemail='',voicemailTranslation='';if(outcome==='missed'&&call.reason==='first-checkin'&&!call.voicemailCreated){voicemail='형원아, 나야. 그냥 집에 잘 들어갔나 해서 전화했어. 이거 들으면 연락해.';voicemailTranslation='亨源啊，是我。只是想確認你有沒有平安到家才打來的。聽到後聯絡我。';call.voicemailCreated=true}makeLostPhoneCallRecord(outcome,voicemail,voicemailTranslation);if(currentScreen==='app-phone')renderCalls();const told=!!(lostPhoneStory.truthToldAt||call.truthTold);if(outcome==='declined'||outcome==='missed')scheduleLostPhoneFollowupMessage('missed','전화했는데 못 받네. 자는 거야?','打電話了但沒接。睡了嗎？',30000);else if(outcome==='interrupted'&&!told&&!call.returnDiscussed){const text=call.personaAssumed?'아까 무슨 일 있었어? 전화가 갑자기 끊겨서.':'무슨 일 있어? 전화가 끊겼네.';const translation=call.personaAssumed?'剛才怎麼了？電話突然就斷了。':'發生什麼事了嗎？電話斷掉了。';scheduleLostPhoneFollowupMessage('ended',text,translation,30000)}saveLostPhoneCallStory();renderAfterWorkPanel()}
+function finishLostPhoneCall(outcome){const call=callStory();if(!call||!['ringing','connected'].includes(call.status))return;if(call.status==='ringing'&&!['declined','missed'].includes(outcome))return;if(call.status==='connected'){if(call.stage==='closed'||outcome==='completed')outcome='completed';else outcome='interrupted';call.endedAt=Date.now()}clearTimeout(lostCallNaturalEndTimer);lostCallNaturalEndTimer=null;call.status=outcome;call.endReason=outcome;call.endedAt=call.endedAt||Date.now();if(call.timeoutEventId)cancelGameEvent(call.timeoutEventId);const event=getGameEvent(call.eventId);if(event)markEventNotificationRead(event);$('#lost-phone-call-overlay').hidden=true;let voicemail='',voicemailTranslation='';if(outcome==='missed'&&call.reason==='first-checkin'&&!call.voicemailCreated){voicemail='형원아, 나야. 그냥 집에 잘 들어갔나 해서 전화했어. 이거 들으면 연락해.';voicemailTranslation='亨源啊，是我。只是想確認你有沒有平安到家才打來的。聽到後聯絡我。';call.voicemailCreated=true}makeLostPhoneCallRecord(outcome,voicemail,voicemailTranslation);if(currentScreen==='app-phone')renderCalls();const told=!!(lostPhoneStory.truthToldAt||call.truthTold);if(outcome==='declined'||outcome==='missed')scheduleLostPhoneFollowupMessage('missed','전화했는데 왜 안 받냐 자냐? ','我打給你了，怎麼沒接？睡著了嗎？',30000);else if(outcome==='interrupted'&&!told&&!call.returnDiscussed){const text=call.personaAssumed?'아까 무슨 일 있었어? 전화가 갑자기 끊겨서.':'무슨 일 있어? 전화가 끊겼네.';const translation=call.personaAssumed?'剛才怎麼了？電話突然就斷了。':'發生什麼事了嗎？電話斷掉了。';scheduleLostPhoneFollowupMessage('ended',text,translation,30000)}saveLostPhoneCallStory();renderAfterWorkPanel()}
 const applyLostCallChoiceBeforeNaturalEnd=applyLostCallChoice;
 applyLostCallChoice=function(id){const call=callStory();if(!call||call.status!=='connected'||call.choiceIds.includes(id))return;applyLostCallChoiceBeforeNaturalEnd(id);const updated=callStory();renderAfterWorkPanel();if(updated?.status==='connected'&&updated.stage==='closed'&&!lostCallChoices(updated).length)scheduleLostCallNaturalEnd()};
 const answerLostPhoneCallBeforePanelRefresh=answerLostPhoneCall;
@@ -1943,7 +1943,7 @@ const renderLostPhoneCallBeforeNaturalEnd=renderLostPhoneCall;
 renderLostPhoneCall=function(){renderLostPhoneCallBeforeNaturalEnd();const call=callStory();if(call?.status==='connected'&&call.stage==='closed'&&!lostCallChoices(call).length)scheduleLostCallNaturalEnd();else if(call?.status==='connected'){clearTimeout(lostCallNaturalEndTimer);lostCallNaturalEndTimer=null}};
 const initializeLostPhoneStoryBeforeCallMigration=initializeLostPhoneStory;
 initializeLostPhoneStory=function(){initializeLostPhoneStoryBeforeCallMigration();const call=callStory();if(call.status==='answered'){call.status=call.stage==='closed'?'completed':'interrupted';call.endReason=call.status;call.endedAt=call.endedAt||Date.now();if(!call.records.some(record=>record.id===call.eventId))makeLostPhoneCallRecord(call.status);saveLostPhoneCallStory()}for(const event of gameEventMemory.events){if(event.status==='completed'||event.type!=='kkt-message'||!String(event.id||'').startsWith(`${call.eventId}:followup:ended`))continue;const text=event.payload?.message?.text;if(['무슨 일 있어? 전화가 끊겼네.','아까 무슨 일 있었어? 전화가 갑자기 끊겨서.'].includes(text)){event.status='cancelled';event.cancelledAt=event.cancelledAt||Date.now();event.shouldNotify=false;event.effects={...(event.effects||{}),retired:true};const staleIds=new Set([String(event.id),String(event.payload?.message?.id||'')]);const chat=CONFIG.chats.find(item=>item.id==='shownu');if(chat)chat.messages=chat.messages.filter(message=>!(staleIds.has(String(message.id||''))&&message.text===text));gameEventMemory.notifications=gameEventMemory.notifications.filter(notification=>!staleIds.has(String(notification.eventId||'')));saveGameEventStore()}}if(call.status==='connected'&&call.stage==='closed')scheduleLostCallNaturalEnd();renderAfterWorkPanel();sortShownuTimeline()};
-function restoreLostPhonePostCallMessage(){const call=callStory();if(!call?.eventId)return;if(['declined','missed'].includes(call.status)){const told=!!(lostPhoneStory.truthToldAt||call.truthTold);scheduleLostPhoneFollowupMessage('missed','전화했는데 못 받네. 자는 거야?','打電話了但沒接。睡了嗎？',30000)}else if(call.status==='interrupted'&&!call.truthTold&&!call.returnDiscussed){scheduleLostPhoneFollowupMessage('ended',call.personaAssumed?'아까 무슨 일 있었어? 전화가 갑자기 끊겨서.':'무슨 일 있어? 전화가 끊겼네.',call.personaAssumed?'剛才怎麼了？電話突然就斷了。':'發生什麼事了嗎？電話斷掉了。',30000)}}
+function restoreLostPhonePostCallMessage(){const call=callStory();if(!call?.eventId)return;if(['declined','missed'].includes(call.status)){const told=!!(lostPhoneStory.truthToldAt||call.truthTold);scheduleLostPhoneFollowupMessage('missed','전화했는데 왜 안 받냐 자냐? ','我打給你了，怎麼沒接？睡著了嗎？',30000)}else if(call.status==='interrupted'&&!call.truthTold&&!call.returnDiscussed){scheduleLostPhoneFollowupMessage('ended',call.personaAssumed?'아까 무슨 일 있었어? 전화가 갑자기 끊겨서.':'무슨 일 있어? 전화가 끊겼네.',call.personaAssumed?'剛才怎麼了？電話突然就斷了。':'發生什麼事了嗎？電話斷掉了。',30000)}}
 function preparePhoneEventsForStory(){retireLegacyAfterWorkEvents();let changed=false;const legacyIg=getGameEvent(SHOWNu_HANGUP_EVENT_ID);if(legacyIg&&['pending','triggered','failed'].includes(legacyIg.status)){legacyIg.status='cancelled';legacyIg.cancelledAt=legacyIg.cancelledAt||Date.now();legacyIg.shouldNotify=false;legacyIg.effects={...(legacyIg.effects||{}),retired:true};changed=true}if(lostPhoneStory?.openingRoute==='legacy_unknown'||lostPhoneStory?.openingRoute==='instagram_first'){for(const event of gameEventMemory.events){const active=lostPhoneStory.call?.eventId===event.id&&['ringing','connected'].includes(lostPhoneStory.call?.status);if(event.type==='lost-phone-incoming-call'&&['first-checkin','outside-reply'].includes(event.payload?.reason)&&['pending','triggered','failed'].includes(event.status)&&!active){event.status='cancelled';event.cancelledAt=event.cancelledAt||Date.now();event.shouldNotify=false;event.effects={...(event.effects||{}),retiredByOpeningRoute:true};changed=true}}}if(changed)saveGameEventStore()}
 function ensureInstagramOpeningCallLog(){const opening=lostPhoneStory?.openingCall;if(!opening?.recordCreated||!opening.endedAt)return;const group=CONFIG.calls[0];if(!group||group.items.some(item=>item.eventId===opening.eventId))return;const date=new Date(opening.storyTimestamp||opening.endedAt),outcome=opening.status;group.items.unshift({eventId:opening.eventId,contact:'셔누형',type:outcome==='completed'?'수신':outcome==='interrupted'?'통화 중 종료':outcome==='declined'?'거절':'부재중',time:`${date.getHours()<12?'오전':'오후'} ${date.getHours()%12||12}:${String(date.getMinutes()).padStart(2,'0')}`,count:''})}
 function reconcileInstagramOpeningCall(){const opening=lostPhoneStory?.openingCall;if(opening&&['ringing','connected'].includes(opening.status)){opening.status=opening.status==='ringing'?'missed':'interrupted';opening.endReason=opening.status;opening.endedAt=opening.endedAt||Date.now();opening.recordCreated=true;instagramState.callStatus=opening.status==='missed'?'missed':'hung-up';instagramState.unlocked=true;saveInstagramState();saveLostPhoneStory()}ensureInstagramOpeningCallLog();if(lostPhoneStory?.openingRoute==='instagram_first'&&(!opening||opening.status==='scheduled'))scheduleInstagramOpeningCall()}
@@ -2440,9 +2440,9 @@ const STAGE_ELEVEN_RESPONSES={
  'shownu-invite-followup:invite-friday':['금요일 저녁 괜찮아. 끝나고 연락할게.','星期五晚上可以。結束後我再聯絡你。','invitation-agreed'],'shownu-invite-followup:invite-flexible':['그럼 일정 확인하고 내가 먼저 연락할게.','那我確認行程後先聯絡你。','invitation-pending'],'shownu-invite-followup:invite-defer':['그래. 다음에 시간 맞을 때 보자.','好，下次時間合適再約。','invitation-deferred'],
  'shownu-drunk-checkin:steady':['다행이다. 어제 꽤 늦게까지 마셨으니까 오늘은 물도 마시고 쉬어.','那就好。昨天喝得滿晚的，今天記得喝水休息。','ordinary'],'shownu-drunk-checkin:flirt':['그건 왜 오해야? 그냥 걱정한 건데 ㅋㅋ','那怎麼會是誤會？我只是擔心你而已ㅋㅋ','flirt-open'],'shownu-drunk-checkin:serious':['갑자기 진지하네. 너는 내가 어떤 사람인데?','突然這麼認真。那你覺得我是怎樣的人？','serious-open'],'shownu-drunk-checkin:confess':['잠깐… 이거 술 때문 아니고 지금 진심으로 하는 말이야?','等一下……這不是因為喝醉才說的，你現在是認真的嗎？','confession-pending'],
  'shownu-flirt-followup:flirt-joke':['알았어 ㅋㅋ 그래도 그런 말은 기억해 둘게.','知道了ㅋㅋ不過這種話我會記住喔。','flirt-joked'],'shownu-flirt-followup:flirt-press':['그건 네가 생각해 봐 ㅋㅋ','那就由你自己想想看吧ㅋㅋ','flirt-reciprocal-ambiguous'],'shownu-flirt-followup:flirt-withdraw':['그래. 다음엔 장난인지 아닌지 좀 더 일찍 알려줘 ㅋㅋ','好啊。下次早點告訴我是在開玩笑還是不是真的ㅋㅋ','flirt-closed-lightly'],
- 'shownu-serious-followup:serious-special':['그렇게 말해 주니까 생각보다 떨리네. 너는?','聽你這麼說，我好像比想像中還緊張。你呢？','serious-open'],'shownu-serious-followup:serious-curious':['나도 너를 편하고 소중한 사람이라고 생각해. 갑자기 물어서 궁금했어.','我也覺得你是相處自在、很重要的人。突然這樣問，我有點好奇。','serious-warm'],'shownu-serious-followup:serious-retreat':['알겠어. 그래도 네가 궁금해한 건 기억할게.','知道了。不過我會記得你曾經好奇這件事。','serious-paused'],
- 'shownu-confession-followup:confession-serious':['알겠어. 지금 바로 답을 정하긴 어렵지만, 네 말을 가볍게 넘기고 싶지는 않아.','我知道了。我現在還沒辦法立刻給答案，但不想把你的話輕輕帶過。','confession-serious'],'shownu-confession-followup:confession-joke':['진짜 놀랐잖아 ㅋㅋ 다음엔 맨정신일 때도 말해 봐.','你真的嚇到我了ㅋㅋ下次清醒時也說說看。','confession-joked'],'shownu-confession-followup:confession-withdraw':['알겠어. 그래도 들은 건 기억할게. 나중에 얘기하고 싶으면 말해.','知道了。不過我會記得你說過的話。之後想聊再告訴我。','confession-withdrawn'],
- 'shownu-confession-revisit:revisit-serious':['응. 네가 그렇게 말해 주니까 나도 더 생각해 보고 싶어.','嗯。你這麼說，我也想再多想一想。','confession-reaffirmed'],'shownu-confession-revisit:revisit-joke':['그 말이 농담인지 아닌지는 조금 더 지켜봐야겠네 ㅋㅋ','那句話到底是不是玩笑，我得再觀察一下ㅋㅋ','confession-joked'],'shownu-confession-revisit:revisit-space':['고마워. 나도 서두르지 않고 생각해 볼게.','謝謝你。我也會慢慢想，不急著下結論。','open-no-pressure']
+ 'shownu-serious-followup:serious-special':['그렇게 말해 주니까 생각보다 떨리네. 너는?','聽你這麼說，我好像比想像中還緊張。你呢？','serious-open'],'shownu-serious-followup:serious-curious':['나한테도 너 편하고 소중한 사람임. 갑자기 물어서 궁금했어','我也覺得你是相處自在、很重要的人。突然這樣問，我有點好奇。','serious-warm'],'shownu-serious-followup:serious-retreat':['알겠어. 그래도 네가 궁금해한 건 기억할게.','知道了。不過我會記得你曾經好奇這件事。','serious-paused'],
+ 'shownu-confession-followup:confession-serious':['알겠어 지금 바로 답을 정하긴 어렵지만 네가 한 말 그냥 넘기긴 좀 그렇다 ','我知道了。我現在還沒辦法立刻給答案，但不想把你的話輕輕帶過。','confession-serious'],'shownu-confession-followup:confession-joke':['진짜 놀랐잖아 ㅋㅋ 다음엔 맨정신일 때도 말해 봐.','你真的嚇到我了ㅋㅋ下次清醒時也說說看。','confession-joked'],'shownu-confession-followup:confession-withdraw':['알겠어. 그래도 들은 건 기억할게. 나중에 얘기하고 싶으면 말해.','知道了。不過我會記得你說過的話。之後想聊再告訴我。','confession-withdrawn'],
+ 'shownu-confession-revisit:revisit-serious':['응. 네가 그렇게 말해 주니까 나도 더 생각해 보고 싶어.','嗯。你這麼說，我也想再多想一想。','confession-reaffirmed'],'shownu-confession-revisit:revisit-joke':['그 말이 농담인지 아닌지는 조금 더 지켜봐야겠네 ㅋㅋ','那句話到底是不是玩笑，我得再觀察一下ㅋㅋ','confession-joked'],'shownu-confession-revisit:revisit-space':['고마워 나도 천천히 고민해 볼게 ','謝謝你。我也會慢慢想，不急著下結論。','open-no-pressure']
 };
 stageSevenApplyOption=function(group,option){if(retiredPlayerIdentityOption(option))return false;stageElevenApplyChoiceBase(group,option);if(!lostPhoneStory||!group||!option)return;const [optionId,,,effect]=option,now=Date.now(),state=ensureStageElevenState(),romance=state.romance;if(group.id.startsWith(`${STAGE_ELEVEN_ID}:manual-disclosure:`)){const record=state.manualDisclosureGroups[group.chatId]||{};record.open=false;record.sent=true;record.sentAt=now;record.groupId=group.id;state.manualDisclosureGroups[group.chatId]=record}if(effect==='disclose'&&group.chatId==='shownu'){for(const [eventId,eventStatus] of Object.entries(romance.replyEventIds||{}))if(eventStatus==='scheduled'){stageSixCancel([eventId]);romance.replyEventIds[eventId]='cancelled'}}if(['romance-main','romance-proactive','romance-invite-followup','romance-flirt-followup','romance-serious-followup','romance-confession-followup','romance-revisit'].includes(effect)){if(group.chatId==='shownu'&&!stageSevenDisclosureKnown('shownu')){lostPhoneStory.playerHasImpersonated=true;lostPhoneStory.repliedAsHyungwonTo=lostPhoneStory.repliedAsHyungwonTo||{};lostPhoneStory.repliedAsHyungwonTo.shownu=true}if(!romance.interactionIds.includes(group.id+':'+optionId))romance.interactionIds.push(group.id+':'+optionId);romance.lastChoiceId=optionId;romance.lastChoiceAt=now;romance.lastGroupId=group.id;if(group.id==='shownu-drunk-checkin'){romance.status='choice-made';romance.checkinChoice=optionId;if(optionId==='confess')romance.confessionStatus='awaiting-seriousness'}else if(group.id==='shownu-proactive'){romance.proactiveChoice=optionId;if(optionId==='invite')romance.invitationStatus='awaiting-reply'}else if(group.id==='shownu-invite-followup')romance.invitationChoice=optionId;else if(group.id==='shownu-flirt-followup')romance.flirtFollowupChoice=optionId;else if(group.id==='shownu-serious-followup')romance.seriousFollowupChoice=optionId;else if(group.id==='shownu-confession-followup'){romance.confessionFollowupChoice=optionId;if(optionId==='confession-serious')romance.confessionStatus='serious';else if(optionId==='confession-joke')romance.confessionStatus='joked';else romance.confessionStatus='withdrawn'}else if(group.id==='shownu-confession-revisit'){romance.confessionRevisitChoice=optionId;romance.confessionRevisitStatus='completed';if(optionId==='revisit-serious')romance.confessionStatus='reaffirmed';else if(optionId==='revisit-joke')romance.confessionStatus='joked';else romance.confessionStatus='open-no-pressure'}const interactionKey=`${group.id}:${optionId}`,replyEventId=`${interactionKey}:reply-event`,replyMessageId=`${interactionKey}:reply`;if(!getGameEvent(replyEventId)&&!romance.replyEventIds[replyEventId]){romance.replyEventIds[replyEventId]='scheduled';stageSevenQueue(replyEventId,'romance-reply',now+1800,{groupId:group.id,optionId,replyMessageId})}}saveLostPhoneStory()};
 stageElevenWorldEvent=function(event){const p=event?.payload||{},romance=ensureStageElevenState()?.romance,now=Date.now();if(p.kind==='romance-checkin'&&['sent','choice-made','completed','suppressed'].includes(romance?.status))return {notify:false};if(p.kind==='romance-revisit'&&['sent','choice-made','completed','suppressed'].includes(romance?.confessionRevisitStatus))return {notify:false};if(p.kind==='romance-reply'){if(!romance||romance.replyEventIds[event.id]==='completed')return {notify:false};const response=STAGE_ELEVEN_RESPONSES[`${p.groupId}:${p.optionId}`];if(!response){romance.replyEventIds[event.id]='completed';saveLostPhoneStory();return {notify:false}}romance.replyEventIds[event.id]='completed';romance.lastResponseKind=response[2];romance.lastResponseAt=now;stageSevenQueueMessage(p.replyMessageId||`${event.id}:message`,'shownu','셔누',response[0],response[1],0,{notify:true});if(response[2]==='invitation-accepted')romance.invitationStatus='tentatively-accepted';else if(response[2]==='invitation-agreed')romance.invitationStatus='agreed';else if(response[2]==='invitation-pending')romance.invitationStatus='awaiting-date';else if(response[2]==='invitation-deferred')romance.invitationStatus='deferred';if(response[2]==='confession-serious'){romance.confessionStatus='serious';const followId=`${STAGE_ELEVEN_ID}:confession-revisit:event`;if(!getGameEvent(followId)){romance.confessionRevisitStatus='scheduled';stageSevenQueue(followId,'romance-revisit',now+180000,{sourceReplyId:p.replyMessageId})}}saveLostPhoneStory();return {notify:false}}return stageElevenWorldEventBeforeStable(event)};
@@ -2580,15 +2580,15 @@ const STAGE_TWELVE_FLOWS={
    {id:'day-check',text:'형, 오늘은 좀 어때?',translation:'哥，今天過得怎麼樣？',reply:'괜찮아. 오전엔 좀 바빴는데 이제 여유 있어. 너는?',replyTranslation:'還不錯。上午有點忙，現在比較有空了。你呢？',next:'day-follow',question:'how-day'},
    {id:'share-day',text:'오늘은 그냥 형한테 얘기하고 싶어서 연락했어.',translation:'今天只是想跟哥聊聊，所以傳訊息來。',reply:'그런 날 있지. 오늘은 뭐 하면서 보냈어?',replyTranslation:'偶爾會有這種日子。你今天都在做什麼？',next:'day-follow',question:'what-did-today'},
   ],'day-follow':[
-   {id:'day-work',text:'일정 끝나고 좀 쉬고 있어. 형은 밥 먹었어?',translation:'行程結束後在休息。哥吃飯了嗎？',reply:'응, 간단히 먹었어. 너도 늦기 전에 챙겨 먹어.',replyTranslation:'嗯，簡單吃過了。你也趁還不晚記得吃點東西。',next:'end-day',question:'meal'},
-   {id:'day-listen',text:'노래 들으면서 쉬는 중이야. 형은 요즘 뭐 들어?',translation:'我在聽歌休息。哥最近都聽什麼？',reply:'요즘은 예전에 듣던 것들 다시 듣고 있어. 나중에 몇 곡 보내줄게.',replyTranslation:'最近在重聽以前聽的歌。晚點傳幾首給你。',next:'end-day',question:'music'},
+   {id:'day-work',text:'일정 끝나고 좀 쉬고 있어. 오늘은 정신없었네.',translation:'行程結束後在休息，今天忙得有點亂。',reply:'그랬어? 나도 오전엔 좀 그랬어. 이제 좀 쉬어.',replyTranslation:'是喔？我上午也差不多，現在休息一下吧。',next:'end-day',question:'meal'},
+   {id:'day-listen',text:'노래 들으면서 쉬는 중이야. 형은 요즘 뭐 들어?',translation:'我在聽歌休息。哥最近都聽什麼？',reply:'요즘은 예전에 듣던 것들 다시 듣고 있어. 익숙한 게 좋더라.',replyTranslation:'最近在重聽以前聽的歌，熟悉的聽起來挺好。',next:'end-day',question:'music'},
    {id:'day-close',text:'그냥 안부 묻고 싶었어. 얼른 쉬어, 형.',translation:'只是想問候一下。哥快休息吧。',reply:'너도. 오늘은 너무 늦게까지 깨어 있지 말고.',replyTranslation:'你也是。今天別熬得太晚。',next:null,close:true}
-  ],'end-day':[{id:'day-thanks',text:'응, 형도 푹 쉬어. 내일 보자.',translation:'嗯，哥也好好休息。明天見。',reply:'그래. 내일 보자.',replyTranslation:'好，明天見。',next:null,close:true}] }},
+  ],'end-day':[{id:'day-thanks',text:'응 ㅋㅋ 그냥 잠깐 얘기하고 싶었어.',translation:'嗯ㅋㅋ 只是想聊一下。',reply:'그래. 생각나면 또 연락해.',replyTranslation:'好啊，想到什麼再傳訊息來。',next:null,close:true}] }},
   flirt:{title:'가벼운 장난',stages:{start:[
    {id:'flirt-see',text:'오늘은 형 얼굴 좀 보고 싶네 ㅋㅋ',translation:'今天有點想見哥呢ㅋㅋ',reply:'갑자기? 무슨 일 있었어?',replyTranslation:'怎麼突然這樣？發生什麼事了嗎？',next:'flirt-after',question:'why-see'},
-   {id:'flirt-special',text:'형한테는 내가 좀 특별한 편이야?',translation:'對哥來說，我算是比較特別的人嗎？',reply:'갑자기 그런 걸 묻네. 너는 내가 특별해?',replyTranslation:'突然問這種事啊。那我對你來說特別嗎？',next:'flirt-special-answer',question:'mutual-special'},
+   {id:'flirt-special',text:'형한테는 내가 좀 특별한 편이야?',translation:'對哥來說，我算是比較特別的人嗎？',reply:'갑자기 왜 그런 걸 묻냐 너는 나 특별함? ',replyTranslation:'突然問這種事啊。那我對你來說特別嗎？',next:'flirt-special-answer',question:'mutual-special'},
   ],'flirt-after':[
-   {id:'flirt-joke',text:'그냥 보고 싶다고 하면 안 돼? ㅋㅋ',translation:'就不能只是說想見哥嗎？ㅋㅋ',reply:'안 될 건 없지 ㅋㅋ 다음에 시간 맞춰 보자.',replyTranslation:'也不是不行ㅋㅋ下次看看時間能不能配合。',next:'flirt-close',question:'meet'},
+   {id:'flirt-joke',text:'그냥 보고 싶다고 하면 안 돼? ㅋㅋ',translation:'就不能只是說想見哥嗎？ㅋㅋ',reply:'안 될 건 없지 ㅋㅋ 그냥 물어본 거야.',replyTranslation:'也不是不行ㅋㅋ 我只是問問。',next:'flirt-close',question:'meet'},
    {id:'flirt-retreat',text:'별일은 아니야. 그냥 장난친 거야 ㅋㅋ',translation:'沒什麼事啦，只是在開玩笑ㅋㅋ',reply:'그래? 알았어 ㅋㅋ 그래도 연락해 줘서 고맙네.',replyTranslation:'是嗎？知道了ㅋㅋ不過謝謝你傳訊息來。',next:null,close:true}
   ],'flirt-special-answer':[
    {id:'special-say',text:'형은 나한테 좀 특별해.',translation:'哥對我來說有點特別。',reply:'특별하다고? 어떤 의미로? ㅋㅋ',replyTranslation:'特別？是哪方面的意思？ㅋㅋ',next:'special-meaning',question:'meaning-of-special',memory:'shownu-special'},
@@ -2596,11 +2596,11 @@ const STAGE_TWELVE_FLOWS={
    {id:'special-retreat',text:'아냐, 그냥 갑자기 궁금했어.',translation:'沒事，只是突然好奇。',reply:'그래. 궁금한 거 있으면 편하게 물어봐.',replyTranslation:'好啊。有好奇的事就自然問我吧。',next:null,close:true}
   ],'special-meaning':[
    {id:'meaning-calm',text:'그냥 형이랑 있으면 편하고, 자주 생각나.',translation:'只是跟哥在一起很自在，而且會常常想到你。',reply:'그 말은 기분 좋네. 나도 너랑 있으면 편해.',replyTranslation:'聽你這麼說滿開心的。我跟你在一起也很自在。',next:'special-end',memory:'shownu-often-think'},
-   {id:'meaning-joke',text:'말 그대로지 ㅋㅋ 너무 깊게 생각하지 마.',translation:'就是字面上的意思啦ㅋㅋ別想太多。',reply:'알았어 ㅋㅋ 그래도 기억은 해 둘게.',replyTranslation:'知道了ㅋㅋ不過我會記著喔。',next:null,close:true},
+   {id:'meaning-joke',text:'말 그대로지 ㅋㅋ 너무 깊게 생각하지 마라 ',translation:'就是字面上的意思啦ㅋㅋ別想太多。',reply:'알았어 ㅋㅋ 그래도 기억은 해 둘게.',replyTranslation:'知道了ㅋㅋ不過我會記著喔。',next:null,close:true},
    {id:'meaning-retreat',text:'아, 취소. 괜히 민망해졌어.',translation:'啊，收回。突然覺得有點不好意思。',reply:'왜 취소해 ㅋㅋ 알겠어, 더 안 물어볼게.',replyTranslation:'幹嘛收回ㅋㅋ知道了，我不再追問。',next:null,close:true,memory:'shownu-retreated'}
   ],'special-end':[{id:'special-close',text:'오늘은 여기까지만 얘기하자. 잘 자, 형.',translation:'今天先聊到這裡吧。哥晚安。',reply:'그래. 잘 자, 형원아.',replyTranslation:'好。晚安，亨源啊。',next:null,close:true}] }},
    'wind-down':{title:'하루 마무리',stages:{start:[
-    {id:'wind-down-rest',text:'오늘 일정 끝나고 잠깐 쉬는 중이야. 형은 이제 좀 쉬어?',translation:'今天行程結束後在稍微休息。哥現在也能休息一下了嗎？',reply:'응, 나도 이제 정리하고 앉았어. 저녁은 먹었어?',replyTranslation:'嗯，我也剛收拾完坐下來。晚餐吃了嗎？',next:'meal-check',question:'has-eaten'},
+    {id:'wind-down-rest',text:'오늘 일정 끝나고 잠깐 쉬는 중이야. 형은 이제 좀 쉬어?',translation:'今天行程結束後在稍微休息。哥現在也能休息一下了嗎？',reply:'응 나도 이제 정리하고 앉았다. 저녁은 먹었어?',replyTranslation:'嗯，我也剛收拾完坐下來。晚餐吃了嗎？',next:'meal-check',question:'has-eaten'},
     {id:'wind-down-care',text:'형, 오늘도 고생했어. 이제 좀 쉬고 있어?',translation:'哥今天也辛苦了。現在有稍微休息嗎？',reply:'응, 이제 괜찮아. 너는 저녁 챙겨 먹었어?',replyTranslation:'嗯，現在還好。你有吃晚餐嗎？',next:'meal-check',question:'has-eaten'}
    ],'meal-check':[
     {id:'wind-down-ate',text:'응, 아까 먹었어. 형도 너무 늦지 않게 쉬어.',translation:'嗯，剛才吃過了。哥也別太晚休息。',reply:'다행이네. 너도 오늘은 일찍 쉬어.',replyTranslation:'那就好。你今天也早點休息。',next:'rest-close',setFacts:{dinnerEaten:true}},
@@ -2625,10 +2625,10 @@ const STAGE_TWELVE_FLOWS={
    {id:'walk-close',text:'그럼 일정 보고 다시 얘기하자.',translation:'那我看一下行程再聊。',reply:'그래. 확인되면 편하게 말해.',replyTranslation:'好，確認後再跟我說。',next:null,close:true}
   ],'invite-close':[{id:'invite-thanks',text:'좋아. 기다릴게 ㅋㅋ',translation:'好啊，我等哥消息ㅋㅋ',reply:'기다릴 것까지야 ㅋㅋ 금방 알려줄게.',replyTranslation:'不用特地等啦ㅋㅋ我很快告訴你。',next:null,close:true}] }},
   confession:{title:'마음에 관한 이야기',stages:{start:[
-   {id:'confession-soft',text:'형, 나 요즘 형을 좋아하는 것 같아. 갑자기 말해서 미안해.',translation:'哥，我最近好像喜歡上你了。突然這樣說，抱歉。',reply:'잠깐… 그 말은 가볍게 넘기고 싶지 않아. 지금도 진심이야?',replyTranslation:'等一下……我不想把這句話輕輕帶過。你現在也是認真的嗎？',next:'confession-answer',question:'is-serious',memory:'shownu-confessed'},
+   {id:'confession-soft',text:'형 나 요즘 형 좋아하나 봐 갑자기 이래서 미안 ',translation:'哥，我最近好像喜歡上你了。突然這樣說，抱歉。',reply:'잠깐… 그 말은 가볍게 넘기고 싶지 않아. 지금도 진심이야?',replyTranslation:'等一下……我不想把這句話輕輕帶過。你現在也是認真的嗎？',next:'confession-answer',question:'is-serious',memory:'shownu-confessed'},
    {id:'confession-direct',text:'형, 나 형 좋아해. 장난 아니야.',translation:'哥，我喜歡你。不是開玩笑。',reply:'알겠어. 놀라긴 했는데 네 얘기 더 듣고 싶어.',replyTranslation:'我知道了。雖然有點意外，但我想再聽你說。',next:'confession-answer',question:'what-next',memory:'shownu-confessed'}
   ],'confession-answer':[
-   {id:'confession-serious',text:'응, 진심이야. 바로 답하지 않아도 괜찮아.',translation:'嗯，我是認真的。不用馬上回答也沒關係。',reply:'고마워. 나도 시간을 두고 제대로 생각해 볼게.',replyTranslation:'謝謝你。我也會留點時間，好好想一想。',next:null,close:true,memory:'shownu-confession-space'},
+   {id:'confession-serious',text:'응 진심이야 바로 대답 안 해도 돼 ',translation:'嗯，我是認真的。不用馬上回答也沒關係。',reply:'고마워. 나도 시간을 두고 제대로 생각해 볼게.',replyTranslation:'謝謝你。我也會留點時間，好好想一想。',next:null,close:true,memory:'shownu-confession-space'},
    {id:'confession-joke',text:'미안, 갑자기 너무 무거웠지. 술김이라고 해도 돼.',translation:'抱歉，突然講得太沉重了。你也可以當我是喝醉亂說。',reply:'네가 그렇게 정리하고 싶다면 알겠어. 그래도 네 말은 기억할게.',replyTranslation:'如果你想先這樣帶過，我知道了。不過我會記得你說的話。',next:null,close:true,memory:'shownu-confession-softened'},
    {id:'confession-withdraw',text:'지금은 더 말하기 어려워. 다음에 얘기해도 될까?',translation:'我現在有點說不下去。可以改天再聊嗎？',reply:'물론이지. 네가 준비되면 말해.',replyTranslation:'當然。等你準備好再說。',next:null,close:true,memory:'shownu-confession-paused'}
   ]}}
@@ -2678,8 +2678,8 @@ STAGE_TWELVE_FLOWS.group['break-chat']={title:'잠깐 쉬는 시간',stages:{sta
  {id:'break-rest-joke',text:'민혁이는 일어나면 의자도 같이 움직이겠네 ㅋㅋ',translation:'玟赫站起來時，椅子該不會也跟著走吧ㅋㅋ',reply:'그 정도면 의자가 나를 따라와야지 ㅋㅋ',replyTranslation:'都到這程度了，應該是椅子跟著我走才對ㅋㅋ',replyFrom:'민혁',next:null,close:true},
  {id:'break-rest-thanks',text:'응, 나도 잠깐 눈 좀 붙일게.',translation:'嗯，我也閉目休息一會兒。',reply:'그래. 누가 부르면 그때 일어나면 돼.',replyTranslation:'好，有人叫再起來就行。',replyFrom:'셔누',next:null,close:true}
 ]}};
-STAGE_TWELVE_FLOWS.shownu.flirt.stages['memory-revisit']=[{id:'special-revisit',text:'그때 내가 형한테 특별하다고 한 말, 기억해?',translation:'我那時候說哥對我很特別，哥還記得嗎？',reply:'기억하지. 지금은 그 말이 어떤 뜻이었는지 물어봐도 돼?',replyTranslation:'記得啊。我現在可以問問那句話是什麼意思嗎？',next:'memory-answer',question:'meaning-of-special-again'}];
-STAGE_TWELVE_FLOWS.shownu.flirt.stages['memory-answer']=[{id:'memory-explain',text:'형이 나한테 소중한 사람이라는 뜻이야.',translation:'意思是哥對我來說是很重要的人。',reply:'그렇게 말해 줘서 고마워. 나도 네가 소중해.',replyTranslation:'謝謝你這麼說。你對我來說也很重要。',next:null,close:true},{id:'memory-joke',text:'그냥 그날 분위기였어 ㅋㅋ 너무 신경 쓰지 마.',translation:'只是那天的氣氛啦ㅋㅋ別太在意。',reply:'알았어 ㅋㅋ 그래도 기분은 좋았어.',replyTranslation:'知道了ㅋㅋ不過我聽了還是很開心。',next:null,close:true},{id:'memory-retreat',text:'미안, 지금은 설명하기 좀 어렵네.',translation:'抱歉，我現在有點難解釋。',reply:'괜찮아. 말하고 싶을 때 얘기해.',replyTranslation:'沒關係。等你想說時再聊。',next:null,close:true}];
+STAGE_TWELVE_FLOWS.shownu.flirt.stages['memory-revisit']=[{id:'special-revisit',text:'그때 내가 형한테 특별하다고 한 말, 기억해?',translation:'我那時候說哥對我很特別，哥還記得嗎？',reply:'기억하지 근데 그 말 무슨 뜻이었는지 물어봐도 되나? ',replyTranslation:'記得啊。我現在可以問問那句話是什麼意思嗎？',next:'memory-answer',question:'meaning-of-special-again'}];
+STAGE_TWELVE_FLOWS.shownu.flirt.stages['memory-answer']=[{id:'memory-explain',text:'형이 나한테 소중한 사람이라는 뜻이야.',translation:'意思是哥對我來說是很重要的人。',reply:'그렇게 말해 줘서 고마워. 나도 네가 소중해.',replyTranslation:'謝謝你這麼說。你對我來說也很重要。',next:null,close:true},{id:'memory-joke',text:'그냥 그날 분위기였어 ㅋㅋ 너무 신경 쓰지 마.',translation:'只是那天的氣氛啦ㅋㅋ別太在意。',reply:'알았어 ㅋㅋ 그래도 기분은 좋았어.',replyTranslation:'知道了ㅋㅋ不過我聽了還是很開心。',next:null,close:true},{id:'memory-retreat',text:'미안 지금은 말하기 좀 그렇네 ',translation:'抱歉，我現在有點不方便說。',reply:'괜찮아. 말하고 싶을 때 얘기해.',replyTranslation:'沒關係。等你想說時再聊。',next:null,close:true}];
 STAGE_TWELVE_FLOWS.shownu.flirt.stages['flirt-close']=[{id:'flirt-close',text:'오늘은 이 얘기 여기까지만 하자 ㅋㅋ 잘 자, 형.',translation:'今天先聊到這裡吧ㅋㅋ哥晚安。',reply:'그래 ㅋㅋ 너도 잘 자.',replyTranslation:'好ㅋㅋ你也晚安。',next:null,close:true}];
 STAGE_TWELVE_FLOWS.kihyun['meal-check']={title:'연습 끝나고 밥',stages:{start:[
  {id:'practice-meal-ask',text:'연습 끝나고 밥은 먹었어?',translation:'練習結束後吃飯了嗎？',reply:'응, 간단히 먹었어. 너는 아직이면 뭐라도 챙겨.',replyTranslation:'嗯，簡單吃了點。如果你還沒吃，記得多少吃一點。',next:'meal-answer',question:'kihyun-meal-status'},
@@ -2743,7 +2743,7 @@ function stageTwelveBridge(chatId,topicId){return chatId==='shownu'&&topicId==='
 function stageTwelveChoiceIsValid(chatId,topicId,stage,choice,conversation){if(retiredPlayerIdentityOption(choice))return false;const facts=conversation?.facts||{};if(choice.requiresFacts&&Object.entries(choice.requiresFacts).some(([key,value])=>facts[key]?.playerValue!==value))return false;if(choice.invalidatedByFacts?.some(key=>facts[key]?.playerValue))return false;if(choice.exclusiveGroup&&conversation?.exclusiveChoices?.[choice.exclusiveGroup])return false;if(choice.requiresInitialCheckin&&!hasValidInitialCheckinReply())return false;if(choice.requiresTopicStatus&&conversation?.pausedTopics?.[topicId]?.status!==choice.requiresTopicStatus)return false;return true}
 const stageTwelveChoiceIsValidBeforeMeal=stageTwelveChoiceIsValid;stageTwelveChoiceIsValid=function(chatId,topicId,stage,choice,conversation){if(chatId==='group'&&topicId==='dinner'){const context=stageFourteenGroupMealContext();if(!context||!stageSevenSourceExists('group',context.stageSevenSourceEventId))return false;if(stage==='start'&&stageFourteenGroupMealPendingStoryChoices())return false;const decision=ensureStageFourteenGroupMealDecision(context.eventId),status=decision?.status||'undecided',id=choice?.mealChoiceId||choice?.id;if(stage==='start'&&decision?.pendingReplyMessageId&&!stageSevenSourceExists('group',decision.pendingReplyMessageId))return false;if(id==='dinner-join'&&['attending','declining'].includes(status))return false;if(id==='dinner-menu'&&decision?.menuAsked)return false;if(id==='dinner-pass'&&!['undecided','asking'].includes(status))return false;if(id==='dinner-change-pass'&&status!=='attending')return false;if(id==='dinner-change-join'&&status!=='declining')return false;if((id==='dinner-ok'||id==='dinner-later')&&status==='declining')return false}return stageTwelveChoiceIsValidBeforeMeal(chatId,topicId,stage,choice,conversation)};
 function stageTwelveBuildItem(chatId,topicId,stage,choice,conversation){const id=`conversation:${chatId}:${topicId}:${stage}:${choice.id}`,switching=conversation?.activeTopicId&&conversation.activeTopicId!==topicId,bridge=switching?stageTwelveBridge(chatId,topicId):['',''],replySpeakers=Array.isArray(choice.replyMessages)&&choice.replyMessages.length?choice.replyMessages:[{from:choice.replyFrom||chatId}],dialogueStyle={player:kakaoDialogueStyleFor('hyungwon',chatId,{addressedTo:choice.playerRecipient}),replies:replySpeakers.map(message=>({speaker:message.from,guide:kakaoDialogueStyleFor(message.from,chatId==='group'?'group':'hyungwon',{addressedTo:message.recipient})}))};return {...choice,id,mealEventId:chatId==='group'&&topicId==='dinner'?stageFourteenGroupMealContext()?.eventId||null:null,category:stage==='start'?(chatId==='group'?'activity':chatId==='manager'?'work':['daily','wind-down','meal-check'].includes(topicId)?'daily':topicId==='flirt'?'flirt':topicId==='invitation'?'invite':'continuation'):'continuation',effect:'conversation-turn',once:true,topicId,topicStage:stage,topicNextStage:choice.next??null,topicQuestionId:choice.question||null,topicMemory:choice.memory||null,topicSwitch:!!switching,dialogueStyle,text:`${bridge[0]}${choice.text}`,translation:`${bridge[1]}${choice.translation}`}}
-function stageTwelveConversationOptions(chatId){const state=ensureStageTwelveState(),conversation=state?.conversations?.[chatId];if(!conversation)return [];if(conversation.pendingReply)return [];const used=state.usedByChat[chatId]||{};if(conversation.status==='active'&&conversation.activeTopicId){const flow=stageTwelveGetFlow(chatId,conversation.activeTopicId),choices=(flow?.stages?.[conversation.stage]||[]).filter(choice=>stageTwelveChoiceIsValid(chatId,conversation.activeTopicId,conversation.stage,choice,conversation)),items=choices.map(choice=>stageTwelveBuildItem(chatId,conversation.activeTopicId,conversation.stage,choice,conversation));const paused=Object.entries(conversation.pausedTopics||{}).find(([topic,record])=>record.status==='paused'&&stageTwelveGetFlow(chatId,topic)?.stages?.[record.stage]?.length);let alternate=null;if(paused){const [topic,record]=paused,choice=stageTwelveGetFlow(chatId,topic).stages[record.stage].find(candidate=>!used[stageTwelveBuildItem(chatId,topic,record.stage,candidate,conversation).id]&&stageTwelveChoiceIsValid(chatId,topic,record.stage,candidate,conversation));if(choice){alternate=stageTwelveBuildItem(chatId,topic,record.stage,choice,conversation);alternate.id=`conversation:${chatId}:${topic}:${record.stage}:${choice.id}:resume`}}else{const target=chatId==='shownu'?(conversation.activeTopicId==='daily'?'invitation':'daily'):chatId==='manager'?'schedule':'daily',choices=stageTwelveGetFlow(chatId,target)?.stages?.start||[],choice=choices.find(candidate=>!used[stageTwelveBuildItem(chatId,target,'start',candidate,conversation).id]&&stageTwelveChoiceIsValid(chatId,target,'start',candidate,conversation));if(choice)alternate=stageTwelveBuildItem(chatId,target,'start',choice,conversation)}if(alternate){alternate.topicSwitch=true;if(!used[alternate.id])items.push(alternate)}return items.filter(item=>!used[item.id])}let items=Object.entries(STAGE_TWELVE_FLOWS[chatId]||{}).filter(([topic])=>!['completed','paused'].includes(conversation.pausedTopics?.[topic]?.status)).flatMap(([topic,flow])=>(flow.stages.start||[]).filter(choice=>stageTwelveChoiceIsValid(chatId,topic,'start',choice,conversation)).map(choice=>stageTwelveBuildItem(chatId,topic,'start',choice,conversation)));for(const [topic,record] of Object.entries(conversation.pausedTopics||{})){if(record.status!=='paused')continue;const choices=stageTwelveGetFlow(chatId,topic)?.stages?.[record.stage]||[],choice=choices.find(candidate=>!used[stageTwelveBuildItem(chatId,topic,record.stage,candidate,conversation).id]&&stageTwelveChoiceIsValid(chatId,topic,record.stage,candidate,conversation));if(!choice)continue;const item=stageTwelveBuildItem(chatId,topic,record.stage,choice,conversation);item.id=`conversation:${chatId}:${topic}:${record.stage}:${choice.id}:resume`;items.unshift(item)}const special=state.memories.shownu?.['shownu-special'];if(chatId==='shownu'&&special?.receivedAt&&!special.revisitUsed&&Number(conversation.turns?.length||0)>=Number(special.revisitAfterTurn||Infinity)&&conversation.pausedTopics?.flirt?.status==='completed'){const choice=STAGE_TWELVE_FLOWS.shownu.flirt.stages['memory-revisit'][0],item=stageTwelveBuildItem(chatId,'shownu','flirt','memory-revisit',choice,conversation);item.id='conversation:shownu:flirt:memory-revisit:special-revisit';item.topicMemory='memory-revisit:shownu-special';items.unshift(item)}return items.filter(item=>!used[item.id])}
+function stageTwelveConversationOptions(chatId){const state=ensureStageTwelveState(),conversation=state?.conversations?.[chatId];if(!conversation)return [];if(conversation.pendingReply)return [];const used=state.usedByChat[chatId]||{};if(conversation.status==='active'&&conversation.activeTopicId){const flow=stageTwelveGetFlow(chatId,conversation.activeTopicId),choices=(flow?.stages?.[conversation.stage]||[]).filter(choice=>stageTwelveChoiceIsValid(chatId,conversation.activeTopicId,conversation.stage,choice,conversation)),items=choices.map(choice=>stageTwelveBuildItem(chatId,conversation.activeTopicId,conversation.stage,choice,conversation));const paused=Object.entries(conversation.pausedTopics||{}).find(([topic,record])=>record.status==='paused'&&stageTwelveGetFlow(chatId,topic)?.stages?.[record.stage]?.length);let alternate=null;if(paused){const [topic,record]=paused,choice=stageTwelveGetFlow(chatId,topic).stages[record.stage].find(candidate=>!used[stageTwelveBuildItem(chatId,topic,record.stage,candidate,conversation).id]&&stageTwelveChoiceIsValid(chatId,topic,record.stage,candidate,conversation));if(choice){alternate=stageTwelveBuildItem(chatId,topic,record.stage,choice,conversation);alternate.id=`conversation:${chatId}:${topic}:${record.stage}:${choice.id}:resume`}}else{const target=chatId==='shownu'?(conversation.activeTopicId==='daily'?'invitation':'daily'):chatId==='manager'?'schedule':'daily',choices=stageTwelveGetFlow(chatId,target)?.stages?.start||[],choice=choices.find(candidate=>!used[stageTwelveBuildItem(chatId,target,'start',candidate,conversation).id]&&stageTwelveChoiceIsValid(chatId,target,'start',candidate,conversation));if(choice)alternate=stageTwelveBuildItem(chatId,target,'start',choice,conversation)}if(alternate){alternate.topicSwitch=true;if(!used[alternate.id])items.push(alternate)}return items.filter(item=>!used[item.id])}let items=Object.entries(STAGE_TWELVE_FLOWS[chatId]||{}).map(([topic,flow])=>[topic,stageTwelveGetFlow(chatId,topic)||flow]).filter(([topic])=>!['completed','paused'].includes(conversation.pausedTopics?.[topic]?.status)).flatMap(([topic,flow])=>(flow.stages.start||[]).filter(choice=>stageTwelveChoiceIsValid(chatId,topic,'start',choice,conversation)).map(choice=>stageTwelveBuildItem(chatId,topic,'start',choice,conversation)));for(const [topic,record] of Object.entries(conversation.pausedTopics||{})){if(record.status!=='paused')continue;const choices=stageTwelveGetFlow(chatId,topic)?.stages?.[record.stage]||[],choice=choices.find(candidate=>!used[stageTwelveBuildItem(chatId,topic,record.stage,candidate,conversation).id]&&stageTwelveChoiceIsValid(chatId,topic,record.stage,candidate,conversation));if(!choice)continue;const item=stageTwelveBuildItem(chatId,topic,record.stage,choice,conversation);item.id=`conversation:${chatId}:${topic}:${record.stage}:${choice.id}:resume`;items.unshift(item)}return items.filter(item=>!used[item.id])}
 const stageElevenActiveOptionsBeforeTwelve=stageElevenActiveOptions;
 stageElevenActiveOptions=function(chatId){const state=ensureStageTwelveState(),conversation=state?.conversations?.[chatId];if(!activeChat||activeChat.id!==chatId)return [];if(conversation?.status==='active'&&conversation.activeTopicId){const focused=stageTwelveConversationOptions(chatId);if(!conversation.pendingReply){const base=stageElevenActiveOptionsBeforeTwelve(chatId).filter(item=>item.effect==='disclose'||item.effect==='phone-followup');return [...focused,...base]}return []}const base=stageElevenActiveOptionsBeforeTwelve(chatId);const conversationItems=stageTwelveConversationOptions(chatId);const occupied=new Set(base.map(item=>item.id));return [...base,...conversationItems.filter(item=>!occupied.has(item.id))]};
 const stageSevenGroupBeforeTwelve=stageSevenGroupForChat;
@@ -2753,7 +2753,7 @@ let stageTwelveCommittingMeta=null;
 const stageSevenQueueBeforeTwelve=stageSevenQueue;
 stageSevenQueue=function(id,kind,scheduledAt,payload={}){const next={...payload};if(kind==='active-message-reply'&&stageTwelveCommittingMeta){next.conversation={...stageTwelveCommittingMeta};if(stageTwelveCommittingMeta.replyFrom)next.from=stageTwelveCommittingMeta.replyFrom}return stageSevenQueueBeforeTwelve(id,kind,scheduledAt,next)};
 const stageElevenCommitBeforeTwelve=stageElevenCommitActiveMessage;
-stageElevenCommitActiveMessage=function(item){if(retiredPlayerIdentityOption(item))return false;if(!item?.topicId){const state=ensureStageTwelveState(),chatId=activeChat?.id,convo=state?.conversations?.[chatId];if(convo?.status==='active'&&convo.activeTopicId&&['disclose','phone-followup'].includes(item?.effect)){convo.pausedTopics[convo.activeTopicId]={status:'paused',stage:convo.stage,pausedAt:Date.now(),lastQuestionId:convo.lastQuestionId||null};convo.status='paused';convo.activeTopicId=null;convo.stage=null;convo.pendingReply=null;saveLostPhoneStory()}const committed=stageElevenCommitBeforeTwelve(item);if(committed&&item.exclusiveGroup){const record=stageElevenActionState(chatId)[item.id],factKey=item.factKey||item.exclusiveGroup;convo.exclusiveChoices=convo.exclusiveChoices||{};convo.exclusiveChoices[item.exclusiveGroup]={selectedValue:item.factValue,selectedAt:Date.now(),source:'player-selected-option'};convo.facts[factKey]={playerValue:item.factValue,recipientValue:null,status:'sent',playerAt:Date.now(),playerMessageId:record?.eventId||null,source:'player-selected-option'};if(record){record.factGroup=factKey;record.factValue=item.factValue}saveLostPhoneStory()}return committed}const state=ensureStageTwelveState(),chatId=activeChat?.id,convo=state?.conversations?.[chatId];if(!convo)return false;stageTwelveCommittingMeta={chatId,topicId:item.topicId,stage:item.topicStage,nextStage:item.topicNextStage,choiceId:item.id,questionId:item.topicQuestionId,memory:item.topicMemory,setFacts:item.setFacts,exclusiveGroup:item.exclusiveGroup,factValue:item.factValue,topicSwitch:item.topicSwitch,playerText:item.text,reply:item.reply,replyTranslation:item.replyTranslation,replyFrom:item.replyFrom,replyMessages:item.replyMessages};const ok=stageElevenCommitBeforeTwelve(item);stageTwelveCommittingMeta=null;if(!ok)return false;const record=stageElevenActionState(chatId)[item.id];if(record){record.conversation={chatId,topicId:item.topicId,stage:item.topicStage,nextStage:item.topicNextStage,choiceId:item.id,questionId:item.topicQuestionId,memory:item.topicMemory,setFacts:item.setFacts,exclusiveGroup:item.exclusiveGroup,factValue:item.factValue,topicSwitch:item.topicSwitch,replyFrom:item.replyFrom,replyMessages:item.replyMessages};record.reply=item.reply;record.replyTranslation=item.replyTranslation;record.replyMessages=item.replyMessages}if(convo.activeTopicId&&convo.activeTopicId!==item.topicId)convo.pausedTopics[convo.activeTopicId]={status:'paused',stage:convo.stage,pausedAt:Date.now(),lastQuestionId:convo.lastQuestionId||null};convo.status='active';convo.activeTopicId=item.topicId;convo.stage=item.topicStage;convo.pendingReply=`${record?.eventId}:reply`;convo.lastQuestionId=item.topicQuestionId||null;convo.turns=Array.isArray(convo.turns)?convo.turns:[];convo.turns.push({optionId:item.id,text:item.text,at:Date.now(),stage:item.topicStage});if(item.setFacts){convo.facts=convo.facts||{};for(const [key,value] of Object.entries(item.setFacts))convo.facts[key]={playerValue:value,recipientValue:null,status:'sent',playerAt:Date.now(),source:'player-selected-option'}}if(item.exclusiveGroup){convo.exclusiveChoices=convo.exclusiveChoices||{};convo.exclusiveChoices[item.exclusiveGroup]={selectedValue:item.factValue||item.id,selectedAt:Date.now(),source:'player-selected-option'}}if(item.topicSwitch)convo.switchCount=(convo.switchCount||0)+1;if(chatId==='shownu'){const romance=ensureStageElevenState().romance;romance.lastChoiceId=item.id;romance.lastChoiceAt=Date.now();romance.lastGroupId=`conversation:${item.topicId}:${item.topicStage}`;romance.interactionIds=romance.interactionIds||[];if(!romance.interactionIds.includes(item.id))romance.interactionIds.push(item.id);if(item.topicMemory==='shownu-confessed'){romance.confessionStatus='awaiting-seriousness';romance.playerConfessedAt=Date.now();romance.playerConfessedAsDeviceOperator=true}else if(item.topicId==='flirt')romance.lastResponseKind='conversation-flirt';if(item.topicId==='invitation')romance.invitationStatus='awaiting-reply'}if(item.topicMemory){state.memories[chatId]=state.memories[chatId]||{};if(String(item.topicMemory).startsWith('memory-revisit:')){const priorKey=String(item.topicMemory).slice('memory-revisit:'.length);if(state.memories[chatId][priorKey])state.memories[chatId][priorKey].revisitUsed=true}else state.memories[chatId][item.topicMemory]={at:Date.now(),messageId:record?.eventId,source:'player-selected-message',revisitUsed:false}}for(const group of Object.values(lostPhoneStory.stageSeven?.groups||{}))if(group.chatId===chatId&&group.status==='pending'&&!String(group.id).startsWith('found-followup:')){group.status='superseded-by-conversation';group.supersededAt=Date.now()}saveLostPhoneStory();return true};
+stageElevenCommitActiveMessage=function(item){if(retiredPlayerIdentityOption(item))return false;if(!item?.topicId){const state=ensureStageTwelveState(),chatId=activeChat?.id,convo=state?.conversations?.[chatId];if(convo?.status==='active'&&convo.activeTopicId&&['disclose','phone-followup'].includes(item?.effect)){convo.pausedTopics[convo.activeTopicId]={status:'paused',stage:convo.stage,pausedAt:Date.now(),lastQuestionId:convo.lastQuestionId||null};convo.status='paused';convo.activeTopicId=null;convo.stage=null;convo.pendingReply=null;saveLostPhoneStory()}const committed=stageElevenCommitBeforeTwelve(item);if(committed&&item.exclusiveGroup){const record=stageElevenActionState(chatId)[item.id],factKey=item.factKey||item.exclusiveGroup;convo.exclusiveChoices=convo.exclusiveChoices||{};convo.exclusiveChoices[item.exclusiveGroup]={selectedValue:item.factValue,selectedAt:Date.now(),source:'player-selected-option'};convo.facts[factKey]={playerValue:item.factValue,recipientValue:null,status:'sent',playerAt:Date.now(),playerMessageId:record?.eventId||null,source:'player-selected-option'};if(record){record.factGroup=factKey;record.factValue=item.factValue}saveLostPhoneStory()}return committed}const state=ensureStageTwelveState(),chatId=activeChat?.id,convo=state?.conversations?.[chatId];if(!convo)return false;stageTwelveCommittingMeta={chatId,topicId:item.topicId,stage:item.topicStage,nextStage:item.topicNextStage,choiceId:item.id,questionId:item.topicQuestionId,memory:item.topicMemory,setFacts:item.setFacts,exclusiveGroup:item.exclusiveGroup,factValue:item.factValue,topicSwitch:item.topicSwitch,playerText:item.text,reply:item.reply,replyTranslation:item.replyTranslation,replyFrom:item.replyFrom,replyMessages:item.replyMessages};const ok=stageElevenCommitBeforeTwelve(item);stageTwelveCommittingMeta=null;if(!ok)return false;const record=stageElevenActionState(chatId)[item.id];if(record){record.conversation={chatId,topicId:item.topicId,stage:item.topicStage,nextStage:item.topicNextStage,choiceId:item.id,questionId:item.topicQuestionId,memory:item.topicMemory,setFacts:item.setFacts,exclusiveGroup:item.exclusiveGroup,factValue:item.factValue,topicSwitch:item.topicSwitch,replyFrom:item.replyFrom,replyMessages:item.replyMessages};record.reply=item.reply;record.replyTranslation=item.replyTranslation;record.replyMessages=item.replyMessages}if(convo.activeTopicId&&convo.activeTopicId!==item.topicId)convo.pausedTopics[convo.activeTopicId]={status:'paused',stage:convo.stage,pausedAt:Date.now(),lastQuestionId:convo.lastQuestionId||null};convo.status='active';convo.activeTopicId=item.topicId;convo.stage=item.topicStage;convo.pendingReply=`${record?.eventId}:reply`;convo.lastQuestionId=item.topicQuestionId||null;convo.turns=Array.isArray(convo.turns)?convo.turns:[];convo.turns.push({optionId:item.id,text:item.text,at:Date.now(),stage:item.topicStage});if(item.setFacts){convo.facts=convo.facts||{};for(const [key,value] of Object.entries(item.setFacts))convo.facts[key]={playerValue:value,recipientValue:null,status:'sent',playerAt:Date.now(),source:'player-selected-option'}}if(item.exclusiveGroup){convo.exclusiveChoices=convo.exclusiveChoices||{};convo.exclusiveChoices[item.exclusiveGroup]={selectedValue:item.factValue||item.id,selectedAt:Date.now(),source:'player-selected-option'}}if(item.topicSwitch)convo.switchCount=(convo.switchCount||0)+1;if(chatId==='shownu'){const romance=ensureStageElevenState().romance;romance.lastChoiceId=item.id;romance.lastChoiceAt=Date.now();romance.lastGroupId=`conversation:${item.topicId}:${item.topicStage}`;romance.interactionIds=romance.interactionIds||[];if(!romance.interactionIds.includes(item.id))romance.interactionIds.push(item.id);if(item.topicMemory==='shownu-confessed'){romance.confessionStatus='awaiting-seriousness';romance.playerConfessedAt=Date.now();romance.playerConfessedAsDeviceOperator=true}else if(item.topicId==='flirt')romance.lastResponseKind='conversation-flirt';if(item.topicId==='invitation'&&item.flowVersion!==2)romance.invitationStatus='awaiting-reply'}if(item.topicMemory){state.memories[chatId]=state.memories[chatId]||{};if(String(item.topicMemory).startsWith('memory-revisit:')){const priorKey=String(item.topicMemory).slice('memory-revisit:'.length);if(state.memories[chatId][priorKey])state.memories[chatId][priorKey].revisitUsed=true}else state.memories[chatId][item.topicMemory]={at:Date.now(),messageId:record?.eventId,source:'player-selected-message',revisitUsed:false}}for(const group of Object.values(lostPhoneStory.stageSeven?.groups||{}))if(group.chatId===chatId&&group.status==='pending'&&!String(group.id).startsWith('found-followup:')){group.status='superseded-by-conversation';group.supersededAt=Date.now()}saveLostPhoneStory();return true};
 const stageSevenApplyOptionBeforeMeal=stageSevenApplyOption;stageSevenApplyOption=function(group,option){if(retiredPlayerIdentityOption(option))return false;stageSevenApplyOptionBeforeMeal(group,option);if(group?.chatId==='group'&&group.id==='group-meal'){const context=stageFourteenGroupMealContext();if(context){stageFourteenRecordGroupMealChoice(context.eventId,option,{source:'story-reply',messageId:group.playerMessageId||null});const ackId=`${group.id}:ack`;if(getGameEvent(ackId))ensureStageFourteenGroupMealDecision(context.eventId).pendingReplyMessageId=ackId;saveLostPhoneStory()}}};const stageElevenCommitActiveMessageBeforeMeal=stageElevenCommitActiveMessage;stageElevenCommitActiveMessage=function(item){const result=stageElevenCommitActiveMessageBeforeMeal(item);if(result&&activeChat?.id==='group'&&item?.topicId==='dinner'&&item.mealEventId){const record=stageElevenActionState('group')?.[item.id];stageFourteenRecordGroupMealChoice(item.mealEventId,item,{source:'active-composer',messageId:record?.eventId||null});if(record)record.groupMealEventId=item.mealEventId;saveLostPhoneStory();renderAfterWorkPanel();renderChatMessages();renderKakaoChats()}return result};
 const stageElevenActiveWorldBeforeTwelve=stageElevenActiveWorldEvent;
 stageElevenActiveWorldEvent=function(event){if(event?.payload?.kind!=='active-message-reply'||!event.payload.conversation)return stageElevenActiveWorldBeforeTwelve(event);const p=event.payload,state=ensureStageTwelveState(),convo=state?.conversations?.[p.chatId],record=Object.values(stageElevenActionState(p.chatId)||{}).find(value=>value.eventId===String(event.id).replace(/:reply$/,''));if(!record||record.replyScheduled||record.replyDelivered||!convo||convo.activeTopicId!==p.conversation.topicId||convo.pendingReply!==event.id)return {notify:false};record.replyScheduled=true;record.replyAt=Date.now();const messages=Array.isArray(record.replyMessages)&&record.replyMessages.length?record.replyMessages:[{from:p.from,text:record.reply||p.text,translation:record.replyTranslation||p.translation}],messageIds=messages.map((_,index)=>`${event.id}:message${index?`:${index}`:``}`);messages.forEach((message,index)=>stageSevenQueueMessage(messageIds[index],p.chatId,message.from||p.from,message.text,message.translation,index*800,{group:!!p.group,notify:true}));record.conversationReplyMessageId=messageIds[messageIds.length-1];saveLostPhoneStory();return {notify:false}};
@@ -3185,7 +3185,7 @@ function narrativeCallInProgress(){return ['ringing','connected'].includes(lostP
 function narrativeDrinkingFocus(){const d=lostPhoneStory?.stageSeven?.drinkingNight;return !!d&&!d.legacyCompleted&&(['tipsy','deeper','boundary','morning'].includes(d.stage)||d.stage==='invite'&&!!d.interactionStarted||!!d.pendingReply)}
 function narrativeDisplayDate(){try{return new Date(narrativeStoryTimestamp())}catch{return new Date(2026,9,23,18,12)}}
 function narrativeClockDate(){try{return Number(lostPhoneStory?.stageSeven?.drinkingNight?.morningStoryTimestamp)?narrativeDisplayDate():new Date()}catch{return new Date()}}
-function narrativeStoryTimestamp(){const d=lostPhoneStory?.stageSeven?.drinkingNight;return Math.max(new Date(2026,9,23,18,12).getTime(),Number(d?.lastStoryTimestamp)||0,Number(lostPhoneStory?.eventIntegration?.contactStoryTimestamp)||0,Number(d?.morningStoryTimestamp)||0)}
+function narrativeStoryTimestamp(){const d=lostPhoneStory?.stageSeven?.drinkingNight;return Math.max(new Date(2026,9,23,18,12).getTime(),Number(d?.lastStoryTimestamp)||0,Number(lostPhoneStory?.eventIntegration?.contactStoryTimestamp)||0,Number(d?.morningStoryTimestamp)||0,shownuShoesClockFloor(),typeof shownuFinaleClockFloor==='function'?shownuFinaleClockFloor():0)}
 function narrativeOriginalEvent(event){const id=String(event?.id||'');return ['instagram-opening-call','lost-phone-incoming-call','lost-phone-call-timeout','lost-phone-convergence'].includes(event?.type)||id.startsWith('lost-phone-shownu-checkin-v1:instagram-first-call')||id.startsWith('lost-phone-shownu-checkin-v1:call:')||id.includes(':convergence:')||id.includes(':world:shownu-after-call:')||/^lost-phone-shownu-checkin-v1:reply-(home|why|outside):/.test(id)}
 function narrativeEventEligibility(event,{history=false}={}){
  const result=(phase,reason)=>({allowed:['eligible','in-progress','completed'].includes(phase),phase,reason});
@@ -3325,7 +3325,7 @@ const DRINKING_NIGHT_CHOICES={
  ['stop','메시지 그만 보내기','停止傳訊息。',null,null,'morning-pending']]
 };
 const DRINKING_MORNING={
- ordinary:{text:'어제 잘 들어갔어? 머리는 안 아프고?',translation:'昨天有平安到家嗎？頭不會痛吧？',options:[
+ ordinary:{text:'어제 잘 들어감? 머리 안 아픔? ',translation:'昨天有平安到家嗎？頭不會痛吧？',options:[
  ['fine','응, 잘 들어왔어. 머리도 괜찮아.','嗯，有平安回家，頭也還好。','다행이다. 오늘은 물 좀 마시고 쉬어.','那就好，今天記得喝水休息。','complete'],
  ['headache','잘 들어왔는데 머리는 좀 아프네 ㅋㅋ','有平安回家，不過頭有點痛ㅋㅋ','빈속에 커피부터 마시지 말고 뭐라도 먹어.','別空腹先喝咖啡，吃點東西吧。','complete'],
  ['brief','응, 괜찮아. 형도 좀 쉬어.','嗯，我沒事。哥也休息一下。','알았어. 나도 좀 쉬려고.','知道了，我也打算休息一下。','complete']]},
@@ -3340,7 +3340,7 @@ const DRINKING_MORNING={
  ['sincere','그냥… 형이 어떻게 생각할지 궁금했어.','只是……好奇哥會怎麼想。','그랬어? 갑자기 물어서 나도 뭐라고 할지 몰랐어.','是喔？問得太突然，我也不知道該怎麼回答。','complete']]},
  different:{text:'어제 너 평소랑 좀 다르더라 ㅋㅋ 많이 취했었나 봐.',translation:'你昨天跟平常有點不一樣ㅋㅋ 看來真的喝醉了。',options:[
  ['laugh','그랬나 ㅋㅋ 좀 많이 마시긴 했어.','有嗎ㅋㅋ 是喝得有點多。','다음엔 천천히 마셔. 나도 중간에 물 좀 챙길게.','下次慢慢喝，我也會記得中間拿點水。','complete'],
- ['ask','많이 이상했어?','有很奇怪嗎？','아니, 평소보다 말이 많았다는 거지 ㅋㅋ','沒有，就是比平常話多一點ㅋㅋ','complete'],
+ ['ask','많이 이상했어?','有很奇怪嗎？','아니 평소보다 말이 좀 많았다고 ㅋㅋ ','沒有，就是比平常話多一點ㅋㅋ','complete'],
  ['quiet','오늘은 조용히 쉬어야겠다.','今天還是安靜休息好了。','그래. 뭐 좀 먹고 쉬어.','好，吃點東西再休息。','complete']]}
 };
 function drinkingNightState(){return lostPhoneStory?.stageSeven?.drinkingNight||null}
@@ -3618,6 +3618,331 @@ $('#launch-confirm-new').addEventListener('click',()=>{
   launchConfirm.hidden=true;resetGameRuntimeForFreshStart();gameInitializationStatus='idle';refreshLaunchMenu();initializeGameOnce();
 });
 launchConfirm.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();$('#launch-cancel').click()}});
+// Revised casual topic: old, already-started invitation conversations keep V1.
+const SHOWNu_INVITATION_V1=STAGE_TWELVE_FLOWS.shownu.invitation;
+STAGE_TWELVE_FLOWS.shownu.invitation={title:'요즘 재밌는 거',translation:'最近有趣的事',version:2,stages:{start:[
+ {id:'casual-v2-ask',flowVersion:2,text:'형, 요즘 뭐 재밌는 거 없어?',translation:'哥，最近有沒有什麼有趣的事？',reply:'글쎄 ㅋㅋ 너는? 요즘 뭐 재밌는 거 봤어?',replyTranslation:'這個嘛ㅋㅋ 你呢？最近看到什麼有趣的東西了嗎？',next:'casual-v2-answer'},
+ {id:'casual-v2-share',flowVersion:2,text:'형, 아까 웃긴 거 봤는데 생각나서 ㅋㅋ',translation:'哥，我剛剛看到個好笑的東西，就想到要跟你講ㅋㅋ',reply:'뭔데? ㅋㅋ',replyTranslation:'什麼東西？ㅋㅋ',next:'casual-v2-share-answer'}
+ ],'casual-v2-answer':[
+ {id:'casual-v2-music',text:'요즘 옛날 노래 다시 듣는데 은근 좋더라.',translation:'最近在重聽以前的歌，意外地滿不錯的。',reply:'그치 ㅋㅋ 오랜만에 들으면 또 다르게 들리더라.',replyTranslation:'對吧ㅋㅋ 隔一陣子再聽，感覺又不太一樣。',next:'casual-v2-close'},
+ {id:'casual-v2-video',text:'짧은 영상 하나 보다가 시간 다 갔어 ㅋㅋ',translation:'看了一個短影片，結果時間一下就過去了ㅋㅋ',reply:'그런 게 있지 ㅋㅋ 하나만 보려고 해도 계속 보게 돼.',replyTranslation:'會這樣ㅋㅋ 本來只想看一個，結果一直看下去。',next:'casual-v2-close'},
+ {id:'casual-v2-nothing',text:'별건 없어. 그냥 형이 뭐 하나 궁금했어.',translation:'沒什麼特別的，只是好奇哥最近在做什麼。',reply:'나도 별거 없어 ㅋㅋ 그냥 평소랑 비슷하지.',replyTranslation:'我也沒什麼ㅋㅋ 就和平常差不多。',next:null,close:true}
+ ],'casual-v2-share-answer':[
+ {id:'casual-v2-explain',text:'말하면 안 웃긴데 ㅋㅋ 아무튼 진짜 웃겼음 ',translation:'講出來就不好笑了ㅋㅋ 反正真的很好笑。',reply:'뭐야 ㅋㅋ 혼자 웃고 끝이네.',replyTranslation:'什麼啦ㅋㅋ 結果只有你自己笑得開心。',next:'casual-v2-close'},
+ {id:'casual-v2-show',text:'형도 보면 웃을 것 같아서 ㅋㅋ',translation:'我覺得哥看到應該也會笑ㅋㅋ',reply:'그래? ㅋㅋ 나중에 보여 줘.',replyTranslation:'是喔？ㅋㅋ 下次給我看看。',next:'casual-v2-close'}
+ ],'casual-v2-close':[
+ {id:'casual-v2-next',text:'다음에 또 재밌는 거 있으면 얘기해 줄게 ㅋㅋ',translation:'下次有什麼有趣的再跟哥說ㅋㅋ',reply:'그래 ㅋㅋ 기대할게.',replyTranslation:'好啊ㅋㅋ 我會期待的。',next:null,close:true},
+ {id:'casual-v2-tell',text:'형도 재밌는 거 있으면 알려 줘.',translation:'哥有什麼有趣的也告訴我。',reply:'알겠어 ㅋㅋ 생각나면 말해 줄게.',replyTranslation:'知道了ㅋㅋ 想到就跟你說。',next:null,close:true}
+ ]}};
+for(const choices of Object.values(STAGE_TWELVE_FLOWS.shownu.invitation.stages))for(const choice of choices)choice.flowVersion=2;
+function shownuLegacyInvitation(){const a=lostPhoneStory?.stageEleven?.activeMessaging,c=a?.conversations?.shownu;if(c?.topicVersions?.invitation===2||String(c?.stage||'').startsWith('casual-v2-')||Object.values(a?.usedByChat?.shownu||{}).some(r=>r.conversation?.topicId==='invitation'&&String(r.conversation?.choiceId||'').includes('casual-v2-')))return false;return !!(c?.activeTopicId==='invitation'||c?.pausedTopics?.invitation||Object.values(a?.usedByChat?.shownu||{}).some(r=>r.conversation?.topicId==='invitation'&&!String(r.conversation?.choiceId||'').includes('casual-v2-'))||['shownu-invited','shownu-date-set','shownu-invite-pending','shownu-walk-planned'].some(id=>a?.memories?.shownu?.[id]));}
+const revisedTopicFlowBase=stageTwelveGetFlow;
+stageTwelveGetFlow=function(chatId,topicId){return chatId==='shownu'&&topicId==='invitation'&&shownuLegacyInvitation()?SHOWNu_INVITATION_V1:revisedTopicFlowBase(chatId,topicId)};
+
+// One independent, persisted short story; all actual replies use Stage Twelve.
+const SHOWNu_SHOES_ID='shownu-shoes-memory-v1';
+const SHOWNu_SHOES_TOPIC='shoes-memory';
+const SHOWNu_SHOES_PROMPT='아 맞다. 미국에서 사 준 신발 잘 신고 있어?';
+const SHOWNu_SHOES_PROMPT_ZH='啊對了，在美國買給你的那雙鞋，有好好穿嗎？';
+const shoesInviteLines=[{from:'셔누',text:'근데 너 오늘 뭐 해?',translation:'不過你今天要幹嘛？'},{from:'셔누',text:'시간 되면 잠깐 볼까 해서.',translation:'想說你有空的話，要不要見個面。'}];
+STAGE_TWELVE_FLOWS.shownu[SHOWNu_SHOES_TOPIC]={title:'그때 봤어',translation:'那時候我看見了',stages:{'shoe-reply':[
+ {id:'shoes-natural',text:'응 ㅋㅋ 잘 신고 있지.',translation:'有啊ㅋㅋ 當然有在穿。',reply:'다행이네. 그때 계속 보고 있길래 마음에 드는 줄 알았어 ㅋㅋ',replyTranslation:'那就好。那時候看你一直盯著，我就想說你應該很喜歡ㅋㅋ',next:'invite-reply'},
+ {id:'shoes-joke',text:'왜 ㅋㅋ 다시 달라고?',translation:'幹嘛ㅋㅋ 要拿回去嗎？',reply:'아니 ㅋㅋ 그때 한참 고민하길래. 잘 신고 있나 궁금해서.',replyTranslation:'不是ㅋㅋ 當時看你猶豫了好久，就好奇你有沒有在穿。',next:'invite-reply'},
+ {id:'shoes-thanks',text:'응. 그때 진짜 고마웠어.',translation:'有。那時候真的很謝謝哥。',reply:'뭘 ㅋㅋ 너 그때 그 신발 마음에 들어 했잖아.',replyTranslation:'謝什麼ㅋㅋ 你那時候不是很喜歡那雙鞋嗎。',next:'invite-reply'}
+ ],'invite-reply':[
+ {id:'shoes-accept',text:'좋지 ㅋㅋ 그럼 내가 갈게.',translation:'好啊ㅋㅋ 那我過去找哥。',reply:'그래 ㅋㅋ 천천히 와.',replyTranslation:'好啊ㅋㅋ 慢慢來。',next:null,close:true},
+ {id:'shoes-test',text:'갑자기? 형 나 보고 싶었냐 ㅋㅋ 내가 갈까? ',translation:'這麼突然？哥想我了嗎？ㅋㅋ 要我過去嗎？',reply:'그냥 얼굴 좀 보자고 ㅋㅋ 시간 되면 와.',replyTranslation:'就想見個面嘛ㅋㅋ 有空就過來。',next:null,close:true}
+ ]}};
+for(const option of STAGE_TWELVE_FLOWS.shownu[SHOWNu_SHOES_TOPIC].stages['shoe-reply'])option.replyMessages=[{from:'셔누',text:option.reply,translation:option.replyTranslation},...shoesInviteLines];
+const shownuShoesExistingFlow={...STAGE_TWELVE_FLOWS.shownu[SHOWNu_SHOES_TOPIC],stages:{
+ 'shoe-reply':STAGE_TWELVE_FLOWS.shownu[SHOWNu_SHOES_TOPIC].stages['shoe-reply'].map(option=>({...option,next:'existing-reply',replyMessages:[option.replyMessages[0],
+  {from:'셔누',text:'아, 그리고 전에 얘기한 약속 있잖아.',translation:'啊，還有之前說好的那個約。'},
+  {from:'셔누',text:'그때 그 신발 신고 와 ㅋㅋ',translation:'到時候穿那雙鞋來ㅋㅋ'}]})),
+ 'existing-reply':[
+  {id:'shoes-existing-natural',text:'알겠어 ㅋㅋ 그날 신고 갈게.',translation:'知道了ㅋㅋ 那天會穿去。',reply:'그래 ㅋㅋ 그때 보자.',replyTranslation:'好啊ㅋㅋ 到時候見。',next:null,close:true},
+  {id:'shoes-existing-joke',text:'형이 사 준 거라서? ㅋㅋ',translation:'因為是哥買給我的嗎？ㅋㅋ',reply:'그것도 있고 ㅋㅋ 잘 어울렸잖아.',replyTranslation:'也有這個原因ㅋㅋ 畢竟那雙鞋很適合你。',next:null,close:true}
+ ]}};
+const shoesEndingFlowBase=stageTwelveGetFlow;
+stageTwelveGetFlow=function(chatId,topicId){return chatId==='shownu'&&topicId===SHOWNu_SHOES_TOPIC&&shownuShoesState()?.endingMode==='existing'?shownuShoesExistingFlow:shoesEndingFlowBase(chatId,topicId)};
+function shownuShoesState(){return lostPhoneStory?.stageEleven?.activeMessaging?.specialEvents?.shoesMemoryV1||null}
+// A saved monotonic floor keeps the shared clock and all later messages consistent.
+// Wall-clock event deadlines are never changed by this one-time story transition.
+function shownuShoesClockFloor(){const correction=shownuShoesState()?.timeCorrection;if(correction?.version!==1)return 0;const from=Number(correction.from),to=Number(correction.to);if(!Number.isFinite(from)||from<=0||!Number.isFinite(to)||to<from||!Number.isFinite(new Date(to).getTime()))return 0;const delivered=Number(correction.latestMessageTimestamp);return Number.isFinite(delivered)&&delivered>=to&&Number.isFinite(new Date(delivered).getTime())?delivered:to}
+function shownuShoesDaytimePlan(){
+ if(shownuShoesState()?.timeCorrection)return null;
+ const from=narrativeStoryTimestamp(),latest=CONFIG.chats.reduce((at,chat)=>(chat.messages||[]).reduce((max,message)=>Math.max(max,kakaoChatMessageTimestamp(message)||0),at),from),date=new Date(latest);
+ if(!Number.isFinite(date.getTime()))return null;
+ let to=latest;
+ if(date.getHours()<8)to=new Date(date.getFullYear(),date.getMonth(),date.getDate(),9).getTime();
+ else if(date.getHours()>=21)to=new Date(date.getFullYear(),date.getMonth(),date.getDate()+1,9).getTime();
+ return to>from?{version:1,from,to,reason:'shoes-story-daytime'}:null;
+}
+// Evidence is read-only. Never turn an undated walk or an old `agreed` flag into a new date.
+function shownuShoesValidAgreement(at=narrativeStoryTimestamp(),{correctionMorning=false}={}){
+ const invalid=reason=>({valid:false,reason}),a=lostPhoneStory?.stageEleven?.activeMessaging,c=a?.conversations?.shownu,m=a?.memories?.shownu||{},old=lostPhoneStory?.stageSeven?.groups?.['shownu-invite-followup'];
+ if(lostPhoneStory?.stageEleven?.romance?.invitationStatus==='deferred'||old?.selectedOptionId==='invite-defer'||c?.activeTopicId==='invitation'||c?.pausedTopics?.invitation?.status==='paused')return invalid('agreement-unsettled');
+ const sources=[];
+ const memory=m['shownu-date-set'],record=Object.values(a?.usedByChat?.shownu||{}).find(r=>r.eventId===memory?.messageId&&r.conversation?.topicId==='invitation'&&String(r.conversation.choiceId).endsWith(':invite-friday'));
+ if(memory?.receivedAt&&!memory.cancelledAt&&record?.replyDelivered&&c?.pausedTopics?.invitation?.status==='completed')sources.push({playerId:record.eventId,replyId:record.conversationReplyMessageId||`${record.eventId}:reply:message`});
+ if(old?.selectedOptionId==='invite-friday'&&old.playerMessageId)sources.push({playerId:old.playerMessageId,replyId:`${old.id||'shownu-invite-followup'}:invite-friday:reply`});
+ const now=new Date(at),today=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
+ for(const source of sources){
+  const player=getGameEvent(source.playerId),reply=getGameEvent(source.replyId);
+  if(player?.status!=='completed'||reply?.status!=='completed'||player.payload?.chatId!=='shownu'||reply.payload?.chatId!=='shownu'||!stageSevenSourceExists('shownu',source.playerId)||!stageSevenSourceExists('shownu',source.replyId))continue;
+  const stamp=kakaoChatMessageTimestamp(player.payload.message);if(!stamp)continue;
+  const chosen=new Date(stamp),weekday=chosen.getDay()||7,planned=new Date(chosen.getFullYear(),chosen.getMonth(),chosen.getDate()+5-weekday);
+  // The original flow says "this week / Friday evening". Do not roll expired Fridays forward.
+  // Ordinary same-day saves remain conservative; the correction-only exception below is before Friday evening.
+  const correctedMorning=correctionMorning||shownuShoesClockFloor()===at&&!!shownuShoesState()?.timeCorrection;
+  // These stable Friday options explicitly arrange Friday evening. A corrected
+  // morning on that date precedes the meeting; ordinary same-day policy is unchanged.
+  if(planned.getTime()<today||planned.getTime()===today&&!(correctedMorning&&now.getHours()<12)||planned.getTime()<new Date(chosen.getFullYear(),chosen.getMonth(),chosen.getDate()).getTime())continue;
+  return {valid:true,playerId:source.playerId,replyId:source.replyId,date:calendarDateKey(planned.getFullYear(),planned.getMonth()+1,planned.getDate())};
+ }
+ return invalid('agreement-date-or-receipt-unverified');
+}
+function shownuShoesAgreement(){
+ if(shownuShoesValidAgreement().valid)return 'agreed';
+ const a=lostPhoneStory?.stageEleven?.activeMessaging,m=a?.memories?.shownu||{},delivered=key=>m[key]?.receivedAt&&stageSevenSourceExists('shownu',`${m[key].messageId}:reply:message`);
+ if(delivered('shownu-date-set')||delivered('shownu-walk-planned'))return 'agreed';
+ const old=lostPhoneStory?.stageSeven?.groups?.['shownu-invite-followup'],romance=lostPhoneStory?.stageEleven?.romance;
+ if(romance?.invitationStatus==='agreed')return 'agreed';
+ if(['shownu-date-set','shownu-walk-planned','shownu-invite-pending','shownu-invited'].some(key=>m[key])||['awaiting-reply','tentatively-accepted','awaiting-date'].includes(romance?.invitationStatus))return 'pending';
+ if(romance?.invitationStatus==='deferred'||old?.selectedOptionId==='invite-defer')return 'deferred';
+ if(old?.selectedOptionId)return 'pending';
+ if(shownuLegacyInvitation()&&(a?.conversations?.shownu?.activeTopicId==='invitation'||a?.conversations?.shownu?.pausedTopics?.invitation?.status==='paused'))return 'pending';
+ return 'none';
+}
+function shownuShoesEligibility(){
+ const fail=reason=>({allowed:false,reason}),d=drinkingNightState(),a=lostPhoneStory?.stageEleven?.activeMessaging,c=a?.conversations?.shownu;
+ if(gameInitializationStatus!=='started'||!phoneUnlocked)return fail('game-not-ready');
+ if(d?.legacyCompleted||d?.recoveryIssue||!d?.completed||d.stage!=='complete'||d.morningStatus!=='completed'||!Number(d.morningStoryTimestamp)||d.invitationStatus!=='confirmed'||d.choices?.invite?.optionId!=='join'||d.pendingReply)return fail('morning-not-complete');
+ const branch=drinkingNightMorningBranch(d),morning=d.choices?.morning,player=morning?.playerId,reply=morning?.replyId,event=reply&&getGameEvent(reply);if(branch!==d.morningBranch||!DRINKING_MORNING[branch]?.options.some(option=>option[0]===morning?.optionId)||player!==`${DRINKING_NIGHT_ID}:interactive:morning:${morning?.optionId}:player`||reply!==`${DRINKING_NIGHT_ID}:interactive:morning:${morning?.optionId}:shownu`||!stageSevenSourceExists('shownu',`${DRINKING_NIGHT_ID}:interactive:morning:${branch}:prompt`)||!stageSevenSourceExists('shownu',d.choices.invite.playerId)||!stageSevenSourceExists('shownu',d.choices.invite.replyId))return fail('morning-evidence-incomplete');
+ if(!player||!reply||!stageSevenSourceExists('shownu',player)||!stageSevenSourceExists('shownu',reply)||event?.status!=='completed'||!event.effects?.preciseReadAt)return fail('morning-not-read');
+ const state=shownuShoesState();if(state&&['active','completed'].includes(state.status))return fail('already-started');
+ const agreement=shownuShoesAgreement();if(agreement!=='none'&&(agreement!=='agreed'||!shownuShoesValidAgreement().valid))return fail('existing-agreement');
+  const ownResume=state?.status==='starting'&&getGameEvent(`${SHOWNu_SHOES_ID}:opening`)?.status==='completed',heldByThisStory=event=>ownResume&&event?.status==='deferred'&&event.qualification?.reason==='shoes-conversation-has-focus';
+ if(narrativeCallInProgress()||[lostPhoneStory?.call,lostPhoneStory?.openingCall].some(call=>(call?.status==='scheduled'||call?.pendingOutsideCallback)&&!heldByThisStory(getGameEvent(call?.scheduledCallId||call?.eventId))))return fail('call-pending');
+ if(c?.pendingReply||c?.activeTopicId&&c.status==='active'||Object.values(c?.pausedTopics||{}).some(topic=>topic.status==='paused'))return fail('conversation-busy');
+ if(Object.values(lostPhoneStory?.stageSeven?.groups||{}).some(group=>group?.chatId==='shownu'&&group.status==='pending'&&!group.selectedOptionId))return fail('story-choice-pending');
+ if((gameEventMemory.events||[]).some(e=>e.id!==`${SHOWNu_SHOES_ID}:opening`&&e.id!==`${SHOWNu_SHOES_ID}:opening-message`&&!['completed','cancelled','inapplicable'].includes(e.status)&&!heldByThisStory(e)&&(e.payload?.chatId==='shownu'||photoShareIsShownuMainEvent(e))))return fail('event-pending');
+ const date=new Date(narrativeStoryTimestamp());
+ if(date.getHours()<8||date.getHours()>=21){
+  // Do not publish a new story date while other apps still own queued material.
+  if(gameEventMemory.events.some(e=>e.id!==`${SHOWNu_SHOES_ID}:opening`&&e.id!==`${SHOWNu_SHOES_ID}:opening-message`&&!['completed','cancelled','inapplicable'].includes(e.status)))return fail('daytime-transition-awaiting-events');
+  const correction=shownuShoesDaytimePlan();if(!correction)return fail('waiting-story-daytime');
+  if(agreement==='agreed'&&!shownuShoesValidAgreement(correction.to,{correctionMorning:true}).valid)return fail('existing-agreement');
+  return {allowed:true,reason:'ready-with-story-transition',timeCorrection:correction};
+ }
+ return {allowed:true,reason:'ready'};
+}
+function markShownuPreciseRead(){if(!phoneUnlocked||currentScreen!=='app-kakao'||activeChat?.id!=='shownu'||!$('#chat-room')?.classList.contains('active'))return;const reply=drinkingNightState()?.choices?.morning?.replyId,event=reply&&getGameEvent(reply);if(event?.status==='completed'&&stageSevenSourceExists('shownu',reply)&&!event.effects?.preciseReadAt){if(typeof Element!=='undefined'){const root=$('#chat-messages'),row=root?.querySelector(`[data-message-id="${reply}"]`);if(!row)return;const r=row.getBoundingClientRect(),box=root.getBoundingClientRect();if(r.bottom<=box.top||r.top>=box.bottom||r.width<=0||r.height<=0)return;}event.effects={...(event.effects||{}),chatRead:true,preciseReadAt:Date.now()};saveGameEventStore()}}
+let syncingShownuShoes=false;
+function syncShownuShoes(){if(syncingShownuShoes||gameInitializationStatus!=='started')return;syncingShownuShoes=true;try{markShownuPreciseRead();const eligibility=shownuShoesEligibility();if(!eligibility.allowed)return;const active=lostPhoneStory?.stageEleven?.activeMessaging;if(!active)return;active.specialEvents=active.specialEvents||{};if(!active.specialEvents.shoesMemoryV1){active.specialEvents.shoesMemoryV1={version:1,status:'scheduled',openingId:`${SHOWNu_SHOES_ID}:opening-message`};if(!saveLostPhoneStory()){delete active.specialEvents.shoesMemoryV1;return}}const state=active.specialEvents.shoesMemoryV1;if(state.status==='starting'&&!getGameEvent(state.openingId)){stageSevenQueueMessage(state.openingId,'shownu','셔누',SHOWNu_SHOES_PROMPT,SHOWNu_SHOES_PROMPT_ZH,0,{notify:true});return}const event=createGameEvent({id:`${SHOWNu_SHOES_ID}:opening`,type:'shownu-shoes-opening',source:'system',scheduledAt:Date.now()+1500,shouldNotify:false,payload:{specialOpening:SHOWNu_SHOES_ID}});if(event?.status==='deferred'){validateNarrativeEvent(event);saveGameEventStore();scheduleGameEvents()}}finally{syncingShownuShoes=false}}
+const shoesNarrativeEligibilityBase=narrativeEventEligibility;
+narrativeEventEligibility=function(event,options){if(event?.status==='completed')return shoesNarrativeEligibilityBase(event,options);if(event?.type==='shownu-shoes-opening'||event?.id===`${SHOWNu_SHOES_ID}:opening-message`){const result=shownuShoesEligibility();return {allowed:result.allowed,phase:result.allowed?'eligible':'deferred',reason:result.reason}}if(['starting','active'].includes(shownuShoesState()?.status)&&!event?.payload?.photoShareId&&event?.id!==`${SHOWNu_SHOES_ID}:opening-message`&&!String(event?.id||'').includes(`conversation:shownu:${SHOWNu_SHOES_TOPIC}:`)&&photoShareIsShownuMainEvent(event))return {allowed:false,phase:'deferred',reason:'shoes-conversation-has-focus'};return shoesNarrativeEligibilityBase(event,options)};
+registerGameEventHandler('shownu-shoes-opening',()=>{
+ const eligibility=shownuShoesEligibility();if(!eligibility.allowed)return {notify:false};
+ const state=shownuShoesState(),previous=JSON.stringify(state);
+ if(state.status!=='starting'){
+  state.endingMode=shownuShoesAgreement()==='agreed'?'existing':'new';
+  if(eligibility.timeCorrection)state.timeCorrection=eligibility.timeCorrection;
+  if(state.endingMode==='existing')state.agreementRef=shownuShoesValidAgreement();
+ }
+ state.status='starting';
+ if(!saveLostPhoneStory()){for(const key of Object.keys(state))delete state[key];Object.assign(state,JSON.parse(previous));throw new Error('Could not save special story opening')}
+ if(state.timeCorrection){updateHomeStoryDate();updateTime()}
+ stageSevenQueueMessage(state.openingId,'shownu','셔누',SHOWNu_SHOES_PROMPT,SHOWNu_SHOES_PROMPT_ZH,0,{notify:true});return {notify:false};
+});
+const shoesKakaoHandlerBase=gameEventHandlers.get('kkt-message');
+gameEventHandlers.set('kkt-message',(event,options)=>{const result=shoesKakaoHandlerBase(event,options),state=shownuShoesState(),a=lostPhoneStory?.stageEleven?.activeMessaging,c=a?.conversations?.shownu;if(state&&event.payload?.message?.id===state.openingId&&stageSevenSourceExists('shownu',state.openingId)&&state.status!=='completed'){if(!c.activeTopicId&&state.status==='starting'){c.status='active';c.activeTopicId=SHOWNu_SHOES_TOPIC;c.stage='shoe-reply';c.pendingReply=null;state.status='active';saveLostPhoneStory();if(activeChat?.id==='shownu')renderAfterWorkPanel()}}if(state?.status==='active'&&c?.pausedTopics?.[SHOWNu_SHOES_TOPIC]?.status==='completed'){state.status='completed';state.completedAt=Date.now();state.meeting=state.endingMode==='existing'?'existing-confirmed':'accepted';saveLostPhoneStory()}if(state?.timeCorrection&&event.payload?.message&&(event.payload.message.id===state.openingId||String(event.payload.message.id).includes(`conversation:shownu:${SHOWNu_SHOES_TOPIC}:`))&&stageSevenSourceExists('shownu',event.payload.message.id)){const at=Number(event.payload.message.storyTimestamp);if(Number.isFinite(at)&&at>shownuShoesClockFloor()){state.timeCorrection.latestMessageTimestamp=at;saveLostPhoneStory();updateHomeStoryDate();updateTime()}}markShownuPreciseRead();return result});
+const shoesOptionsBase=stageElevenActiveOptions;
+stageElevenActiveOptions=function(chatId){const items=shoesOptionsBase(chatId);return chatId==='shownu'&&shownuShoesState()?.status==='active'?items.filter(item=>item.topicId===SHOWNu_SHOES_TOPIC):items};
+const revisedCommitBase=stageElevenCommitActiveMessage;
+stageElevenCommitActiveMessage=function(item){const c=lostPhoneStory?.stageEleven?.activeMessaging?.conversations?.shownu;if(activeChat?.id==='shownu'&&item?.topicId==='invitation'&&item.flowVersion===2){if(!stageElevenActiveOptions('shownu').some(candidate=>candidate.id===item.id))return false;const prior=c.topicVersions;c.topicVersions={...(prior||{}),invitation:2};const ok=revisedCommitBase(item);if(!ok)c.topicVersions=prior;return ok}return revisedCommitBase(item)};
+const revisedCategoriesBase=stageElevenCurrentCategories;stageElevenCurrentCategories=function(chatId){return revisedCategoriesBase(chatId).map(category=>category.id==='invite'&&chatId==='shownu'&&stageTwelveGetFlow(chatId,'invitation')?.version===2?{...category,label:['요즘 재밌는 거','最近有趣的事']}:category)};
+const shoesResetBase=resetGameRuntimeForFreshStart;resetGameRuntimeForFreshStart=function(...args){clearInterval(shoesEligibilityTimer);shoesEligibilityTimer=null;return shoesResetBase(...args)};
+const shoesInitializeBase=initializeGameOnce;let shoesEligibilityTimer=null;
+initializeGameOnce=function(){const ok=shoesInitializeBase();if(ok&&shoesEligibilityTimer===null){shoesEligibilityTimer=setInterval(syncShownuShoes,1000);syncShownuShoes()}return ok};
+
+// Final phone chapter. Player messages remain individual Stage Twelve choices;
+// a control-only B selection never becomes a fabricated Hyungwon message.
+const SHOWNu_FINALE_ID='shownu-c1c2-endings-v1',SHOWNu_FINALE_TOPIC='c1c2-endings';
+const SHOWNu_ENDING_DEFINITIONS=Object.freeze({
+ A:{label:'Ending A',title:'형원의 고백',translation:'亨源先告白；賢佑表示可能有相似感受，提出當面談。尚未正式確認交往。',summary:'형원이 먼저 고백하고 셔누가 비슷한 마음일 수 있다고 말하며 직접 만나 이야기하자고 합니다. 아직 교제는 확정되지 않았습니다.'},
+ B:{label:'Ending B',title:'셔누의 고백',translation:'賢佑主動坦白感情，表示已在亨源家樓下，希望當面談。畫面中尚未正式確認交往。',summary:'셔누가 먼저 마음을 밝히고 형원의 집 앞에서 만나 이야기하자고 합니다. 화면 안에서는 아직 교제를 확정하지 않습니다.'}
+});
+const finaleLine=(text,translation)=>({from:'셔누',text,translation});
+STAGE_TWELVE_FLOWS.shownu[SHOWNu_FINALE_TOPIC]={title:'마지막 이야기',stages:{
+ 'c1-meal':[{id:'c1-meal',text:'응 형은?',translation:'嗯，哥呢？',replyMessages:[finaleLine('나도 먹었어','我也吃了'),finaleLine('뭐해?','在做什麼？')],next:'c1-why'}],
+ 'c1-why':[{id:'c1-why',text:'왜 ㅋㅋ',translation:'怎麼了ㅋㅋ',reply:'그냥 생각나서',replyTranslation:'只是想到你',next:'c2-choice'}],
+ 'c2-choice':[
+  {id:'route-a',text:'ㅋㅋㅋㅋ 형은 자꾸 사람 헷갈리게 해 ㅋㅋ',translation:'ㅋㅋㅋㅋ哥老是讓人搞不清楚ㅋㅋ',endingRoute:'A',reply:'내가? 왜?',replyTranslation:'我？怎麼了？',next:'a-words'},
+  {id:'route-b',text:'형의 말을 더 듣는다',translation:'聽賢佑繼續說（選擇路線，不發送訊息）',endingRoute:'B',controlOnly:true,next:'b-deny'}
+ ],
+ 'a-words':[{id:'a-words',text:'그런 말을 아무렇지도 않게 하니까',translation:'因為哥總是若無其事地說那種話',reply:'무슨 말?',replyTranslation:'什麼話？',next:'a-remember'}],
+ 'a-remember':[{id:'a-remember',text:'방금도 그렇고. 나 생각났다는 거',translation:'剛才也是，說想到我的那句',playerOnly:true,next:'a-different'}],
+ 'a-different':[{id:'a-different',text:'근데 나한텐 좀 다르게 들려',translation:'不過，對我來說聽起來有點不一樣',playerOnly:true,next:'a-confess'}],
+ 'a-confess':[{id:'a-confess',text:'나 형 좋아해, 그냥 형으로 좋아하는 거 말고',translation:'我喜歡哥，不只是把哥當哥哥的那種喜歡',playerOnly:true,next:'a-serious'}],
+ 'a-serious':[{id:'a-serious',text:'진심으로, 장난 아니야',translation:'我是認真的，不是開玩笑',replyMessages:[
+  finaleLine('…정말?','……真的？'),finaleLine('아, 내가 헷갈리게 했어?','啊，是我讓你搞不清楚了嗎？'),finaleLine('뭐, 나도 좀 비슷했던 것 같기도 하고 ㅎㅎㅎ','嗯，我好像也有點類似的感覺ㅎㅎㅎ'),finaleLine('일단 집 앞으로 나와','先到家門口來'),finaleLine('얼굴 보고 얘기해','見面再說')
+ ],next:null,close:true}],
+ 'b-deny':[{id:'b-deny',text:'내가? 아니거든 ㅋㅋㅋ',translation:'我？才沒有ㅋㅋㅋ',replyMessages:[finaleLine('연락도 늦게 받고 만나면 딴생각하고 ','聯絡時也晚回，見面的時候也在想別的事'),finaleLine('너 나 신경 쓰여서 그러는 거잖아','你是因為在意我，才會這樣吧')],next:'b-silence'}],
+ 'b-silence':[{id:'b-silence',text:'…',translation:'……',playerOnly:true,next:'b-sober'}],
+ 'b-sober':[{id:'b-sober',text:'형 술 마셨어?',translation:'哥喝酒了嗎？',replyMessages:[
+  finaleLine('안 마셨어 맨정신이야','沒喝，我很清醒'),finaleLine('너 나 좋아하는 거 맞잖아','你是喜歡我的，沒錯吧'),finaleLine('나도 너 좋아하는 것 같아서 그래','因為我覺得自己也喜歡你'),finaleLine('언제까지 둘이 눈치만 볼 수는 없잖아','總不能一直只有我們兩個互相試探吧'),finaleLine('나 지금 너희 집 앞이니까 얘기 좀 하자','我現在就在你家門口，我們聊一下'),finaleLine('옷 따뜻하게 입고 나와','穿暖一點再出來')
+ ],next:null,close:true}]
+}};
+function shownuFinaleState(){return lostPhoneStory?.stageEleven?.activeMessaging?.specialEvents?.c1c2EndingsV1||null}
+function shownuFinaleClockFloor(){const at=Number(shownuFinaleState()?.lastStoryTimestamp);return Number.isFinite(at)&&at>0?at:0}
+function shownuFinaleOwnEvent(event){return String(event?.id||'').startsWith(`${SHOWNu_FINALE_ID}:`)||String(event?.id||'').includes(`:conversation:shownu:${SHOWNu_FINALE_TOPIC}:`)}
+function shownuFinaleChoice(record){const meta=record?.conversation;return meta?.topicId===SHOWNu_FINALE_TOPIC?(STAGE_TWELVE_FLOWS.shownu[SHOWNu_FINALE_TOPIC].stages[meta.stage]||[]).find(choice=>String(meta.choiceId).endsWith(`:${choice.id}`)):null}
+function shownuFinaleBusy(){
+ if(narrativeCallInProgress())return 'call-active';
+ if([lostPhoneStory?.call,lostPhoneStory?.openingCall].some(call=>call?.pendingOutsideCallback||call?.status==='scheduled'))return 'call-pending';
+ if((gameEventMemory.events||[]).some(event=>!shownuFinaleOwnEvent(event)&&!['completed','cancelled','inapplicable'].includes(event.status)&&(event.payload?.chatId==='shownu'||photoShareIsShownuMainEvent(event))))return 'message-pending';
+ return null;
+}
+function shownuFinaleEntryEligibility(){
+ if(gameInitializationStatus!=='started'||!phoneUnlocked)return {allowed:false,reason:'game-not-ready'};
+ if(shownuFinaleState())return {allowed:false,reason:'chapter-already-created'};
+ if(shownuShoesState()?.status!=='completed')return {allowed:false,reason:'shoes-not-complete'};
+ const d=drinkingNightState(),reply=d?.choices?.morning?.replyId;
+ if(d?.stage!=='complete'||d?.morningStatus!=='completed'||!reply||!getGameEvent(reply)?.effects?.preciseReadAt)return {allowed:false,reason:'morning-not-complete-or-read'};
+ const a=lostPhoneStory?.stageEleven?.activeMessaging,c=a?.conversations?.shownu;
+ if(!c||c.pendingReply||c.status==='active'&&c.activeTopicId)return {allowed:false,reason:'conversation-busy'};
+ const terminal=Object.values(a.usedByChat?.shownu||{}).find(record=>record.conversation?.topicId===SHOWNu_SHOES_TOPIC&&record.conversation.nextStage===null&&stageSevenSourceExists('shownu',stageTwelveExpectedReplyMessageId(record))&&getGameEvent(stageTwelveExpectedReplyMessageId(record))?.status==='completed');
+ if(!terminal)return {allowed:false,reason:'shoes-final-reply-not-delivered'};
+ const busy=shownuFinaleBusy();return {allowed:!busy,reason:busy||'ready'};
+}
+function shownuFinaleRefresh(){
+ if(activeChat?.id==='shownu'){renderAfterWorkPanel();if(!$('#stage-eleven-active-sheet')?.hidden)stageElevenRenderComposer()}
+}
+function shownuFinaleScheduleTransition(action){
+ return createGameEvent({id:`${SHOWNu_FINALE_ID}:${action}`,type:'shownu-finale-transition',source:'system',scheduledAt:action==='c2-ready'?shownuFinaleState().c2ReadyAt:Date.now(),shouldNotify:false,payload:{action}});
+}
+let syncingShownuFinale=false;
+function syncShownuFinale(){
+ if(syncingShownuFinale||gameInitializationStatus!=='started'||!phoneUnlocked)return;
+ syncingShownuFinale=true;
+ try{
+  let state=shownuFinaleState();
+  if(!state){
+   if(!shownuFinaleEntryEligibility().allowed)return;
+   const active=lostPhoneStory.stageEleven.activeMessaging;active.specialEvents=active.specialEvents||{};
+   state=active.specialEvents.c1c2EndingsV1={version:1,status:'scheduled',phase:'opening',route:null,openingId:`${SHOWNu_FINALE_ID}:opening-message`,lastStoryTimestamp:Math.max(narrativeStoryTimestamp(),...(CONFIG.chats||[]).flatMap(chat=>chat.messages||[]).map(kakaoChatMessageTimestamp).filter(Number.isFinite))};
+   if(!saveLostPhoneStory()){delete active.specialEvents.c1c2EndingsV1;return}
+  }
+  if(state.status==='completed'||state.recoveryIssue)return;
+  if(state.phase==='opening'&&!getGameEvent(state.openingId))stageSevenQueueMessage(state.openingId,'shownu','셔누','밥 먹었어?','吃飯了嗎？',1000,{notify:true});
+  if(state.phase==='pause'&&state.c2ReadyAt)shownuFinaleScheduleTransition('c2-ready');
+  if(state.phase==='branch-pending'&&state.route==='B')shownuFinaleScheduleTransition('route-b');
+  // Deferred deliveries use the existing revalidation and saved remaining delay.
+  if(gameEventMemory.events.some(event=>shownuFinaleOwnEvent(event)&&event.status==='deferred'))resumeNarrativeEvents();
+ }finally{syncingShownuFinale=false}
+}
+const finaleMessageBase=stageSevenQueueMessage;
+stageSevenQueueMessage=function(id,chatId,from,text,translation,delay=0,options={}){
+ if(shownuFinaleOwnEvent({id})&&!options.storyTimestamp){const queued=gameEventMemory.events.filter(shownuFinaleOwnEvent).map(event=>Number(event.payload?.message?.storyTimestamp)||0);options={...options,storyTimestamp:Math.max(narrativeStoryTimestamp(),...queued)+1000}}
+ return finaleMessageBase(id,chatId,from,text,translation,delay,options);
+};
+const finaleEligibilityBase=narrativeEventEligibility;
+narrativeEventEligibility=function(event,options){
+ if(!shownuFinaleOwnEvent(event)){
+  const state=shownuFinaleState();
+  if(state&&state.status!=='completed'&&event?.status!=='completed'&&photoShareIsShownuMainEvent(event))return {allowed:false,phase:'deferred',reason:'finale-conversation-has-focus'};
+  return finaleEligibilityBase(event,options);
+ }
+ if(['cancelled','inapplicable'].includes(event?.status))return {allowed:false,phase:'not-applicable',reason:'finale-event-retired'};
+ const state=shownuFinaleState(),message=event?.payload?.message;
+ // A delivered opening/final line is still eligible for notification creation.
+ if(event?.status==='completed'||message?.id&&stageSevenSourceExists('shownu',message.id))return {allowed:true,phase:'completed',reason:'finale-delivered'};
+ if(!state)return {allowed:false,phase:'deferred',reason:'finale-state-not-restored'};
+ if(state.status==='completed')return {allowed:false,phase:'not-applicable',reason:'finale-complete'};
+ const id=String(event.id),route=/:route-b(?:$|:)/.test(id)||/:b-(?:deny|silence|sober):/.test(id)?'B':/:route-a:|:a-(?:words|remember|different|confess|serious):/.test(id)?'A':null;
+ if(route&&state.route!==route)return {allowed:false,phase:'not-applicable',reason:'other-ending-route'};
+ if(gameInitializationStatus!=='started'||!phoneUnlocked||narrativeCallInProgress())return {allowed:false,phase:'deferred',reason:'finale-game-or-call-not-ready'};
+ return {allowed:true,phase:'eligible',reason:'current-finale'};
+};
+registerGameEventHandler('shownu-finale-transition',event=>{
+ const state=shownuFinaleState(),c=lostPhoneStory?.stageEleven?.activeMessaging?.conversations?.shownu;
+ if(!state||!c||state.status==='completed')return {notify:false};
+ if(event.payload.action==='c2-ready'&&state.phase==='pause'&&c.stage==='c2-choice'&&!c.pendingReply){
+  state.phase='c2';if(!saveLostPhoneStory()){state.phase='pause';throw new Error('Could not save C2 readiness')}
+  shownuFinaleRefresh();
+ }else if(event.payload.action==='route-b'&&state.route==='B'&&state.phase==='branch-pending')stageSevenQueueMessage(`${SHOWNu_FINALE_ID}:route-b:opening-message`,'shownu','셔누','요즘 너 나 조금 피하는 것 같아서','因為覺得你最近好像有點在躲我',0,{notify:true});
+ return {notify:false};
+});
+const finaleActiveReplyBase=stageElevenActiveWorldEvent;
+stageElevenActiveWorldEvent=function(event){
+ const p=event?.payload,active=lostPhoneStory?.stageEleven?.activeMessaging,c=active?.conversations?.shownu;
+ const record=p?.chatId==='shownu'?Object.values(active?.usedByChat?.shownu||{}).find(item=>`${item.eventId}:reply`===event.id):null,choice=shownuFinaleChoice(record);
+ if(!choice?.playerOnly)return finaleActiveReplyBase(event);
+ if(record.replyDelivered||c?.activeTopicId!==SHOWNu_FINALE_TOPIC||c.pendingReply!==event.id)return {notify:false};
+ if(!stageSevenSourceExists('shownu',record.eventId))throw new Error('Finale player message has not been delivered');
+ const before=JSON.stringify({record,c});
+ record.replyScheduled=true;record.replyDelivered=true;record.responseKind='player-only';record.replyDeliveredAt=Date.now();
+ c.pendingReply=null;c.stage=choice.next;c.status='active';
+ if(!saveLostPhoneStory()){const old=JSON.parse(before);Object.assign(record,old.record);Object.assign(c,old.c);throw new Error('Could not save finale player-only transition')}
+ shownuFinaleRefresh();return {notify:false};
+};
+const finaleKakaoBase=gameEventHandlers.get('kkt-message');
+gameEventHandlers.set('kkt-message',(event,options)=>{
+ const result=finaleKakaoBase(event,options),state=shownuFinaleState(),message=event.payload?.message;
+ if(!state||!message||!shownuFinaleOwnEvent(event)||!stageSevenSourceExists('shownu',message.id))return result;
+ const c=lostPhoneStory.stageEleven.activeMessaging.conversations.shownu;
+ state.lastStoryTimestamp=Math.max(state.lastStoryTimestamp||0,Number(message.storyTimestamp)||0);
+ if(state.status!=='completed'){
+  if(message.id===state.openingId&&state.phase==='opening'){
+   c.status='active';c.activeTopicId=SHOWNu_FINALE_TOPIC;c.stage='c1-meal';c.pendingReply=null;state.status='active';state.phase='c1';
+  }else if(message.id===`${SHOWNu_FINALE_ID}:route-b:opening-message`&&state.route==='B'&&state.phase==='branch-pending'){
+   c.status='active';c.activeTopicId=SHOWNu_FINALE_TOPIC;c.stage='b-deny';c.pendingReply=null;state.phase='route-b';
+  }else if(c.activeTopicId===SHOWNu_FINALE_TOPIC&&c.stage==='c2-choice'&&!c.pendingReply&&state.phase==='c1'){
+   state.phase='pause';state.c2ReadyAt=Date.now()+3000;
+  }
+  if(c.pausedTopics?.[SHOWNu_FINALE_TOPIC]?.status==='completed'&&state.route){state.status='completed';state.phase='complete';state.endingId=state.route;state.completedAt=Date.now();state.finalMessageId=message.id;state.relationshipStatus='not-confirmed';}
+ }
+ if(!saveLostPhoneStory())throw new Error('Could not save final chapter delivery');
+ if(state.phase==='pause')shownuFinaleScheduleTransition('c2-ready');
+ updateHomeStoryDate();updateTime();shownuFinaleRefresh();return result;
+});
+const finaleOptionsBase=stageElevenActiveOptions;
+stageElevenActiveOptions=function(chatId){
+ const items=finaleOptionsBase(chatId),state=shownuFinaleState();if(chatId!=='shownu'||!state)return items;
+ if(state.status==='completed'||state.phase==='opening'||state.phase==='pause'||state.phase==='branch-pending')return [];
+ return items.filter(item=>item.topicId===SHOWNu_FINALE_TOPIC);
+};
+const finaleCommitBase=stageElevenCommitActiveMessage;
+stageElevenCommitActiveMessage=function(item){
+ if(item?.topicId!==SHOWNu_FINALE_TOPIC)return activeChat?.id==='shownu'&&shownuFinaleState()?false:finaleCommitBase(item);
+ const state=shownuFinaleState();if(!state||!phoneUnlocked||activeChat?.id!=='shownu'||!$('#chat-room')?.classList.contains('active')||stageElevenComposerBusy||!stageElevenActiveOptions('shownu').some(option=>option.id===item.id))return false;
+ const previous=JSON.stringify(state),c=lostPhoneStory.stageEleven.activeMessaging.conversations.shownu;
+ if(item.endingRoute){
+  if(state.route)return false;
+  state.route=item.endingRoute;state.phase=item.controlOnly?'branch-pending':'route-a';
+  if(!item.controlOnly&&!saveLostPhoneStory()){Object.assign(state,JSON.parse(previous));return false}
+ }
+ if(item.controlOnly){
+  const oldPending=c.pendingReply;c.pendingReply=`${SHOWNu_FINALE_ID}:route-b`;
+  if(!saveLostPhoneStory()){c.pendingReply=oldPending;Object.assign(state,JSON.parse(previous));return false}
+  shownuFinaleScheduleTransition('route-b');stageElevenCloseComposer();shownuFinaleRefresh();return true;
+ }
+ const accepted=finaleCommitBase(item);if(!accepted&&item.endingRoute){Object.assign(state,JSON.parse(previous));saveLostPhoneStory()}return accepted;
+};
+const finaleGroupBase=stageSevenGroupForChat;
+stageSevenGroupForChat=function(chatId){return chatId==='shownu'&&shownuFinaleState()?null:finaleGroupBase(chatId)};
+const finalePanelBase=renderAfterWorkPanel;
+renderAfterWorkPanel=function(){
+ const state=shownuFinaleState();if(activeChat?.id!=='shownu'||!state)return finalePanelBase();
+ const panel=$('#after-work-panel');if(!panel)return;
+ if(state.status!=='completed'){panel.classList.remove('active');panel.innerHTML='';return}
+ const definition=SHOWNu_ENDING_DEFINITIONS[state.endingId];if(!definition)return;
+ panel.classList.add('active');panel.innerHTML=`<div class="story-panel-title">${definition.label} · ${escapeHtml(definition.title)}</div><div class="story-panel-note">${escapeHtml(definition.summary)}<br>${escapeHtml(definition.translation)}</div>`;
+};
+const finaleComposerBase=stageElevenRenderComposer;
+stageElevenRenderComposer=function(){finaleComposerBase();if(stageElevenComposerSelection?.controlOnly){const button=stageElevenEnsureComposer().querySelector('[data-active-confirm]');if(button)button.textContent='선택 · 確認選擇'}};
+const finaleSyncBase=syncShownuShoes;
+syncShownuShoes=function(){finaleSyncBase();syncShownuFinale()};
 </script>
 </body>
 </html>
